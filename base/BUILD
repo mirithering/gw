@@ -3,12 +3,14 @@ cc_library(
     srcs = [
         "attribute.cpp",
         "clock.cpp",
+        "effect.cpp",
         "profession.cpp",
         "random.cpp",
     ],
     hdrs = [
         "attribute.h",
         "clock.h",
+        "effect.h",
         "profession.h",
         "random.h",
     ],
@@ -20,6 +22,7 @@ cc_test(
     size = "small",
     srcs = [
         "clock_test.cpp",
+        "effect_test.cpp",
         "random_test.cpp",
     ],
     deps = [

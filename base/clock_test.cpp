@@ -8,7 +8,7 @@ class Counter : public TimedObject {
  public:
   Counter(int& counter) : counter_(counter) {}
 
-  void Tick(int) { ++counter_; }
+  void Tick(int) override { ++counter_; }
 
  private:
   int& counter_;
@@ -18,7 +18,7 @@ class Timer : public TimedObject {
  public:
   Timer(int& time_passed) : time_passed_(time_passed) {}
 
-  void Tick(int time_passed) { time_passed_ = time_passed; }
+  void Tick(int time_passed) override { time_passed_ = time_passed; }
 
  private:
   int& time_passed_;
@@ -63,4 +63,44 @@ TEST(ClockTest, TimePassedIsHowOftenTicksWasCalled) {
   counter = std::make_unique<Timer>(time_passed);
   Tick();
   EXPECT_EQ(time_passed, 1);
+}
+
+namespace {
+class Remover : public TimedObject {
+ public:
+  Remover(bool& deleted) : deleted_(deleted) {}
+  ~Remover() override { deleted_ = true; }
+  void Tick(int) override { delete delete_on_tick_; }
+  void SetRemove(TimedObject* delete_on_tick) {
+    delete_on_tick_ = delete_on_tick;
+  }
+
+ private:
+  TimedObject* delete_on_tick_ = nullptr;
+  bool& deleted_;
+};
+}  // namespace
+
+TEST(ClockTest, TickRemovesItself) {
+  bool remover_deleted;
+  Remover* remover = new Remover(remover_deleted);
+  remover->SetRemove(remover);
+  Tick();
+  ASSERT_TRUE(remover_deleted);
+  Tick();
+}
+
+// Ticks are called in construction order, so the one who is first constructed
+// will delete the other one.
+TEST(ClockTest, TickRemovesOtherTick) {
+  bool remover1_deleted, remover2_deleted;
+  Remover *remover1, *remover2;
+  remover1 = new Remover(remover1_deleted);
+  remover2 = new Remover(remover2_deleted);
+  remover1->SetRemove(remover2);
+  remover2->SetRemove(remover1);
+  Tick();
+  ASSERT_TRUE(remover2_deleted);
+  ASSERT_FALSE(remover1_deleted);
+  delete remover1;
 }
