@@ -47,5 +47,4 @@ TEST(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
     Tick(defender, attacker, ticks);
   }
   EXPECT_EQ(defender.GetAction().GetType(), Action::Type::Dead);
-  EXPECT_EQ(defender.health(), 0);
 }

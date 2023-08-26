@@ -50,11 +50,11 @@ TEST(CharacterTest, StanceBlocksAttacks) {
           Effect<Stance>(10, std::make_unique<BlockEverythingStance>())));
 
   EXPECT_FALSE(character.ReceiveWeaponDamage(100, Weapon::Type::Scythe));
-  EXPECT_EQ(character.health(), character.GetMaxHealth());
+  EXPECT_EQ(character.GetLostHealth(), 0);
   EXPECT_EQ(stance->attack_blocked_called_, 1);
 
   EXPECT_FALSE(character.ReceiveWeaponDamage(200, Weapon::Type::Staff));
-  EXPECT_EQ(character.health(), character.GetMaxHealth());
+  EXPECT_EQ(character.GetLostHealth(), 0);
   EXPECT_EQ(stance->attack_blocked_called_, 2);
 }
 

@@ -28,10 +28,10 @@ std::map<Profession, int> kEnergyRegeneration = {
 constexpr int kMaxHealth = 480;  // At level 20
 }  // namespace
 
-Character::Character(Profession first_profession) : maxHealth_(kMaxHealth) {
+Character::Character(Profession first_profession) {
   first_profession_ = first_profession;
   armor_ = std::make_unique<Armor>(first_profession);
-  health_ = kMaxHealth;
+  health_lost_ = 0;
   energy_ = kMaxEnergy[first_profession];
 
   attribute_points_ = 200;
@@ -63,7 +63,7 @@ void Character::HealthGeneration() {
 
   health_generation =
       std::max(-10, health_generation);  // Negative generation is capped at 10.
-  AddHealth(2 * health_generation);
+  LoseHealth(-(2 * health_generation));
 }
 
 void Character::EnergyGeneration() {
@@ -75,8 +75,33 @@ void Character::AddEnergy(int amount) {
   energy_ = std::min(kMaxEnergy.at(first_profession_), energy_ + amount);
 }
 
-void Character::AddHealth(int amount) {
-  health_ = std::min(kMaxHealth, health_ + amount);
+void Character::LoseHealth(int amount) {
+  health_lost_ += amount;
+  if (amount > 0 && health_lost_ >= GetMaxHealth()) {
+    Die();
+  }
+}
+
+int Character::GetMaxHealth() const {
+  int max_health = kMaxHealth;
+  int percentage = 100;
+  for (auto modifier : max_health_modifiers_) {
+    percentage += modifier(*this);
+  }
+  // TODO I think there is a cap to this.. E.g. cannot lose more than 100 max
+  // health via deep wound.
+  return (max_health * percentage) / 100;
+}
+
+Character::MaxHealthModifierRef Character::AddMaxHealthModifier(
+    std::function<int(const Character&)> modifier) {
+  max_health_modifiers_.push_front(modifier);
+  return std::begin(max_health_modifiers_);
+}
+
+void Character::RemoveMaxHealthModifier(
+    MaxHealthModifierRef modifier_reference) {
+  max_health_modifiers_.erase(modifier_reference);
 }
 
 void Character::SetAttribute(Attribute attribute, int num) {
@@ -111,16 +136,10 @@ bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type,
     return false;
   }
 
-  int percentage = damage * 100 / maxHealth_;
+  int percentage = damage * 100 / GetMaxHealth();
   AddAdrenaline(percentage);
 
-  // TODO put this in a separate "lose health" function.
-  health_ -= damage;
-  std::cout << name_ << " receiving " << damage
-            << " damage. Remaining health: " << health_ << ".\n";
-  if (health_ <= 0) {
-    Die();
-  }
+  LoseHealth(damage);
   return true;  // TODO return false if blocked.
 }
 
@@ -161,11 +180,13 @@ void Character::RemoveOneAdrenalineStrike() {
 
 void Character::Die() {
   action_ = kActionDead;
-  health_ = 0;
+  // TODO what else happens when you die? Probably lose all timed effects.
   std::for_each(std::begin(skills_), std::end(skills_),
                 [](std::unique_ptr<Skill>& skill) {
                   if (skill) skill->LoseAllAdrenaline();
                 });
+  health_lost_ = GetMaxHealth();
+  energy_ = 0;
 }
 
 int Character::GetAttribute(Attribute attribute) const {
@@ -177,7 +198,7 @@ int Character::GetAttribute(Attribute attribute) const {
 
 std::ostream& operator<<(std::ostream& out, const Character& character) {
   out << character.first_profession_ << std::endl;
-  out << "Health: " << character.health_ << std::endl;
+  out << "Lost Health: " << character.health_lost_ << std::endl;
   out << "Energy: " << character.energy_ << std::endl;
   return out;
 }

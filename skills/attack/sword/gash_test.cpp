@@ -45,21 +45,18 @@ TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.health(), dummy.GetMaxHealth() - expected_damage);
+  EXPECT_EQ(dummy.GetLostHealth(), expected_damage);
   EXPECT_FALSE(dummy.HasCondition(Condition::Type::DeepWound));
 }
 
 TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   constexpr int kExpectedSkillDamage = 17;
   constexpr int kExpectedBleedingDamage = 6;
-  constexpr int kExpectedDeepWoundDamage =
-      0;  // TODO change once deep wound has an effect.
   gash->AddAdrenaline(6 * 25);
 
   OverrideRandomRollForTesting(10);
   int expected_damage = WeaponStrikeDamage(character, dummy) +
-                        kExpectedSkillDamage + kExpectedBleedingDamage +
-                        kExpectedDeepWoundDamage;
+                        kExpectedSkillDamage + kExpectedBleedingDamage;
 
   dummy.AddCondition(Effect<Condition>(10000, std::make_unique<Bleeding>()));
 
@@ -69,7 +66,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.health(), dummy.GetMaxHealth() - expected_damage);
+  EXPECT_EQ(dummy.GetLostHealth(), expected_damage);
 }
 
 TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {

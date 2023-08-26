@@ -7,6 +7,7 @@
 
 class Condition {
  public:
+  virtual ~Condition() = default;
   enum class Type { Bleeding, DeepWound };
   virtual int HealthGeneration() const { return 0; }
   virtual Type GetType() const = 0;

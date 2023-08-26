@@ -92,11 +92,11 @@ TEST(ActionTest, WeaponAttackAttacksAfterHalfOfWeaponSpeed) {
   int expect_attack_at = character.weapon().AttackSpeed() / 2;
   for (int i = 0; i < expect_attack_at; ++i) {
     EXPECT_EQ(action.Tick(), Action::Result::Continue);
-    EXPECT_EQ(character.health(), character.GetMaxHealth());
+    EXPECT_EQ(character.GetLostHealth(), 0);
   }
 
   EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_NE(character.health(), character.GetMaxHealth());
+  EXPECT_NE(character.GetLostHealth(), 0);
 }
 
 TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {

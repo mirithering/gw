@@ -7,7 +7,7 @@
 
 namespace {
 Action NextAction(Character& character, Character& enemy) {
-  if (enemy.health() > 0) {
+  if (enemy.GetAction().GetType() != Action::Type::Dead) {
     for (int i = 0; i < 8; ++i) {
       Skill* skill = character.GetSkill(i);
       if (!skill) continue;

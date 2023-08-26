@@ -26,8 +26,8 @@ class Gash : public AttackSkill {
 
     if (success && is_bleeding) {
       std::cout << "Inflicting deep wound." << std::endl;
-      target.AddCondition(Effect<Condition>(deep_wound_duration,
-                                            std::make_unique<DeepWound>()));
+      target.AddCondition(Effect<Condition>(
+          deep_wound_duration, std::make_unique<DeepWound>(target)));
     }
   }
 

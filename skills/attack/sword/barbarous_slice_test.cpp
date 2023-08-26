@@ -62,7 +62,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.health(), dummy.GetMaxHealth() - kExpectedSkillDamage);
+  EXPECT_EQ(dummy.GetLostHealth(), kExpectedSkillDamage);
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {

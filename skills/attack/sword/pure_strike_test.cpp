@@ -38,7 +38,7 @@ TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
     Tick();
   }
   ASSERT_EQ(stance->attack_blocked_called_, 0);
-  ASSERT_NE(dummy.health(), dummy.GetMaxHealth());
+  ASSERT_NE(dummy.GetLostHealth(), 0);
 }
 
 TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
@@ -52,5 +52,5 @@ TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
     Tick();
   }
   ASSERT_EQ(stance->attack_blocked_called_, 1);
-  ASSERT_EQ(dummy.health(), dummy.GetMaxHealth());
+  ASSERT_EQ(dummy.GetLostHealth(), 0);
 }

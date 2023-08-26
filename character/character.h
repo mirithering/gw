@@ -31,7 +31,7 @@ class Character : public TimedObject {
     energy_ -= use_energy;
   }
 
-  void AddHealth(int amount);
+  void LoseHealth(int amount);
   void AddEnergy(int amount);
 
   void RemoveOneAdrenalineStrike();
@@ -74,11 +74,19 @@ class Character : public TimedObject {
   const Armor& armor() const { return *armor_; }
   int GetAttribute(Attribute attribute) const;
   Profession GetFirstProfession() const { return first_profession_; }
-  int GetMaxHealth() const { return maxHealth_; }
-  int health() const { return health_; }
+  int GetMaxHealth() const;
+  int GetLostHealth() const { return health_lost_; }
   int energy() const { return energy_; }
 
   std::string name_ = "Lovely Princess";  // For debugging.
+
+  typedef std::_List_iterator<std::function<int(const Character& character)>>
+      MaxHealthModifierRef;
+
+  MaxHealthModifierRef AddMaxHealthModifier(
+      std::function<int(const Character&)> modifier);
+
+  void RemoveMaxHealthModifier(MaxHealthModifierRef modifier_reference);
 
  private:
   void HealthGeneration();
@@ -106,10 +114,12 @@ class Character : public TimedObject {
   Effect<Stance> stance_ = Effect<Stance>::None();
   // TODO how to get rid of old conditions, and how to deal with duplicated
   // ones?
+  std::list<std::function<int(const Character& character)>>
+      max_health_modifiers_;
+
   std::vector<Effect<Condition>> conditions_;
 
-  const int maxHealth_;
-  int health_;
+  int health_lost_;
   int energy_;
 
   int attribute_points_;
