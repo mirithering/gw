@@ -62,7 +62,6 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
     Tick();
   }
 
-  // This should not have worked because of bleeding damage.
   EXPECT_EQ(dummy.health(), dummy.GetMaxHealth() - kExpectedSkillDamage);
 }
 
@@ -74,10 +73,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.GetConditions().size(), 1);
-  EXPECT_NE(dummy.GetConditions()[0].get(), nullptr);
-  EXPECT_EQ(dummy.GetConditions()[0].get()->GetType(),
-            Condition::Type::Bleeding);
+  EXPECT_TRUE(dummy.HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
@@ -90,5 +86,5 @@ TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.GetConditions().size(), 0);
+  EXPECT_FALSE(dummy.HasCondition(Condition::Type::Bleeding));
 }

@@ -7,7 +7,8 @@
 #include "base/profession.h"
 #include "character/character.h"
 #include "character/skill.h"
-#include "skills/attack/dagger/desperate_strike.h"
+#include "skills/attack/sword/barbarous_slice.h"
+#include "skills/attack/sword/gash.h"
 #include "skills/attack/sword/jaizenju_strike.h"
 #include "skills/attack/sword/pure_strike.h"
 #include "skills/bonettis_defense.h"
@@ -17,7 +18,7 @@
 // TODO this test needs to change when something about random changes, but it
 // guarantees I am not changing anything else.
 TEST(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
-  int kTime = 55197;
+  int kTime = 32587;
 
   Character attacker(Profession::Warrior);
   attacker.name_ = "Attacker";
@@ -25,8 +26,8 @@ TEST(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
   attacker.SetAttribute(Attribute::Strength, 12);
   attacker.SetSkill(0, std::make_unique<PureStrike>());
   attacker.SetSkill(1, std::make_unique<JaizenjuStrike>());
-  attacker.SetSkill(2, std::make_unique<PureStrike>());
-  attacker.SetSkill(3, std::make_unique<JaizenjuStrike>());
+  attacker.SetSkill(2, std::make_unique<BarbarousSlice>());
+  attacker.SetSkill(3, std::make_unique<Gash>());
 
   Character defender(Profession::Warrior);
   defender.name_ = "Defender";

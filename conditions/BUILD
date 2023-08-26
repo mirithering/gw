@@ -4,6 +4,7 @@ cc_library(
     ],
     hdrs = [
         "bleeding.h",
+        "deep_wound.h",
     ],
     visibility = ["//visibility:public"],
     deps = [

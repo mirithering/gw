@@ -42,12 +42,18 @@ class Character : public TimedObject {
   }
 
   Effect<Condition>* AddCondition(Effect<Condition> condition) {
+    // TODO what about duplicate conditions.
     conditions_.push_back(std::move(condition));
     return &conditions_.back();
   }
 
-  const std::vector<Effect<Condition>>& GetConditions() const {
-    return conditions_;
+  bool HasCondition(Condition::Type type) {
+    for (auto& condition : conditions_) {
+      if (!condition.Ended() && condition.get()->GetType() == type) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void GiveWeapon(std::unique_ptr<Weapon> weapon) {
@@ -56,6 +62,8 @@ class Character : public TimedObject {
 
   void SetAttribute(Attribute attribute, int num);
   Skill* SetSkill(int pos, std::unique_ptr<Skill> skill);
+
+  void SetArmor(std::unique_ptr<Armor> armor) { armor_ = std::move(armor); }
 
   Action& GetAction() { return action_; }
   Skill* GetSkill(int pos) { return skills_[pos].get(); }
