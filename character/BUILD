@@ -9,6 +9,7 @@ cc_library(
     hdrs = [
         "action.h",
         "character.h",
+        "condition.h",
         "damage.h",
         "skill.h",
         "stance.h",

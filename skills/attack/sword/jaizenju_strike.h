@@ -7,7 +7,7 @@
 // Duplicate skill.
 class JaizenjuStrike : public PureStrike {
  public:
-  std::string Name() override { return "Jaizenju Strike"; }
+  std::string Name() const override { return "Jaizenju Strike"; }
 };
 
 #endif  // SKILLS_JAIZENJU_STRIKE_H

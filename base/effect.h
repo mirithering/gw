@@ -15,7 +15,7 @@ class Effect : public TimedObject {
 
   Effect(Effect<T>&&) = default;
   Effect<T>& operator=(Effect<T>&&) = default;
-  ~Effect() override { std::cout << "effect destructor" << std::endl; };
+  ~Effect() override{};
 
   void Tick(int time) override {
     if (duration_ <= time) {

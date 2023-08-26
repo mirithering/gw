@@ -38,15 +38,16 @@ TEST(CharacterTest, StartWithNoAdrenaline) {
 TEST(CharacterTest, StanceBlocksAttacks) {
   class BlockEverythingStance : public Stance {
    public:
-    BlockEverythingStance() : Stance(/*duration=*/10) {}
+    BlockEverythingStance() {}
     int BlockChance(Weapon::Type) override { return 100; }
     void AttackBlocked(Weapon::Type) override { ++attack_blocked_called_; }
     int attack_blocked_called_ = 0;
   };
 
   Character character(Profession::Warrior);
-  BlockEverythingStance* stance = static_cast<BlockEverythingStance*>(
-      character.SetStance(std::make_unique<BlockEverythingStance>()));
+  BlockEverythingStance* stance =
+      static_cast<BlockEverythingStance*>(character.SetStance(
+          Effect<Stance>(10, std::make_unique<BlockEverythingStance>())));
 
   EXPECT_FALSE(character.ReceiveWeaponDamage(100, Weapon::Type::Scythe));
   EXPECT_EQ(character.health(), character.GetMaxHealth());
@@ -107,7 +108,7 @@ TEST_F(AdrenalineCharacterTest,
   adrenaline_skill1->AddAdrenaline(1000);
   adrenaline_skill2->AddAdrenaline(1000);
 
-  adrenaline_skill1->Use(character, dummy);
+  adrenaline_skill1->Activate(character, dummy);
 
   EXPECT_EQ(adrenaline_skill2->GetAdrenaline(), 1000 - 25);
 }

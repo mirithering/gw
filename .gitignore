@@ -33,3 +33,5 @@
 
 # Bazel output
 bazel-*
+.bazelrc*
+.vscode*

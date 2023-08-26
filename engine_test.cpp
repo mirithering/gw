@@ -7,17 +7,17 @@
 #include "base/profession.h"
 #include "character/character.h"
 #include "character/skill.h"
+#include "skills/attack/dagger/desperate_strike.h"
+#include "skills/attack/sword/jaizenju_strike.h"
+#include "skills/attack/sword/pure_strike.h"
 #include "skills/bonettis_defense.h"
-#include "skills/desperate_strike.h"
-#include "skills/jaizenju_strike.h"
-#include "skills/pure_strike.h"
 #include "weapon/dagger.h"
 #include "weapon/sword.h"
 
 // TODO this test needs to change when something about random changes, but it
 // guarantees I am not changing anything else.
 TEST(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
-  int kTime = 113717;
+  int kTime = 64507;
 
   Character attacker(Profession::Warrior);
   attacker.name_ = "Attacker";

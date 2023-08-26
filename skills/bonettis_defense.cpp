@@ -1,17 +1,17 @@
 #include "bonettis_defense.h"
 
+#include <bits/stdc++.h>
+
 #include "character/character.h"
 #include "character/skill.h"
 #include "character/stance.h"
 
-Action BonettisDefense::Use(Character& source, Character&) {
-  Skill::ActivationStart(source);
-
-  source.SetStance(std::make_unique<BonettisDefenseStance>(
-      duration[source.GetAttribute(attribute)] * 1000, source));
+void BonettisDefense::ActivationEnd(Character& source) {
+  int time = kDuration[source.GetAttribute(kAttribute)] * 1000;
+  source.SetStance(
+      Effect<Stance>(time, std::make_unique<BonettisDefenseStance>(source)));
 
   Skill::ActivationEnd(source);
-  return kActionIdle;
 };
 
 int BonettisDefenseStance::BlockChance(Weapon::Type type) {

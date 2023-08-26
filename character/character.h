@@ -7,7 +7,9 @@
 #include "armor/armor.h"
 #include "base/attribute.h"
 #include "base/clock.h"
+#include "base/effect.h"
 #include "base/profession.h"
+#include "condition.h"
 #include "skill.h"
 #include "stance.h"
 #include "weapon/weapon.h"
@@ -19,23 +21,29 @@ class Character : public TimedObject {
 
   void Tick(int time_passed) override;
 
-  bool ReceiveWeaponDamage(int damage, Weapon::Type type);
-  void WeaponAttack(Character& target, int skill_damage = 0);
+  bool ReceiveWeaponDamage(int damage, Weapon::Type type,
+                           bool blockable = true);
+  bool WeaponAttack(Character& target, int skill_damage = 0,
+                    bool blockable = true);
 
   void UseEnergy(int use_energy) {
     assert(energy_ >= use_energy);
     energy_ -= use_energy;
   }
 
-  void RemoveOneAdrenalineStrike();
-
-  void RechargeEnergy();
-
+  void AddHealth(int amount);
   void AddEnergy(int amount);
 
-  Stance* SetStance(std::unique_ptr<Stance> stance) {
+  void RemoveOneAdrenalineStrike();
+
+  Stance* SetStance(Effect<Stance> stance) {
     stance_ = std::move(stance);
-    return stance_.get();
+    return GetStance();
+  }
+
+  Effect<Condition>* AddCondition(Effect<Condition> condition) {
+    conditions_.push_back(std::move(condition));
+    return &conditions_.back();
   }
 
   void GiveWeapon(std::unique_ptr<Weapon> weapon) {
@@ -43,7 +51,7 @@ class Character : public TimedObject {
   }
 
   void SetAttribute(Attribute attribute, int num);
-  void SetSkill(int pos, std::unique_ptr<Skill> skill);
+  Skill* SetSkill(int pos, std::unique_ptr<Skill> skill);
 
   Action& GetAction() { return action_; }
   Skill* GetSkill(int pos) { return skills_[pos].get(); }
@@ -61,6 +69,9 @@ class Character : public TimedObject {
   std::string name_ = "Lovely Princess";  // For debugging.
 
  private:
+  void HealthGeneration();
+
+  void EnergyGeneration();
   void AddAdrenaline(int charges);
   void Die();
 
@@ -80,7 +91,10 @@ class Character : public TimedObject {
 
   std::unique_ptr<Skill> skills_[8];
 
-  std::unique_ptr<Effect<Stance>> stance_;
+  Effect<Stance> stance_ = Effect<Stance>::None();
+  // TODO how to get rid of old conditions, and how to deal with duplicated
+  // ones?
+  std::vector<Effect<Condition>> conditions_;
 
   const int maxHealth_;
   int health_;

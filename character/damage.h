@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 
-#include "character.h"
+class Character;
 
 int WeaponStrikeDamage(const Character& attacker, const Character& defender,
                        int bonus_damage = 0);

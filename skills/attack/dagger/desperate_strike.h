@@ -4,21 +4,40 @@
 
 #include <bits/stdc++.h>
 
+#include "../attack_skill.h"
 #include "character/action.h"
 #include "character/character.h"
 #include "character/damage.h"
 #include "character/skill.h"
 
 // TODO this is a first hand attack, need to set the state to allow for chains.
-class DesperateStrike : public Skill {
+class DesperateStrike : public AttackSkill {
  public:
-  bool CanUse(const Character& character) const override;
+  std::string Name() const override { return "Desperate Strike"; }
 
-  Action Use(Character& source, Character& target) override;
+ protected:
+  void ActivationMiddle(Character& source, Character& target) override {
+    AttackSkill::ActivationMiddle(source, target);
 
-  std::string Name() override { return "Desperate Strike"; }
-  int RechargeTime() const override { return 6000; }
+    int health_below = healthAndDamage.at(source.GetAttribute(attribute)).first;
+    int added_damage =
+        healthAndDamage.at(source.GetAttribute(attribute)).second;
+
+    int skill_damage = 0;
+    if ((source.health() * 100) / source.GetMaxHealth() < health_below) {
+      skill_damage = added_damage;
+    }
+
+    source.WeaponAttack(target, skill_damage);
+  }
+
+  int AdrenalineCost() const override { return 0; }
   int EnergyCost() const override { return 5; }
+  int RechargeTime() const override { return 6000; }
+  int ActivationTime(Character& character) const override {
+    return character.weapon().AttackSpeed();
+  }
+  Weapon::Type WeaponType() const override { return Weapon::Type::Dagger; };
 
  private:
   inline static const Attribute attribute = Attribute::DaggerMastery;

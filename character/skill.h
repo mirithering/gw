@@ -5,31 +5,34 @@
 
 #include "action.h"
 #include "base/clock.h"
-#include "character.h"
 #include "damage.h"
+
+class Character;
 
 class Skill : public TimedObject {
  public:
-  virtual bool CanUse(const Character& character) const;
+  virtual bool CanActivate(const Character& character) const;
+  virtual ~Skill() override = default;
 
-  virtual Action Use(Character& source, Character& target) = 0;
+  Action Activate(Character& source, Character& target);
 
   void Tick(int) override final { recharge_ = std::max(0, recharge_ - 1); }
-
-  virtual std::string Name() = 0;
 
   void AddAdrenaline(int units);
   void LoseAdrenaline(int units);
   void LoseAllAdrenaline();
   int GetAdrenaline() const;
 
-  virtual int AdrenalineCost() const { return 0; }
-  virtual int EnergyCost() const { return 0; }
-  virtual int RechargeTime() const { return 0; }
+  virtual std::string Name() const = 0;
 
  protected:
-  virtual void ActivationStart(Character& character);
+  virtual int AdrenalineCost() const = 0;
+  virtual int EnergyCost() const = 0;
+  virtual int RechargeTime() const = 0;
+  virtual int ActivationTime(Character& character) const = 0;
 
+  virtual void ActivationStart(Character& character);
+  virtual void ActivationMiddle(Character& source, Character& target){};
   virtual void ActivationEnd(Character& character);
 
  private:

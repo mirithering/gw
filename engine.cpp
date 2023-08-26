@@ -11,10 +11,10 @@ Action NextAction(Character& character, Character& enemy) {
     for (int i = 0; i < 8; ++i) {
       Skill* skill = character.GetSkill(i);
       if (!skill) continue;
-      if (skill->CanUse(character)) {
+      if (skill->CanActivate(character)) {
         std::cout << character.name_ << ": " << skill->Name()
                   << " energy: " << character.energy() << std::endl;
-        return skill->Use(character, enemy);
+        return skill->Activate(character, enemy);
       }
     }
     std::cout << character.name_ << ": "
@@ -26,14 +26,7 @@ Action NextAction(Character& character, Character& enemy) {
 }  // namespace
 
 void Tick(Character& character, Character& enemy, int time) {
-  // End stances.
-  if (character.GetStance() &&
-      character.GetStance()->Tick() == Stance::State::End) {
-    character.SetStance(nullptr);
-  }
-
-  // Continue current action.
-  if (character.GetAction().Tick() == Action::Result::End) {
+  if (character.GetAction().GetType() == Action::Type::Idle) {
     // New action.
     character.GetAction() = NextAction(character, enemy);
   }

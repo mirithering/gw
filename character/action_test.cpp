@@ -57,6 +57,16 @@ TEST(ActionTest, EndFunctionIsCalledOnce) {
   EXPECT_EQ(end_called, 1);
 }
 
+TEST(ActionTest, EndFunctionIsCalledWithNoDuration) {
+  int end_called = 0;
+  Action action(
+      Action::Type::Busy, 0,
+      [](int duration) { return Action::Result::Continue; },
+      [&]() { ++end_called; });
+  EXPECT_EQ(action.Tick(), Action::Result::End);
+  EXPECT_EQ(end_called, 1);
+}
+
 TEST(ActionTest, IdleTypeIsIdle) {
   EXPECT_EQ(kActionIdle.GetType(), Action::Type::Idle);
 }

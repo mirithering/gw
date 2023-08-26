@@ -6,6 +6,7 @@
 #include "base/profession.h"
 #include "base/random.h"
 #include "damage.h"
+#include "skill.h"
 
 namespace {
 
@@ -38,16 +39,44 @@ Character::Character(Profession first_profession) : maxHealth_(kMaxHealth) {
 
 void Character::Tick(int time_passed) {
   if (time_passed % 3000 == 0) {
-    RechargeEnergy();
+    EnergyGeneration();
   }
+  if (time_passed % 1000 == 0) {
+    HealthGeneration();
+  }
+
+  if (GetAction().Tick() == Action::Result::End) {
+    GetAction() = kActionIdle;
+  }
+
+  // TODO Remove ended conditions.
 }
 
-void Character::RechargeEnergy() {
-  AddEnergy(kEnergyRegeneration.at(first_profession_));
+void Character::HealthGeneration() {
+  int health_generation = 0;  // Base is 0.
+
+  for (auto& condition : conditions_) {
+    if (!condition.Ended()) {
+      health_generation += condition.get()->HealthGeneration();
+    }
+  }
+
+  health_generation =
+      std::max(-10, health_generation);  // Negative generation is capped at 10.
+  AddHealth(2 * health_generation);
+}
+
+void Character::EnergyGeneration() {
+  int energy_generation = kEnergyRegeneration.at(first_profession_);
+  AddEnergy(energy_generation);
 }
 
 void Character::AddEnergy(int amount) {
   energy_ = std::min(kMaxEnergy.at(first_profession_), energy_ + amount);
+}
+
+void Character::AddHealth(int amount) {
+  health_ = std::min(kMaxHealth, health_ + amount);
 }
 
 void Character::SetAttribute(Attribute attribute, int num) {
@@ -64,17 +93,19 @@ void Character::SetAttribute(Attribute attribute, int num) {
   attributes_[attribute] = num;
 }
 
-void Character::SetSkill(int pos, std::unique_ptr<Skill> skill) {
+Skill* Character::SetSkill(int pos, std::unique_ptr<Skill> skill) {
   assert(pos < 8 && pos >= 0);
   skills_[pos] = std::move(skill);
+  return GetSkill(pos);
 }
 
-bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type) {
-  if (WillBlockAttack(type)) {
+bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type,
+                                    bool blockable) {
+  if (blockable && WillBlockAttack(type)) {
     // TODO maybe I can have a list of functions that want to be called on
     // certain events.
-    if (stance_) {
-      stance_->AttackBlocked(type);
+    if (GetStance()) {
+      GetStance()->AttackBlocked(type);
     }
 
     return false;
@@ -93,8 +124,8 @@ bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type) {
 }
 
 bool Character::WillBlockAttack(Weapon::Type type) {
-  if (stance_) {
-    int chance = stance_->BlockChance(type);
+  if (GetStance()) {
+    int chance = GetStance()->BlockChance(type);
     if (RandomDecision(Chance(chance))) {
       return true;
     }
@@ -102,12 +133,15 @@ bool Character::WillBlockAttack(Weapon::Type type) {
   return false;
 }
 
-void Character::WeaponAttack(Character& target, int skill_damage) {
+bool Character::WeaponAttack(Character& target, int skill_damage,
+                             bool blockable) {
   bool success = target.ReceiveWeaponDamage(
-      WeaponStrikeDamage(*this, target, skill_damage), weapon_->GetType());
+      WeaponStrikeDamage(*this, target, skill_damage), weapon_->GetType(),
+      blockable);
   if (success) {
     AddAdrenaline(25);
   }
+  return success;
 }
 
 void Character::AddAdrenaline(int charges) {

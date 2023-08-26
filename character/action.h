@@ -23,8 +23,9 @@ class Action {
 
     --duration_;
 
-    if (duration_ == 0) {
-      end_();
+    if (duration_ <= 0 && end_.has_value()) {
+      end_.value()();
+      end_ = std::nullopt;
     }
 
     if (duration_ <= 0) {
@@ -42,7 +43,7 @@ class Action {
   Type type_;
   int duration_;
   std::function<Result(int duration)> tick_;
-  std::function<void()> end_;
+  std::optional<std::function<void()>> end_;
 };
 
 Action::Result DoNothingTick(int);

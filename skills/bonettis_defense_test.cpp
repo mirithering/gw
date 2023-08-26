@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
+#include "base/clock.h"
 #include "bonettis_defense.h"
 #include "character/character.h"
 
@@ -20,42 +21,42 @@ class BonettisDefenseTest : public ::testing::Test {
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
-  EXPECT_FALSE(bonettis_defense->CanUse(character));
+  EXPECT_FALSE(bonettis_defense->CanActivate(character));
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
-  bonettis_defense->AddAdrenaline(bonettis_defense->AdrenalineCost());
-  EXPECT_TRUE(bonettis_defense->CanUse(character));
+  bonettis_defense->AddAdrenaline(8 * 25);
+  ASSERT_TRUE(bonettis_defense->CanActivate(character));
 
-  character.GetAction() = bonettis_defense->Use(character, character);
-  for (int i = 1; i < 5000; ++i) {
-    EXPECT_NE(character.GetStance(), nullptr);
-    EXPECT_EQ(character.GetStance()->Tick(), Stance::State::Continue);
+  character.GetAction() = bonettis_defense->Activate(character, character);
+  for (int i = 1; i <= 5000; ++i) {
+    ASSERT_NE(character.GetStance(), nullptr);
+    Tick();
   }
-  EXPECT_EQ(character.GetStance()->Tick(), Stance::State::End);
+  ASSERT_EQ(character.GetStance(), nullptr);
 }
 
 TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
   character.SetAttribute(Attribute::Tactics, 12);
-  bonettis_defense->AddAdrenaline(bonettis_defense->AdrenalineCost());
-  EXPECT_TRUE(bonettis_defense->CanUse(character));
+  bonettis_defense->AddAdrenaline(8 * 25);
+  ASSERT_TRUE(bonettis_defense->CanActivate(character));
 
-  character.GetAction() = bonettis_defense->Use(character, character);
-  for (int i = 1; i < 10000; ++i) {
-    EXPECT_NE(character.GetStance(), nullptr);
-    EXPECT_EQ(character.GetStance()->Tick(), Stance::State::Continue);
+  character.GetAction() = bonettis_defense->Activate(character, character);
+  for (int i = 1; i <= 10000; ++i) {
+    ASSERT_NE(character.GetStance(), nullptr);
+    Tick();
   }
-  EXPECT_EQ(character.GetStance()->Tick(), Stance::State::End);
+  ASSERT_EQ(character.GetStance(), nullptr);
 }
 
 TEST_F(BonettisDefenseTest, BlockChanceDependsOnWeaponType) {
-  BonettisDefenseStance stance(10, character);
+  BonettisDefenseStance stance(character);
   EXPECT_EQ(stance.BlockChance(Weapon::Type::Hammer), 75);
   EXPECT_EQ(stance.BlockChance(Weapon::Type::Staff), 0);
 }
 
 TEST_F(BonettisDefenseTest, BlockingMeeleGivesEnergy) {
-  BonettisDefenseStance stance(10, character);
+  BonettisDefenseStance stance(character);
 
   character.UseEnergy(character.energy());
   EXPECT_EQ(character.energy(), 0);
