@@ -46,6 +46,10 @@ class Character : public TimedObject {
     return &conditions_.back();
   }
 
+  const std::vector<Effect<Condition>>& GetConditions() const {
+    return conditions_;
+  }
+
   void GiveWeapon(std::unique_ptr<Weapon> weapon) {
     weapon_ = std::move(weapon);
   }

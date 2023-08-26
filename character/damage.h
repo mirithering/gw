@@ -5,7 +5,6 @@
 
 class Character;
 
-int WeaponStrikeDamage(const Character& attacker, const Character& defender,
-                       int bonus_damage = 0);
+int WeaponStrikeDamage(const Character& attacker, const Character& defender);
 
 #endif  // DAMAGE_H

@@ -7,7 +7,8 @@
 
 class Bleeding : public Condition {
  public:
-  int HealthGeneration() { return -3; }
+  int HealthGeneration() const override { return -3; }
+  Type GetType() const override { return Type::Bleeding; }
 };
 
 #endif  // CONDITIONS_BLEEDING_H

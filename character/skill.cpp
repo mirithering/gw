@@ -12,6 +12,7 @@ bool Skill::CanActivate(const Character& character) const {
 }
 
 Action Skill::Activate(Character& source, Character& target) {
+  std::cout << source.name_ << " activating skill " << Name() << std::endl;
   ActivationStart(source);
 
   int activation_time = ActivationTime(source);

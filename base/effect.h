@@ -26,6 +26,7 @@ class Effect : public TimedObject {
   bool Ended() { return timed_object_ == nullptr; }
 
   T* get() { return timed_object_.get(); }
+  const T* get() const { return timed_object_.get(); }
 
   static Effect<T> None() { return Effect<T>(); }
 

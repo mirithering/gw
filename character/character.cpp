@@ -114,6 +114,7 @@ bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type,
   int percentage = damage * 100 / maxHealth_;
   AddAdrenaline(percentage);
 
+  // TODO put this in a separate "lose health" function.
   health_ -= damage;
   std::cout << name_ << " receiving " << damage
             << " damage. Remaining health: " << health_ << ".\n";
@@ -136,7 +137,7 @@ bool Character::WillBlockAttack(Weapon::Type type) {
 bool Character::WeaponAttack(Character& target, int skill_damage,
                              bool blockable) {
   bool success = target.ReceiveWeaponDamage(
-      WeaponStrikeDamage(*this, target, skill_damage), weapon_->GetType(),
+      WeaponStrikeDamage(*this, target) + skill_damage, weapon_->GetType(),
       blockable);
   if (success) {
     AddAdrenaline(25);

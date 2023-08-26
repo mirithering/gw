@@ -9,7 +9,11 @@ bool g_random_deterministic = true;
 std::default_random_engine g_deterministic_random_engine(1337);
 
 int Random(int minimum = 0, int maximum = 99) {
-  if (g_random_override) return *g_random_override;
+  if (g_random_override) {
+    int override = g_random_override.value();
+    g_random_override = std::nullopt;
+    return override;
+  }
 
   if (g_random_deterministic) {
     std::uniform_int_distribution<int> uniform_dist(minimum, maximum);

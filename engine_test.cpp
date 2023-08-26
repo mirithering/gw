@@ -17,7 +17,7 @@
 // TODO this test needs to change when something about random changes, but it
 // guarantees I am not changing anything else.
 TEST(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
-  int kTime = 64507;
+  int kTime = 55197;
 
   Character attacker(Profession::Warrior);
   attacker.name_ = "Attacker";

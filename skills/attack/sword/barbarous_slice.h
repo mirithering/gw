@@ -14,14 +14,16 @@ class BarbarousSlice : public AttackSkill {
 
  protected:
   void ActivationMiddle(Character& source, Character& target) override {
+    std::cout << "Barbarous Slice hitting now." << std::endl;
     int skill_damage = kDamage[source.GetAttribute(attribute)];
     int bleeding_duration =
         kBleedingDurationSeconds[source.GetAttribute(attribute)] * 1000;
 
     bool success = source.WeaponAttack(target, skill_damage);
-    bool inflict_bleeding = source.GetStance() == nullptr;
+    bool inflict_bleeding = (source.GetStance() == nullptr);
     if (success && inflict_bleeding) {
-      source.AddCondition(
+      std::cout << "Inflicting bleeding." << std::endl;
+      target.AddCondition(
           Effect<Condition>(bleeding_duration, std::make_unique<Bleeding>()));
     }
   }

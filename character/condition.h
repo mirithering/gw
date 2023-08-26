@@ -7,7 +7,9 @@
 
 class Condition {
  public:
-  virtual int HealthGeneration() { return 0; }
+  enum class Type { Bleeding };
+  virtual int HealthGeneration() const { return 0; }
+  virtual Type GetType() const = 0;
 };
 
 #endif  // CHARACTER_CONDITION_H
