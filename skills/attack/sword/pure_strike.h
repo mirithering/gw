@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "../attack_skill.h"
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/damage.h"
 #include "character/skill.h"
 
@@ -13,8 +13,8 @@ class PureStrike : public AttackSkill {
   std::string Name() const override { return "Pure Strike"; }
 
  protected:
-  void ActivationMiddle(Character& source, Character& target) override {
-    int skill_damage = kDamage.at(source.GetAttribute(kAttribute));
+  void ActivationMiddle(Creature& source, Creature& target) override {
+    int skill_damage = kDamage.at(source.GetBuild().GetAttribute(kAttribute));
     source.WeaponAttack(target, skill_damage,
                         /*blockable=*/(source.GetStance() != nullptr));
   }
@@ -22,8 +22,8 @@ class PureStrike : public AttackSkill {
   int AdrenalineCost() const override { return 0; }
   int EnergyCost() const override { return 5; }
   int RechargeTime() const override { return 8000; }
-  int ActivationTime(Character& character) const override {
-    return character.weapon().AttackSpeed();
+  int ActivationTime(Creature& character) const override {
+    return character.GetBuild().GetWeapon().AttackSpeed();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };
 

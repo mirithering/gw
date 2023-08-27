@@ -5,7 +5,7 @@
 
 #include "weapon/weapon.h"
 
-class Character;
+class Creature;
 
 class Action {
  public:
@@ -35,7 +35,7 @@ class Action {
     return result;
   }
 
-  static Action WeaponAttack(Character& source, Character& target);
+  static Action WeaponAttack(Creature& source, Creature& target);
 
   Type GetType() const { return type_; }
 

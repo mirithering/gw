@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "../attack_skill.h"
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/skill.h"
 #include "conditions/bleeding.h"
 
@@ -13,11 +13,12 @@ class BarbarousSlice : public AttackSkill {
   std::string Name() const override { return "Barbarous Slice"; }
 
  protected:
-  void ActivationMiddle(Character& source, Character& target) override {
+  void ActivationMiddle(Creature& source, Creature& target) override {
     std::cout << "Barbarous Slice hitting now." << std::endl;
-    int skill_damage = kDamage[source.GetAttribute(attribute)];
+    int skill_damage = kDamage[source.GetBuild().GetAttribute(attribute)];
     int bleeding_duration =
-        kBleedingDurationSeconds[source.GetAttribute(attribute)] * 1000;
+        kBleedingDurationSeconds[source.GetBuild().GetAttribute(attribute)] *
+        1000;
 
     bool success = source.WeaponAttack(target, skill_damage);
     bool inflict_bleeding = (source.GetStance() == nullptr);
@@ -31,8 +32,8 @@ class BarbarousSlice : public AttackSkill {
   int AdrenalineCost() const override { return 6 * 25; }
   int EnergyCost() const override { return 0; }
   int RechargeTime() const override { return 0; }
-  int ActivationTime(Character& character) const override {
-    return character.weapon().AttackSpeed();
+  int ActivationTime(Creature& character) const override {
+    return character.GetBuild().GetWeapon().AttackSpeed();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };
 

@@ -1,8 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-class Character;
+class Creature;
 
-void Tick(Character& character, Character& enemy, int time);
+void Tick(Creature& creature, Creature& enemy, int time);
 
 #endif  // ENGINE_H

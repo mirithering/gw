@@ -2,7 +2,7 @@
 
 #include "base/attribute.h"
 #include "base/profession.h"
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/skill.h"
 #include "engine.h"
 #include "skills/desperate_strike.h"
@@ -14,13 +14,13 @@
 int kMaxTime = 60 * 1000;  // 60 Seconds game time.
 
 int main() {
-  Character warrior(Profession::Warrior);
+  Creature warrior(Profession::Warrior);
   warrior.SetAttribute(Attribute::Swordsmanship, 12);
   warrior.SetAttribute(Attribute::Strength, 12);
   warrior.SetSkill(0, std::make_unique<PureStrike>());
   warrior.SetSkill(1, std::make_unique<JaizenjuStrike>());
 
-  Character assassin(Profession::Assassin);
+  Creature assassin(Profession::Assassin);
   assassin.SetAttribute(Attribute::DaggerMastery, 12);
   assassin.SetAttribute(Attribute::DeadlyArts, 12);
   assassin.SetSkill(0, std::make_unique<DesperateStrike>());

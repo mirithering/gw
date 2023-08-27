@@ -4,6 +4,9 @@
 
 std::ostream& operator<<(std::ostream& out, const Profession& profession) {
   switch (profession) {
+    case Profession::None:
+      out << "None";
+      break;
     case Profession::Warrior:
       out << "Warrior";
       break;

@@ -58,9 +58,9 @@ TEST(EffectTest, EffectWithTimedObject) {
   Effect<Timer> effect(kTime, std::make_unique<Timer>(ticks));
   for (int i = 1; i <= kTime; ++i) {
     Tick();
-    EXPECT_EQ(ticks, i);
+    ASSERT_EQ(ticks, i);
   }
   effect = Effect<Timer>::None();
   Tick();
-  EXPECT_EQ(ticks, kTime);
+  ASSERT_EQ(ticks, kTime);
 }

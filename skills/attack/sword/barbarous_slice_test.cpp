@@ -4,7 +4,8 @@
 #include <gtest/gtest.h>
 
 #include "base/random.h"
-#include "character/character.h"
+#include "character/build.h"
+#include "character/creature.h"
 #include "weapon/sword.h"
 
 namespace {
@@ -18,32 +19,27 @@ class NoOpStance : public Stance {
 }  // namespace
 
 class BarbarousSliceTest : public ::testing::Test {
- public:
-  void SetUp() override {
-    barbarous_slice = static_cast<BarbarousSlice*>(
-        character.SetSkill(0, std::make_unique<BarbarousSlice>()));
-    character.SetAttribute(Attribute::Swordsmanship, 12);
-    character.GiveWeapon(std::make_unique<Sword>());
-  }
-
  protected:
-  Character character{Profession::Warrior};
-  Character dummy{Profession::Warrior};
-  BarbarousSlice* barbarous_slice;
+  Creature character =
+      ConstructCreature(Profession::Warrior, Sword(),
+                        {{Attribute::Swordsmanship, 12}}, BarbarousSlice());
+  Creature dummy = ConstructCreature(Profession::Warrior, Sword());
+  BarbarousSlice* barbarous_slice =
+      character.GetBuild().GetSkill<BarbarousSlice>(0);
 };
 
 TEST_F(BarbarousSliceTest, NoActivationWithoutAdrenaline) {
-  EXPECT_FALSE(barbarous_slice->CanActivate(character));
+  ASSERT_FALSE(barbarous_slice->CanActivate(character));
 }
 
 TEST_F(BarbarousSliceTest, NoActivationWithTooLittleAdrenaline) {
   barbarous_slice->AddAdrenaline(5 * 25);
-  EXPECT_FALSE(barbarous_slice->CanActivate(character));
+  ASSERT_FALSE(barbarous_slice->CanActivate(character));
 }
 
 TEST_F(BarbarousSliceTest, ActivationWithEnoughAdrenaline) {
   barbarous_slice->AddAdrenaline(6 * 25);
-  EXPECT_TRUE(barbarous_slice->CanActivate(character));
+  ASSERT_TRUE(barbarous_slice->CanActivate(character));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
@@ -62,7 +58,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.GetLostHealth(), kExpectedSkillDamage);
+  ASSERT_EQ(dummy.GetLostHealth(), kExpectedSkillDamage);
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
@@ -73,7 +69,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
     Tick();
   }
 
-  EXPECT_TRUE(dummy.HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(dummy.HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
@@ -86,5 +82,5 @@ TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
     Tick();
   }
 
-  EXPECT_FALSE(dummy.HasCondition(Condition::Type::Bleeding));
+  ASSERT_FALSE(dummy.HasCondition(Condition::Type::Bleeding));
 }

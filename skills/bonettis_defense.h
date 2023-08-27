@@ -3,19 +3,19 @@
 
 #include <bits/stdc++.h>
 
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/skill.h"
 #include "character/stance.h"
 
 class BonettisDefenseStance : public Stance {
  public:
-  BonettisDefenseStance(Character& character) : character_(character) {}
+  BonettisDefenseStance(Creature& character) : character_(character) {}
 
   virtual int BlockChance(Weapon::Type type) override;
   virtual void AttackBlocked(Weapon::Type type) override;
 
  private:
-  Character& character_;
+  Creature& character_;
 };
 
 class BonettisDefense : public Skill {
@@ -23,12 +23,12 @@ class BonettisDefense : public Skill {
   std::string Name() const override { return "Bonetti's Defense"; }
 
  protected:
-  virtual void ActivationEnd(Character& character) override;
+  void ActivationEnd(Creature& character) override;
 
   int AdrenalineCost() const override { return 8 * 25; }
   int EnergyCost() const override { return 0; }
   int RechargeTime() const override { return 0; }
-  int ActivationTime(Character& character) const override { return 0; }
+  int ActivationTime(Creature& character) const override { return 0; }
 
  private:
   inline static const Attribute kAttribute = Attribute::Tactics;

@@ -1,5 +1,5 @@
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#ifndef CREATURE_H
+#define CREATURE_H
 
 #include <bits/stdc++.h>
 
@@ -9,21 +9,22 @@
 #include "base/clock.h"
 #include "base/effect.h"
 #include "base/profession.h"
+#include "build.h"
 #include "condition.h"
 #include "skill.h"
 #include "stance.h"
 #include "weapon/weapon.h"
 
-class Character : public TimedObject {
+class Creature : public TimedObject {
  public:
-  Character(Profession first_profession);
-  ~Character() = default;
+  Creature(std::unique_ptr<Build> build);
+  ~Creature() override = default;
 
   void Tick(int time_passed) override;
 
   bool ReceiveWeaponDamage(int damage, Weapon::Type type,
                            bool blockable = true);
-  bool WeaponAttack(Character& target, int skill_damage = 0,
+  bool WeaponAttack(Creature& target, int skill_damage = 0,
                     bool blockable = true);
 
   void UseEnergy(int use_energy) {
@@ -56,75 +57,58 @@ class Character : public TimedObject {
     return false;
   }
 
-  void GiveWeapon(std::unique_ptr<Weapon> weapon) {
-    weapon_ = std::move(weapon);
-  }
-
-  void SetAttribute(Attribute attribute, int num);
-  Skill* SetSkill(int pos, std::unique_ptr<Skill> skill);
-
-  void SetArmor(std::unique_ptr<Armor> armor) { armor_ = std::move(armor); }
-
   Action& GetAction() { return action_; }
-  Skill* GetSkill(int pos) { return skills_[pos].get(); }
 
   Stance* GetStance() { return stance_.get(); }
 
-  const Weapon& weapon() const { return *weapon_; }
-  const Armor& armor() const { return *armor_; }
-  int GetAttribute(Attribute attribute) const;
-  Profession GetFirstProfession() const { return first_profession_; }
   int GetMaxHealth() const;
   int GetLostHealth() const { return health_lost_; }
   int energy() const { return energy_; }
 
   std::string name_ = "Lovely Princess";  // For debugging.
 
-  typedef std::_List_iterator<std::function<int(const Character& character)>>
+  typedef std::_List_iterator<std::function<int(const Creature& character)>>
       MaxHealthModifierRef;
 
   MaxHealthModifierRef AddMaxHealthModifier(
-      std::function<int(const Character&)> modifier);
+      std::function<int(const Creature&)> modifier);
 
   void RemoveMaxHealthModifier(MaxHealthModifierRef modifier_reference);
 
+  Build& GetBuild() const { return *build_.get(); }
+
  private:
   void HealthGeneration();
-
   void EnergyGeneration();
   void AddAdrenaline(int charges);
   void Die();
-
   bool WillBlockAttack(Weapon::Type type);
 
-  friend std::ostream& operator<<(std::ostream& out,
-                                  const Character& character);
+  std::unique_ptr<Build> build_;
 
   Action action_ = kActionIdle;
-
-  std::unique_ptr<Weapon> weapon_;
-  std::unique_ptr<Armor> armor_;
-
-  Profession first_profession_;
-
-  std::map<Attribute, int> attributes_;
-
-  std::unique_ptr<Skill> skills_[8];
 
   Effect<Stance> stance_ = Effect<Stance>::None();
   // TODO how to get rid of old conditions, and how to deal with duplicated
   // ones?
-  std::list<std::function<int(const Character& character)>>
+  std::list<std::function<int(const Creature& character)>>
       max_health_modifiers_;
 
   std::vector<Effect<Condition>> conditions_;
 
   int health_lost_;
   int energy_;
-
-  int attribute_points_;
 };
 
-std::ostream& operator<<(std::ostream& out, const Character& character);
+std::ostream& operator<<(std::ostream& out, const Creature& character);
 
-#endif  // CHARACTER_H
+template <class W, class... S>
+Creature ConstructCreature(Profession first_profession, W&& weapon,
+                           std::map<Attribute, int> attributes = {},
+                           S&&... skills) {
+  return Creature(std::make_unique<Build>(
+      ConstructBuild(first_profession, std::move(weapon), attributes,
+                     std::forward<S>(skills)...)));
+}
+
+#endif  // CREATURE_H

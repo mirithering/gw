@@ -2,32 +2,32 @@
 
 #include "base/clock.h"
 #include "character/action.h"
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/skill.h"
 
 namespace {
-Action NextAction(Character& character, Character& enemy) {
+Action NextAction(Creature& creature, Creature& enemy) {
   if (enemy.GetAction().GetType() != Action::Type::Dead) {
-    for (int i = 0; i < 8; ++i) {
-      Skill* skill = character.GetSkill(i);
+    for (int i = 0; i < creature.GetBuild().GetSkills().size(); ++i) {
+      Skill* skill = creature.GetBuild().GetSkill<Skill>(i);
       if (!skill) continue;
-      if (skill->CanActivate(character)) {
-        std::cout << character.name_ << ": " << skill->Name()
-                  << " energy: " << character.energy() << std::endl;
-        return skill->Activate(character, enemy);
+      if (skill->CanActivate(creature)) {
+        std::cout << creature.name_ << ": " << skill->Name()
+                  << " energy: " << creature.energy() << std::endl;
+        return skill->Activate(creature, enemy);
       }
     }
-    std::cout << character.name_ << ": "
+    std::cout << creature.name_ << ": "
               << "weapon attack" << std::endl;
-    return Action::WeaponAttack(character, enemy);
+    return Action::WeaponAttack(creature, enemy);
   }
   return kActionIdle;
 }
 }  // namespace
 
-void Tick(Character& character, Character& enemy, int time) {
-  if (character.GetAction().GetType() == Action::Type::Idle) {
+void Tick(Creature& creature, Creature& enemy, int time) {
+  if (creature.GetAction().GetType() == Action::Type::Idle) {
     // New action.
-    character.GetAction() = NextAction(character, enemy);
+    creature.GetAction() = NextAction(creature, enemy);
   }
 }

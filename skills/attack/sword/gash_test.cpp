@@ -5,78 +5,72 @@
 
 #include "base/effect.h"
 #include "base/random.h"
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/damage.h"
 #include "conditions/bleeding.h"
 #include "weapon/sword.h"
 
 class GashTest : public ::testing::Test {
- public:
-  void SetUp() override {
-    gash = static_cast<Gash*>(character.SetSkill(0, std::make_unique<Gash>()));
-    character.SetAttribute(Attribute::Swordsmanship, 12);
-    character.GiveWeapon(std::make_unique<Sword>());
-  }
-
  protected:
-  Character character{Profession::Warrior};
-  Character dummy{Profession::Warrior};
-  Gash* gash;
+  Creature character_ = ConstructCreature(
+      Profession::Warrior, Sword(), {{Attribute::Swordsmanship, 12}}, Gash());
+  Creature dummy_ = ConstructCreature(Profession::Warrior, Sword());
+  Gash* gash_ = character_.GetBuild().GetSkill<Gash>(0);
 };
 
 TEST_F(GashTest, NoActivationWithoutAdrenaline) {
-  ASSERT_FALSE(gash->CanActivate(character));
+  ASSERT_FALSE(gash_->CanActivate(character_));
 }
 
 TEST_F(GashTest, ActivationWithAdrenaline) {
-  gash->AddAdrenaline(6 * 25);
-  ASSERT_TRUE(gash->CanActivate(character));
+  gash_->AddAdrenaline(6 * 25);
+  ASSERT_TRUE(gash_->CanActivate(character_));
 }
 
 TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
-  gash->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * 25);
 
   OverrideRandomRollForTesting(10);
-  int expected_damage = WeaponStrikeDamage(character, dummy);
+  int expected_damage = WeaponStrikeDamage(character_, dummy_);
 
   OverrideRandomRollForTesting(10);
-  character.GetAction() = gash->Activate(character, dummy);
-  while (character.GetAction().GetType() != Action::Type::Idle) {
+  character_.GetAction() = gash_->Activate(character_, dummy_);
+  while (character_.GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.GetLostHealth(), expected_damage);
-  EXPECT_FALSE(dummy.HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(dummy_.GetLostHealth(), expected_damage);
+  ASSERT_FALSE(dummy_.HasCondition(Condition::Type::DeepWound));
 }
 
 TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   constexpr int kExpectedSkillDamage = 17;
   constexpr int kExpectedBleedingDamage = 6;
-  gash->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * 25);
 
   OverrideRandomRollForTesting(10);
-  int expected_damage = WeaponStrikeDamage(character, dummy) +
+  int expected_damage = WeaponStrikeDamage(character_, dummy_) +
                         kExpectedSkillDamage + kExpectedBleedingDamage;
 
-  dummy.AddCondition(Effect<Condition>(10000, std::make_unique<Bleeding>()));
+  dummy_.AddCondition(Effect<Condition>(10000, std::make_unique<Bleeding>()));
 
   OverrideRandomRollForTesting(10);
-  character.GetAction() = gash->Activate(character, dummy);
-  while (character.GetAction().GetType() != Action::Type::Idle) {
+  character_.GetAction() = gash_->Activate(character_, dummy_);
+  while (character_.GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  EXPECT_EQ(dummy.GetLostHealth(), expected_damage);
+  ASSERT_EQ(dummy_.GetLostHealth(), expected_damage);
 }
 
 TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
-  gash->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * 25);
 
-  dummy.AddCondition(Effect<Condition>(10000, std::make_unique<Bleeding>()));
-  character.GetAction() = gash->Activate(character, dummy);
-  while (character.GetAction().GetType() != Action::Type::Idle) {
+  dummy_.AddCondition(Effect<Condition>(10000, std::make_unique<Bleeding>()));
+  character_.GetAction() = gash_->Activate(character_, dummy_);
+  while (character_.GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  EXPECT_TRUE(dummy.HasCondition(Condition::Type::DeepWound));
+  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::DeepWound));
 }

@@ -30,28 +30,28 @@ TEST(ClockTest, EmptyClockCanTick) { Tick(); }
 TEST(ClockTest, TickRegisterAndUnregister) {
   int ticks = 0;
   std::unique_ptr<Counter> counter = std::make_unique<Counter>(ticks);
-  EXPECT_EQ(ticks, 0);
+  ASSERT_EQ(ticks, 0);
   Tick();
-  EXPECT_EQ(ticks, 1);
+  ASSERT_EQ(ticks, 1);
   Tick();
-  EXPECT_EQ(ticks, 2);
+  ASSERT_EQ(ticks, 2);
   counter.reset();
   Tick();
-  EXPECT_EQ(ticks, 2);
+  ASSERT_EQ(ticks, 2);
 }
 
 TEST(ClockTest, AllTicksAreCalled) {
   int ticks = 0;
   std::unique_ptr<Counter> counter = std::make_unique<Counter>(ticks);
   std::unique_ptr<Counter> second_counter = std::make_unique<Counter>(ticks);
-  EXPECT_EQ(ticks, 0);
+  ASSERT_EQ(ticks, 0);
   Tick();
-  EXPECT_EQ(ticks, 2);
+  ASSERT_EQ(ticks, 2);
   Tick();
-  EXPECT_EQ(ticks, 4);
+  ASSERT_EQ(ticks, 4);
   counter.reset();
   Tick();
-  EXPECT_EQ(ticks, 5);
+  ASSERT_EQ(ticks, 5);
 }
 
 TEST(ClockTest, TimePassedIsHowOftenTicksWasCalled) {
@@ -59,10 +59,10 @@ TEST(ClockTest, TimePassedIsHowOftenTicksWasCalled) {
   std::unique_ptr<Timer> counter = std::make_unique<Timer>(time_passed);
   Tick();
   Tick();
-  EXPECT_EQ(time_passed, 2);
+  ASSERT_EQ(time_passed, 2);
   counter = std::make_unique<Timer>(time_passed);
   Tick();
-  EXPECT_EQ(time_passed, 1);
+  ASSERT_EQ(time_passed, 1);
 }
 
 namespace {

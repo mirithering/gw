@@ -3,8 +3,8 @@
 
 #include <bits/stdc++.h>
 
-class Character;
+class Creature;
 
-int WeaponStrikeDamage(const Character& attacker, const Character& defender);
+int WeaponStrikeDamage(const Creature& attacker, const Creature& defender);
 
 #endif  // DAMAGE_H

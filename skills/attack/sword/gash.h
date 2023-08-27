@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "../attack_skill.h"
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/skill.h"
 #include "conditions/deep_wound.h"
 
@@ -13,14 +13,15 @@ class Gash : public AttackSkill {
   std::string Name() const override { return "Gash"; }
 
  protected:
-  void ActivationMiddle(Character& source, Character& target) override {
+  void ActivationMiddle(Creature& source, Creature& target) override {
     bool is_bleeding = target.HasCondition(Condition::Type::Bleeding);
     int skill_damage = 0;
     if (is_bleeding) {
-      skill_damage = Damage(source.GetAttribute(attribute));
+      skill_damage = Damage(source.GetBuild().GetAttribute(attribute));
     }
     int deep_wound_duration =
-        DeepWoundDurationSeconds(source.GetAttribute(attribute)) * 1000;
+        DeepWoundDurationSeconds(source.GetBuild().GetAttribute(attribute)) *
+        1000;
 
     bool success = source.WeaponAttack(target, skill_damage);
 
@@ -34,8 +35,8 @@ class Gash : public AttackSkill {
   int AdrenalineCost() const override { return 6 * 25; }
   int EnergyCost() const override { return 0; }
   int RechargeTime() const override { return 0; }
-  int ActivationTime(Character& character) const override {
-    return character.weapon().AttackSpeed();
+  int ActivationTime(Creature& character) const override {
+    return character.GetBuild().GetWeapon().AttackSpeed();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };
 

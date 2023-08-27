@@ -6,22 +6,22 @@ TEST(DaggerTest, AttackSpeedIsAsExpected) {
   constexpr int kExpectedAttackSpeed = 1330;
 
   Dagger dagger;
-  EXPECT_EQ(dagger.AttackSpeed(), kExpectedAttackSpeed);
+  ASSERT_EQ(dagger.AttackSpeed(), kExpectedAttackSpeed);
 }
 
 TEST(DaggerTest, DamageTypeIsPiercing) {
   Dagger dagger;
-  EXPECT_EQ(dagger.GetDamageType(), DamageType::Piercing);
+  ASSERT_EQ(dagger.GetDamageType(), DamageType::Piercing);
 }
 
 TEST(DaggerTest, AttributeIsDaggerMastery) {
   Dagger dagger;
-  EXPECT_EQ(dagger.GetAttribute(), Attribute::DaggerMastery);
+  ASSERT_EQ(dagger.GetAttribute(), Attribute::DaggerMastery);
 }
 
 TEST(DaggerTest, TypeIsDagger) {
   Dagger dagger;
-  EXPECT_EQ(dagger.GetType(), Weapon::Type::Dagger);
+  ASSERT_EQ(dagger.GetType(), Weapon::Type::Dagger);
 }
 
 TEST(DaggerTest, DefaultDamageIsAsExpected) {
@@ -29,8 +29,8 @@ TEST(DaggerTest, DefaultDamageIsAsExpected) {
   constexpr int kExpectedDefaultMaxDamage = 17;
 
   Dagger dagger;
-  EXPECT_EQ(dagger.MinDamage(), kExpectedDefaultMinDamage);
-  EXPECT_EQ(dagger.MaxDamage(), kExpectedDefaultMaxDamage);
+  ASSERT_EQ(dagger.MinDamage(), kExpectedDefaultMinDamage);
+  ASSERT_EQ(dagger.MaxDamage(), kExpectedDefaultMaxDamage);
 }
 
 TEST(DaggerTest, DamageIsSetWithConstructor) {
@@ -38,13 +38,13 @@ TEST(DaggerTest, DamageIsSetWithConstructor) {
   constexpr int kMaxDamage = 89;
 
   Dagger dagger(kMinDamage, kMaxDamage);
-  EXPECT_EQ(dagger.MinDamage(), kMinDamage);
-  EXPECT_EQ(dagger.MaxDamage(), kMaxDamage);
+  ASSERT_EQ(dagger.MinDamage(), kMinDamage);
+  ASSERT_EQ(dagger.MaxDamage(), kMaxDamage);
 }
 
 TEST(DaggerTest, DefaultRequirementIsAsExpected) {
   constexpr int kDefaultReq = 9;
 
   Dagger dagger;
-  EXPECT_EQ(dagger.Requirement(), kDefaultReq);
+  ASSERT_EQ(dagger.Requirement(), kDefaultReq);
 }

@@ -2,12 +2,12 @@
 
 #include <bits/stdc++.h>
 
-#include "character/character.h"
+#include "character/creature.h"
 #include "character/skill.h"
 #include "character/stance.h"
 
-void BonettisDefense::ActivationEnd(Character& source) {
-  int time = kDuration[source.GetAttribute(kAttribute)] * 1000;
+void BonettisDefense::ActivationEnd(Creature& source) {
+  int time = kDuration[source.GetBuild().GetAttribute(kAttribute)] * 1000;
   source.SetStance(
       Effect<Stance>(time, std::make_unique<BonettisDefenseStance>(source)));
 

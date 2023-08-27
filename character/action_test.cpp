@@ -3,27 +3,28 @@
 #include <gtest/gtest.h>
 
 #include "base/profession.h"
-#include "character.h"
+#include "creature.h"
+#include "weapon/dagger.h"
 #include "weapon/sword.h"
 
 TEST(ActionTest, IdleEndsAfterOneTick) {
   Action action = kActionIdle;
-  EXPECT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
 }
 
 TEST(ActionTest, DeathDoesntEndSoon) {
   Action action = kActionDead;
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
 }
 
 TEST(ActionTest, TickFunctionCanEndAction) {
   Action action(
       Action::Type::Busy, 10, [](int duration) { return Action::Result::End; },
       []() {});
-  EXPECT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
 }
 
 TEST(ActionTest, TickFunctionIsCalledTickTimes) {
@@ -35,14 +36,14 @@ TEST(ActionTest, TickFunctionIsCalledTickTimes) {
         return Action::Result::Continue;
       },
       []() {});
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_EQ(tick_called, 1);
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_EQ(tick_called, 2);
-  EXPECT_EQ(action.Tick(), Action::Result::End);
-  EXPECT_EQ(tick_called, 3);
-  EXPECT_EQ(action.Tick(), Action::Result::End);  // We're done, no more tick.
-  EXPECT_EQ(tick_called, 3);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(tick_called, 1);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(tick_called, 2);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(tick_called, 3);
+  ASSERT_EQ(action.Tick(), Action::Result::End);  // We're done, no more tick.
+  ASSERT_EQ(tick_called, 3);
 }
 
 TEST(ActionTest, EndFunctionIsCalledOnce) {
@@ -51,10 +52,10 @@ TEST(ActionTest, EndFunctionIsCalledOnce) {
       Action::Type::Busy, 2,
       [](int duration) { return Action::Result::Continue; },
       [&]() { ++end_called; });
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_EQ(action.Tick(), Action::Result::End);
-  EXPECT_EQ(action.Tick(), Action::Result::End);
-  EXPECT_EQ(end_called, 1);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(end_called, 1);
 }
 
 TEST(ActionTest, EndFunctionIsCalledWithNoDuration) {
@@ -63,55 +64,49 @@ TEST(ActionTest, EndFunctionIsCalledWithNoDuration) {
       Action::Type::Busy, 0,
       [](int duration) { return Action::Result::Continue; },
       [&]() { ++end_called; });
-  EXPECT_EQ(action.Tick(), Action::Result::End);
-  EXPECT_EQ(end_called, 1);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(end_called, 1);
 }
 
 TEST(ActionTest, IdleTypeIsIdle) {
-  EXPECT_EQ(kActionIdle.GetType(), Action::Type::Idle);
+  ASSERT_EQ(kActionIdle.GetType(), Action::Type::Idle);
 }
 
 TEST(ActionTest, DeadTypeIsDead) {
-  EXPECT_EQ(kActionDead.GetType(), Action::Type::Dead);
+  ASSERT_EQ(kActionDead.GetType(), Action::Type::Dead);
 }
 
 TEST(ActionTest, WeaponAttackTypeIsBusy) {
-  Character character(Profession::Warrior);
-  character.GiveWeapon(std::make_unique<Sword>());
+  Creature character = ConstructCreature(Profession::Warrior, Sword());
   Action action = Action::WeaponAttack(character, character);
-  EXPECT_EQ(action.GetType(), Action::Type::Busy);
+  ASSERT_EQ(action.GetType(), Action::Type::Busy);
 }
 
 TEST(ActionTest, WeaponAttackAttacksAfterHalfOfWeaponSpeed) {
-  Character character(Profession::Warrior);
-  character.GiveWeapon(std::make_unique<Sword>());
-  character.SetAttribute(Attribute::Swordsmanship, 12);
+  Creature character = ConstructCreature(Profession::Warrior, Sword());
 
   Action action = Action::WeaponAttack(character, character);
 
-  int expect_attack_at = character.weapon().AttackSpeed() / 2;
+  int expect_attack_at = character.GetBuild().GetWeapon().AttackSpeed() / 2;
   for (int i = 0; i < expect_attack_at; ++i) {
-    EXPECT_EQ(action.Tick(), Action::Result::Continue);
-    EXPECT_EQ(character.GetLostHealth(), 0);
+    ASSERT_EQ(action.Tick(), Action::Result::Continue);
+    ASSERT_EQ(character.GetLostHealth(), 0);
   }
 
-  EXPECT_EQ(action.Tick(), Action::Result::Continue);
-  EXPECT_NE(character.GetLostHealth(), 0);
+  ASSERT_EQ(action.Tick(), Action::Result::Continue);
+  ASSERT_NE(character.GetLostHealth(), 0);
 }
 
 TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
-  Character character(Profession::Warrior);
-  character.GiveWeapon(std::make_unique<Sword>());
-  character.SetAttribute(Attribute::Swordsmanship, 12);
+  Creature character = ConstructCreature(Profession::Warrior, Sword());
 
   Action action = Action::WeaponAttack(character, character);
 
-  int expect_end_at = character.weapon().AttackSpeed();
+  int expect_end_at = character.GetBuild().GetWeapon().AttackSpeed();
   for (int i = 0; i < expect_end_at - 1; ++i) {
-    EXPECT_EQ(action.Tick(), Action::Result::Continue);
+    ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }
-  EXPECT_EQ(action.Tick(), Action::Result::End);
+  ASSERT_EQ(action.Tick(), Action::Result::End);
 }
 
-// TODO write a random class that can be faked for tests and check the double
-// strike chance for assassins.
+// TODO double strike chance for daggers.

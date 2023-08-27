@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 enum class Profession {
+  None,
   Warrior,
   Ranger,
   Dervish,

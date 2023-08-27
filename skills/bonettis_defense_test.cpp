@@ -5,65 +5,61 @@
 
 #include "base/clock.h"
 #include "bonettis_defense.h"
-#include "character/character.h"
+#include "character/creature.h"
+#include "weapon/sword.h"
 
 class BonettisDefenseTest : public ::testing::Test {
- public:
-  void SetUp() override {
-    auto skill_ptr = std::make_unique<BonettisDefense>();
-    bonettis_defense = skill_ptr.get();
-    character.SetSkill(0, std::move(skill_ptr));
-  }
-
  protected:
-  Character character{Profession::Warrior};
-  Skill* bonettis_defense;
+  Creature character_ =
+      ConstructCreature(Profession::Warrior, Sword(), {}, BonettisDefense());
+  BonettisDefense* bonettis_defense_ =
+      character_.GetBuild().GetSkill<BonettisDefense>(0);
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
-  EXPECT_FALSE(bonettis_defense->CanActivate(character));
+  ASSERT_FALSE(bonettis_defense_->CanActivate(character_));
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
-  bonettis_defense->AddAdrenaline(8 * 25);
-  ASSERT_TRUE(bonettis_defense->CanActivate(character));
+  bonettis_defense_->AddAdrenaline(8 * 25);
+  ASSERT_TRUE(bonettis_defense_->CanActivate(character_));
 
-  character.GetAction() = bonettis_defense->Activate(character, character);
+  character_.GetAction() = bonettis_defense_->Activate(character_, character_);
   for (int i = 1; i <= 5000; ++i) {
-    ASSERT_NE(character.GetStance(), nullptr);
+    ASSERT_NE(character_.GetStance(), nullptr);
     Tick();
   }
-  ASSERT_EQ(character.GetStance(), nullptr);
+  ASSERT_EQ(character_.GetStance(), nullptr);
 }
 
 TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
-  character.SetAttribute(Attribute::Tactics, 12);
-  bonettis_defense->AddAdrenaline(8 * 25);
-  ASSERT_TRUE(bonettis_defense->CanActivate(character));
+  character_.GetBuild().SetAttribute(Attribute::Tactics, 12);
+  bonettis_defense_->AddAdrenaline(8 * 25);
+  ASSERT_TRUE(bonettis_defense_->CanActivate(character_));
 
-  character.GetAction() = bonettis_defense->Activate(character, character);
+  character_.GetAction() = bonettis_defense_->Activate(character_, character_);
   for (int i = 1; i <= 10000; ++i) {
-    ASSERT_NE(character.GetStance(), nullptr);
+    ASSERT_NE(character_.GetStance(), nullptr);
     Tick();
   }
-  ASSERT_EQ(character.GetStance(), nullptr);
+  ASSERT_EQ(character_.GetStance(), nullptr);
 }
 
 TEST_F(BonettisDefenseTest, BlockChanceDependsOnWeaponType) {
-  BonettisDefenseStance stance(character);
-  EXPECT_EQ(stance.BlockChance(Weapon::Type::Hammer), 75);
-  EXPECT_EQ(stance.BlockChance(Weapon::Type::Staff), 0);
+  BonettisDefenseStance stance(character_);
+  ASSERT_EQ(stance.BlockChance(Weapon::Type::Hammer), 75);
+  ASSERT_EQ(stance.BlockChance(Weapon::Type::Staff), 0);
 }
 
 TEST_F(BonettisDefenseTest, BlockingMeeleGivesEnergy) {
-  BonettisDefenseStance stance(character);
+  BonettisDefenseStance stance(character_);
 
-  character.UseEnergy(character.energy());
-  EXPECT_EQ(character.energy(), 0);
+  character_.UseEnergy(character_.energy());
+  ASSERT_EQ(character_.energy(), 0);
 
   stance.AttackBlocked(Weapon::Type::Bow);
-  EXPECT_EQ(character.energy(), 0);
+  ASSERT_EQ(character_.energy(), 0);
 
   stance.AttackBlocked(Weapon::Type::Sword);
-  EXPECT_EQ(character.energy(), 5);
+  ASSERT_EQ(character_.energy(), 5);
 }

@@ -1,4 +1,4 @@
-#include "character.h"
+#include "creature.h"
 
 #include <bits/stdc++.h>
 
@@ -28,16 +28,12 @@ std::map<Profession, int> kEnergyRegeneration = {
 constexpr int kMaxHealth = 480;  // At level 20
 }  // namespace
 
-Character::Character(Profession first_profession) {
-  first_profession_ = first_profession;
-  armor_ = std::make_unique<Armor>(first_profession);
+Creature::Creature(std::unique_ptr<Build> build) : build_(std::move(build)) {
   health_lost_ = 0;
-  energy_ = kMaxEnergy[first_profession];
-
-  attribute_points_ = 200;
+  energy_ = kMaxEnergy[build_->GetFirstProfession()];
 }
 
-void Character::Tick(int time_passed) {
+void Creature::Tick(int time_passed) {
   if (time_passed % 3000 == 0) {
     EnergyGeneration();
   }
@@ -52,7 +48,7 @@ void Character::Tick(int time_passed) {
   // TODO Remove ended conditions.
 }
 
-void Character::HealthGeneration() {
+void Creature::HealthGeneration() {
   int health_generation = 0;  // Base is 0.
 
   for (auto& condition : conditions_) {
@@ -66,23 +62,24 @@ void Character::HealthGeneration() {
   LoseHealth(-(2 * health_generation));
 }
 
-void Character::EnergyGeneration() {
-  int energy_generation = kEnergyRegeneration.at(first_profession_);
+void Creature::EnergyGeneration() {
+  int energy_generation = kEnergyRegeneration.at(build_->GetFirstProfession());
   AddEnergy(energy_generation);
 }
 
-void Character::AddEnergy(int amount) {
-  energy_ = std::min(kMaxEnergy.at(first_profession_), energy_ + amount);
+void Creature::AddEnergy(int amount) {
+  energy_ =
+      std::min(kMaxEnergy.at(build_->GetFirstProfession()), energy_ + amount);
 }
 
-void Character::LoseHealth(int amount) {
+void Creature::LoseHealth(int amount) {
   health_lost_ += amount;
   if (amount > 0 && health_lost_ >= GetMaxHealth()) {
     Die();
   }
 }
 
-int Character::GetMaxHealth() const {
+int Creature::GetMaxHealth() const {
   int max_health = kMaxHealth;
   int percentage = 100;
   for (auto modifier : max_health_modifiers_) {
@@ -93,39 +90,19 @@ int Character::GetMaxHealth() const {
   return (max_health * percentage) / 100;
 }
 
-Character::MaxHealthModifierRef Character::AddMaxHealthModifier(
-    std::function<int(const Character&)> modifier) {
+Creature::MaxHealthModifierRef Creature::AddMaxHealthModifier(
+    std::function<int(const Creature&)> modifier) {
   max_health_modifiers_.push_front(modifier);
   return std::begin(max_health_modifiers_);
 }
 
-void Character::RemoveMaxHealthModifier(
+void Creature::RemoveMaxHealthModifier(
     MaxHealthModifierRef modifier_reference) {
   max_health_modifiers_.erase(modifier_reference);
 }
 
-void Character::SetAttribute(Attribute attribute, int num) {
-  // TODO Make sure to not violate primary attributes.
-  std::map<int, int> kAttributeCost = {{1, 1},  {2, 3},   {3, 6},   {4, 10},
-                                       {5, 15}, {6, 21},  {7, 28},  {8, 37},
-                                       {9, 48}, {10, 61}, {11, 77}, {12, 97}};
-  int attribute_points_back = kAttributeCost[attributes_[attribute]];
-  int attribute_points_spend = kAttributeCost[num];
-  assert(attribute_points_ - attribute_points_spend + attribute_points_back >
-         0);
-  attribute_points_ =
-      attribute_points_ - attribute_points_spend + attribute_points_back;
-  attributes_[attribute] = num;
-}
-
-Skill* Character::SetSkill(int pos, std::unique_ptr<Skill> skill) {
-  assert(pos < 8 && pos >= 0);
-  skills_[pos] = std::move(skill);
-  return GetSkill(pos);
-}
-
-bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type,
-                                    bool blockable) {
+bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
+                                   bool blockable) {
   if (blockable && WillBlockAttack(type)) {
     // TODO maybe I can have a list of functions that want to be called on
     // certain events.
@@ -143,7 +120,7 @@ bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type,
   return true;  // TODO return false if blocked.
 }
 
-bool Character::WillBlockAttack(Weapon::Type type) {
+bool Creature::WillBlockAttack(Weapon::Type type) {
   if (GetStance()) {
     int chance = GetStance()->BlockChance(type);
     if (RandomDecision(Chance(chance))) {
@@ -153,52 +130,41 @@ bool Character::WillBlockAttack(Weapon::Type type) {
   return false;
 }
 
-bool Character::WeaponAttack(Character& target, int skill_damage,
-                             bool blockable) {
+bool Creature::WeaponAttack(Creature& target, int skill_damage,
+                            bool blockable) {
   bool success = target.ReceiveWeaponDamage(
-      WeaponStrikeDamage(*this, target) + skill_damage, weapon_->GetType(),
-      blockable);
+      WeaponStrikeDamage(*this, target) + skill_damage,
+      build_->GetWeapon().GetType(), blockable);
   if (success) {
     AddAdrenaline(25);
   }
   return success;
 }
 
-void Character::AddAdrenaline(int charges) {
-  std::for_each(std::begin(skills_), std::end(skills_),
-                [charges](std::unique_ptr<Skill>& skill) {
+void Creature::AddAdrenaline(int charges) {
+  const auto& skills = build_->GetSkills();
+  std::for_each(std::begin(skills), std::end(skills),
+                [charges](const std::unique_ptr<Skill>& skill) {
                   if (skill) skill->AddAdrenaline(charges);
                 });
 }
 
-void Character::RemoveOneAdrenalineStrike() {
-  std::for_each(std::begin(skills_), std::end(skills_),
-                [](std::unique_ptr<Skill>& skill) {
+void Creature::RemoveOneAdrenalineStrike() {
+  const auto& skills = build_->GetSkills();
+  std::for_each(std::begin(skills), std::end(skills),
+                [](const std::unique_ptr<Skill>& skill) {
                   if (skill) skill->LoseAdrenaline(25);
                 });
 }
 
-void Character::Die() {
+void Creature::Die() {
   action_ = kActionDead;
   // TODO what else happens when you die? Probably lose all timed effects.
-  std::for_each(std::begin(skills_), std::end(skills_),
-                [](std::unique_ptr<Skill>& skill) {
+  const auto& skills = build_->GetSkills();
+  std::for_each(std::begin(skills), std::end(skills),
+                [](const std::unique_ptr<Skill>& skill) {
                   if (skill) skill->LoseAllAdrenaline();
                 });
   health_lost_ = GetMaxHealth();
   energy_ = 0;
-}
-
-int Character::GetAttribute(Attribute attribute) const {
-  if (attributes_.count(attribute)) {
-    return attributes_.at(attribute);
-  }
-  return 0;
-}
-
-std::ostream& operator<<(std::ostream& out, const Character& character) {
-  out << character.first_profession_ << std::endl;
-  out << "Lost Health: " << character.health_lost_ << std::endl;
-  out << "Energy: " << character.energy_ << std::endl;
-  return out;
 }
