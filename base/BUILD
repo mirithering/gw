@@ -13,6 +13,7 @@ cc_library(
         "effect.h",
         "profession.h",
         "random.h",
+        "units.h",
     ],
     visibility = ["//visibility:public"],
 )
@@ -24,6 +25,7 @@ cc_test(
         "clock_test.cpp",
         "effect_test.cpp",
         "random_test.cpp",
+        "units_test.cpp",
     ],
     deps = [
         "base",
