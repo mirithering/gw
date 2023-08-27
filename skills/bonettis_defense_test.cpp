@@ -14,17 +14,19 @@ class BonettisDefenseTest : public ::testing::Test {
       ConstructCreature(Profession::Warrior, Sword(), {}, BonettisDefense());
   BonettisDefense* bonettis_defense_ =
       character_.GetBuild().GetSkill<BonettisDefense>(0);
+  std::vector<Creature> kEmpty;
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
-  ASSERT_FALSE(bonettis_defense_->CanActivate(character_));
+  ASSERT_FALSE(bonettis_defense_->CanActivate(character_, {}, {}));
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
   bonettis_defense_->AddAdrenaline(8 * 25);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(character_));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(character_, {}, {}));
 
-  character_.GetAction() = bonettis_defense_->Activate(character_, character_);
+  character_.GetAction() =
+      bonettis_defense_->Activate(character_, kEmpty, kEmpty);
   for (int i = 1; i <= 5000; ++i) {
     ASSERT_NE(character_.GetStance(), nullptr);
     Tick();
@@ -35,9 +37,10 @@ TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
 TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
   character_.GetBuild().SetAttribute(Attribute::Tactics, 12);
   bonettis_defense_->AddAdrenaline(8 * 25);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(character_));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(character_, {}, {}));
 
-  character_.GetAction() = bonettis_defense_->Activate(character_, character_);
+  character_.GetAction() =
+      bonettis_defense_->Activate(character_, kEmpty, kEmpty);
   for (int i = 1; i <= 10000; ++i) {
     ASSERT_NE(character_.GetStance(), nullptr);
     Tick();

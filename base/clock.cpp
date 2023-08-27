@@ -21,18 +21,37 @@ void TickAllTicks(int current_time) {
   }
 }
 
+void Remove(TimedObject* obj) {
+  for (auto it = std::begin(g_ticks); it != std::end(g_ticks);) {
+    auto tmp = it;
+    ++it;
+    if (*tmp == obj) {
+      g_ticks.erase(tmp);
+    }
+  }
+}
+
 }  // namespace
 
 TimedObject::TimedObject() : creation_time_(g_time) { g_ticks.push_back(this); }
 
-TimedObject::~TimedObject() {
-  for (auto it = std::begin(g_ticks); it != std::end(g_ticks); ++it) {
-    if (*it == this) {
-      g_ticks.erase(it);
-      break;
-    }
-  }
+TimedObject::TimedObject(TimedObject&& other) {
+  Remove(&other);
+  g_ticks.push_back(this);
+  creation_time_ = other.creation_time_;
+  last_tick_at_ = other.last_tick_at_;
 }
+
+TimedObject& TimedObject::operator=(TimedObject&& other) {
+  Remove(&other);
+  Remove(this);
+  g_ticks.push_back(this);
+  creation_time_ = other.creation_time_;
+  last_tick_at_ = other.last_tick_at_;
+  return *this;
+}
+
+TimedObject::~TimedObject() { Remove(this); }
 
 void Tick() {
   ++g_time;

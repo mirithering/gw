@@ -6,12 +6,14 @@
 #include "character/skill.h"
 #include "character/stance.h"
 
-void BonettisDefense::ActivationEnd(Creature& source) {
-  int time = kDuration[source.GetBuild().GetAttribute(kAttribute)] * 1000;
-  source.SetStance(
-      Effect<Stance>(time, std::make_unique<BonettisDefenseStance>(source)));
+void BonettisDefense::ActivationEnd(Creature& creature,
+                                    std::vector<Creature>& my_team,
+                                    std::vector<Creature>& enemy_team) {
+  int time = kDuration[creature.GetBuild().GetAttribute(kAttribute)] * 1000;
+  creature.SetStance(
+      Effect<Stance>(time, std::make_unique<BonettisDefenseStance>(creature)));
 
-  Skill::ActivationEnd(source);
+  Skill::ActivationEnd(creature, my_team, enemy_team);
 };
 
 int BonettisDefenseStance::BlockChance(Weapon::Type type) {

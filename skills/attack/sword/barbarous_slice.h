@@ -5,7 +5,6 @@
 
 #include "../attack_skill.h"
 #include "character/creature.h"
-#include "character/skill.h"
 #include "conditions/bleeding.h"
 
 class BarbarousSlice : public AttackSkill {
@@ -13,21 +12,8 @@ class BarbarousSlice : public AttackSkill {
   std::string Name() const override { return "Barbarous Slice"; }
 
  protected:
-  void ActivationMiddle(Creature& source, Creature& target) override {
-    std::cout << "Barbarous Slice hitting now." << std::endl;
-    int skill_damage = kDamage[source.GetBuild().GetAttribute(attribute)];
-    int bleeding_duration =
-        kBleedingDurationSeconds[source.GetBuild().GetAttribute(attribute)] *
-        1000;
-
-    bool success = source.WeaponAttack(target, skill_damage);
-    bool inflict_bleeding = (source.GetStance() == nullptr);
-    if (success && inflict_bleeding) {
-      std::cout << "Inflicting bleeding." << std::endl;
-      target.AddCondition(
-          Effect<Condition>(bleeding_duration, std::make_unique<Bleeding>()));
-    }
-  }
+  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
+                        std::vector<Creature>& enemy_team) override;
 
   int AdrenalineCost() const override { return 6 * 25; }
   int EnergyCost() const override { return 0; }

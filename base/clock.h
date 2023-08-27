@@ -3,11 +3,13 @@
 
 #include <bits/stdc++.h>
 
-// There is no guarantee time will be 0 at any point, the only guarantee is that
-// it is increased by one on every tick. Only use relatively.
 class TimedObject {
  public:
   TimedObject();
+  TimedObject(const TimedObject& obj) = delete;
+  TimedObject& operator=(const TimedObject& obj) = delete;
+  TimedObject(TimedObject&& other);
+  TimedObject& operator=(TimedObject&& other);
   virtual ~TimedObject();
 
   virtual void Tick(int time_passed) = 0;

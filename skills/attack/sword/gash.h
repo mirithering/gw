@@ -5,7 +5,6 @@
 
 #include "../attack_skill.h"
 #include "character/creature.h"
-#include "character/skill.h"
 #include "conditions/deep_wound.h"
 
 class Gash : public AttackSkill {
@@ -13,22 +12,23 @@ class Gash : public AttackSkill {
   std::string Name() const override { return "Gash"; }
 
  protected:
-  void ActivationMiddle(Creature& source, Creature& target) override {
-    bool is_bleeding = target.HasCondition(Condition::Type::Bleeding);
+  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
+                        std::vector<Creature>& enemy_team) override {
+    assert(target_);
+    bool is_bleeding = target_->HasCondition(Condition::Type::Bleeding);
     int skill_damage = 0;
     if (is_bleeding) {
-      skill_damage = Damage(source.GetBuild().GetAttribute(attribute));
+      skill_damage = Damage(creature.GetBuild().GetAttribute(attribute));
     }
     int deep_wound_duration =
-        DeepWoundDurationSeconds(source.GetBuild().GetAttribute(attribute)) *
+        DeepWoundDurationSeconds(creature.GetBuild().GetAttribute(attribute)) *
         1000;
 
-    bool success = source.WeaponAttack(target, skill_damage);
+    bool success = creature.WeaponAttack(*target_, skill_damage);
 
     if (success && is_bleeding) {
-      std::cout << "Inflicting deep wound." << std::endl;
-      target.AddCondition(Effect<Condition>(
-          deep_wound_duration, std::make_unique<DeepWound>(target)));
+      target_->AddCondition(Effect<Condition>(
+          deep_wound_duration, std::make_unique<DeepWound>(*target_)));
     }
   }
 

@@ -1,6 +1,8 @@
 cc_library(
     name = "skills",
     srcs = [
+        "attack/attack_skill.cpp",
+        "attack/sword/barbarous_slice.cpp",
         "bonettis_defense.cpp",
     ],
     hdrs = [

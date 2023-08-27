@@ -3,18 +3,24 @@
 
 #include <bits/stdc++.h>
 
-#include "action.h"
 #include "base/clock.h"
-#include "damage.h"
 
+class Action;
 class Creature;
 
 class Skill : public TimedObject {
  public:
-  virtual bool CanActivate(const Creature& character) const;
+  Skill() = default;
+  Skill(Skill&& other) = default;
+  Skill& operator=(Skill&& other) = default;
+
+  virtual bool CanActivate(const Creature& creature,
+                           const std::vector<Creature>& my_team,
+                           const std::vector<Creature>& enemy_team) const;
   virtual ~Skill() override = default;
 
-  Action Activate(Creature& source, Creature& target);
+  Action Activate(Creature& creature, std::vector<Creature>& my_team,
+                  std::vector<Creature>& enemy_team);
 
   void Tick(int) override final { recharge_ = std::max(0, recharge_ - 1); }
 
@@ -26,14 +32,22 @@ class Skill : public TimedObject {
   virtual std::string Name() const = 0;
 
  protected:
+  Creature* target_ = nullptr;
   virtual int AdrenalineCost() const = 0;
   virtual int EnergyCost() const = 0;
   virtual int RechargeTime() const = 0;
   virtual int ActivationTime(Creature& character) const = 0;
 
-  virtual void ActivationStart(Creature& character);
-  virtual void ActivationMiddle(Creature& source, Creature& target){};
-  virtual void ActivationEnd(Creature& character);
+  Creature* GetTarget(Creature& creature, std::vector<Creature>& my_team,
+                      std::vector<Creature>& enemy_team);
+  virtual void ActivationStart(Creature& creature,
+                               std::vector<Creature>& my_team,
+                               std::vector<Creature>& enemy_team);
+  virtual void ActivationMiddle(Creature& creature,
+                                std::vector<Creature>& my_team,
+                                std::vector<Creature>& enemy_team){};
+  virtual void ActivationEnd(Creature& creature, std::vector<Creature>& my_team,
+                             std::vector<Creature>& enemy_team);
 
  private:
   int adrenaline_ = 0;  // In theory, adrenaline is also lost when being idle.

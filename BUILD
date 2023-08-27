@@ -16,14 +16,6 @@ cc_library(
     ],
 )
 
-cc_binary(
-    name = "main",
-    srcs = ["main.cpp"],
-    deps = [
-        ":engine",
-    ],
-)
-
 cc_test(
     name = "test",
     size = "small",

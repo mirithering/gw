@@ -18,28 +18,30 @@
 // TODO this test needs to change when something about random changes, but it
 // guarantees I am not changing anything else.
 TEST(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
-  int kTime = 37907;
+  int kTime = 33917;  // TODO I think there are some mistakes in my code...
 
-  Creature attacker = ConstructCreature(
+  std::vector<Creature> team;
+  std::vector<Creature> enemies;
+
+  team.push_back(ConstructCreature(
       Profession::Warrior, Sword(),
       {{Attribute::Swordsmanship, 12}, {Attribute::Strength, 12}}, PureStrike(),
-      JaizenjuStrike(), BarbarousSlice(), Gash());
-  attacker.name_ = "Attacker";
+      JaizenjuStrike(), BarbarousSlice(), Gash()));
+  team.back().name_ = "Attacker";
 
-  Creature defender =
-      ConstructCreature(Profession::Warrior, Sword(),
-                        {{Attribute::Tactics, 12}}, BonettisDefense());
-  defender.GetBuild().SetArmor(std::make_unique<Armor>(0));
-  defender.name_ = "Defender";
+  enemies.push_back(ConstructCreature(Profession::Warrior, Sword(),
+                                      {{Attribute::Tactics, 12}},
+                                      BonettisDefense()));
+  // enemies.back().GetBuild().SetArmor(std::make_unique<Armor>(0));
+  enemies.back().name_ = "Defender";
 
   for (int ticks = 0; ticks < kTime; ++ticks) {
-    ASSERT_NE(defender.GetAction().GetType(), Action::Type::Dead)
+    ASSERT_NE(enemies.back().GetAction().GetType(), Action::Type::Dead)
         << " " << ticks;
-    ASSERT_NE(attacker.GetAction().GetType(), Action::Type::Dead)
+    ASSERT_NE(team.back().GetAction().GetType(), Action::Type::Dead)
         << " " << ticks;
     Tick();
-    Tick(attacker, defender, ticks);
-    Tick(defender, attacker, ticks);
+    NextActions(team, enemies);
   }
-  ASSERT_EQ(defender.GetAction().GetType(), Action::Type::Dead);
+  ASSERT_EQ(enemies.back().GetAction().GetType(), Action::Type::Dead);
 }

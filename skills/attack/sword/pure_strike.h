@@ -6,17 +6,18 @@
 #include "../attack_skill.h"
 #include "character/creature.h"
 #include "character/damage.h"
-#include "character/skill.h"
 
 class PureStrike : public AttackSkill {
  public:
   std::string Name() const override { return "Pure Strike"; }
 
  protected:
-  void ActivationMiddle(Creature& source, Creature& target) override {
-    int skill_damage = kDamage.at(source.GetBuild().GetAttribute(kAttribute));
-    source.WeaponAttack(target, skill_damage,
-                        /*blockable=*/(source.GetStance() != nullptr));
+  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
+                        std::vector<Creature>& enemy_team) override {
+    assert(target_);
+    int skill_damage = kDamage.at(creature.GetBuild().GetAttribute(kAttribute));
+    creature.WeaponAttack(*target_, skill_damage,
+                          /*blockable=*/(creature.GetStance() != nullptr));
   }
 
   int AdrenalineCost() const override { return 0; }

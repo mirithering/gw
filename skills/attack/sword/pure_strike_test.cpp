@@ -18,18 +18,21 @@ class BlockEverythingStance : public Stance {
 }  // namespace
 
 class PureStrikeTest : public ::testing::Test {
+  void SetUp() override { character.target_ = &dummy; }
+
  protected:
   Creature character =
       ConstructCreature(Profession::Warrior, Sword(),
                         {{Attribute::Swordsmanship, 12}}, PureStrike());
   Creature dummy = ConstructCreature(Profession::Warrior, Sword());
+  std::vector<Creature> kEmpty;
 };
 
 TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
   auto* stance = static_cast<BlockEverythingStance*>(dummy.SetStance(
       Effect<Stance>(INT_MAX, std::make_unique<BlockEverythingStance>())));
-  character.GetAction() =
-      character.GetBuild().GetSkill<Skill>(0)->Activate(character, dummy);
+  character.GetAction() = character.GetBuild().GetSkill<Skill>(0)->Activate(
+      character, kEmpty, kEmpty);
   while (character.GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
@@ -43,8 +46,8 @@ TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
   static_cast<BlockEverythingStance*>(character.SetStance(
       Effect<Stance>(INT_MAX, std::make_unique<BlockEverythingStance>())));
 
-  character.GetAction() =
-      character.GetBuild().GetSkill<Skill>(0)->Activate(character, dummy);
+  character.GetAction() = character.GetBuild().GetSkill<Skill>(0)->Activate(
+      character, kEmpty, kEmpty);
   while (character.GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }

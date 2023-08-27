@@ -4,20 +4,17 @@
 #include <bits/stdc++.h>
 
 #include "action.h"
-#include "armor/armor.h"
-#include "base/attribute.h"
 #include "base/clock.h"
 #include "base/effect.h"
-#include "base/profession.h"
 #include "build.h"
 #include "condition.h"
-#include "skill.h"
 #include "stance.h"
-#include "weapon/weapon.h"
 
 class Creature : public TimedObject {
  public:
   Creature(std::unique_ptr<Build> build);
+  Creature(Creature&&) = default;
+  Creature& operator=(Creature&&) = default;
   ~Creature() override = default;
 
   void Tick(int time_passed) override;
@@ -76,6 +73,10 @@ class Creature : public TimedObject {
   void RemoveMaxHealthModifier(MaxHealthModifierRef modifier_reference);
 
   Build& GetBuild() const { return *build_.get(); }
+
+  // Creatures lock on one target, but will attack other targets with skills if
+  // the locked target would be pointless.
+  Creature* target_ = nullptr;
 
  private:
   void HealthGeneration();

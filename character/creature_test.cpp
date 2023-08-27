@@ -87,7 +87,9 @@ TEST_F(CreatureTest, UsingSkillRemovesOneAdrenalineStrike) {
   bonettis_defense_->AddAdrenaline(1000);
   barbarous_slice_->AddAdrenaline(1000);
 
-  bonettis_defense_->Activate(creature_, dummy_);
+  std::vector<Creature> empty;
+
+  bonettis_defense_->Activate(creature_, empty, empty);
 
   ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0);
   ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 1000 - 25);

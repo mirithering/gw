@@ -8,7 +8,6 @@
 #include "character/action.h"
 #include "character/creature.h"
 #include "character/damage.h"
-#include "character/skill.h"
 
 // TODO this is a first hand attack, need to set the state to allow for chains.
 class DesperateStrike : public AttackSkill {
@@ -16,22 +15,23 @@ class DesperateStrike : public AttackSkill {
   std::string Name() const override { return "Desperate Strike"; }
 
  protected:
-  void ActivationMiddle(Creature& source, Creature& target) override {
-    AttackSkill::ActivationMiddle(source, target);
+  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
+                        std::vector<Creature>& enemy_team) override {
+    assert(target_ != nullptr);
 
     int health_below =
-        healthAndDamage.at(source.GetBuild().GetAttribute(attribute)).first;
+        healthAndDamage.at(creature.GetBuild().GetAttribute(attribute)).first;
     int added_damage =
-        healthAndDamage.at(source.GetBuild().GetAttribute(attribute)).second;
+        healthAndDamage.at(creature.GetBuild().GetAttribute(attribute)).second;
 
     int skill_damage = 0;
-    if ((source.GetMaxHealth() - source.GetLostHealth()) /
-            source.GetMaxHealth() <
+    if ((creature.GetMaxHealth() - creature.GetLostHealth()) /
+            creature.GetMaxHealth() <
         health_below) {
       skill_damage = added_damage;
     }
 
-    source.WeaponAttack(target, skill_damage);
+    creature.WeaponAttack(*target_, skill_damage);
   }
 
   int AdrenalineCost() const override { return 0; }

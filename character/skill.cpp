@@ -2,35 +2,39 @@
 
 #include <bits/stdc++.h>
 
-#include "action.h"
-#include "creature.h"
-#include "damage.h"
+#include "character/action.h"
+#include "character/creature.h"
+#include "character/damage.h"
 
-bool Skill::CanActivate(const Creature& character) const {
+bool Skill::CanActivate(const Creature& creature,
+                        const std::vector<Creature>& my_team,
+                        const std::vector<Creature>& enemy_team) const {
   return recharge_ == 0 && adrenaline_ >= AdrenalineCost() &&
-         character.energy() >= EnergyCost();
+         creature.energy() >= EnergyCost();
 }
 
-Action Skill::Activate(Creature& source, Creature& target) {
-  std::cout << source.name_ << " activating skill " << Name() << std::endl;
-  ActivationStart(source);
+Action Skill::Activate(Creature& creature, std::vector<Creature>& my_team,
+                       std::vector<Creature>& enemy_team) {
+  ActivationStart(creature, my_team, enemy_team);
 
-  int activation_time = ActivationTime(source);
+  int activation_time = ActivationTime(creature);
 
   std::function<Action::Result(int)> tick = [&, activation_time](int duration) {
     if (duration == activation_time / 2) {
-      ActivationMiddle(source, target);
+      ActivationMiddle(creature, my_team, enemy_team);
     }
     // TODO cancel skills with dead targets.
     return Action::Result::Continue;
   };
 
   if (activation_time == 0) {
-    ActivationEnd(source);
+    ActivationEnd(creature, my_team, enemy_team);
     return kActionIdle;
   }
 
-  std::function<void()> end = [&]() { ActivationEnd(source); };
+  std::function<void()> end = [&]() {
+    ActivationEnd(creature, my_team, enemy_team);
+  };
 
   return Action(Action::Type::Busy, activation_time, tick, end);
 }
@@ -44,15 +48,22 @@ void Skill::LoseAdrenaline(int units) {
 void Skill::LoseAllAdrenaline() { adrenaline_ = 0; }
 int Skill::GetAdrenaline() const { return adrenaline_; }
 
-void Skill::ActivationStart(Creature& character) {
+Creature* Skill::GetTarget(Creature& creature, std::vector<Creature>& my_team,
+                           std::vector<Creature>& enemy_team) {
+  return creature.target_;
+}
+void Skill::ActivationStart(Creature& creature, std::vector<Creature>& my_team,
+                            std::vector<Creature>& enemy_team) {
   adrenaline_ = 0;
   if (AdrenalineCost() > 0) {
-    character.RemoveOneAdrenalineStrike();
+    creature.RemoveOneAdrenalineStrike();
   }
-  character.UseEnergy(EnergyCost());
+  target_ = GetTarget(creature, my_team, enemy_team);
+  creature.UseEnergy(EnergyCost());
 }
 
-void Skill::ActivationEnd(Creature& character) {
-  std::cout << "activation end" << std::endl;
+void Skill::ActivationEnd(Creature& creature, std::vector<Creature>& my_team,
+                          std::vector<Creature>& enemy_team) {
   recharge_ = RechargeTime();
+  target_ = nullptr;
 }

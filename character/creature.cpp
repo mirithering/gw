@@ -73,6 +73,8 @@ void Creature::AddEnergy(int amount) {
 }
 
 void Creature::LoseHealth(int amount) {
+  if (amount > 0)
+    std::cout << name_ << " losing " << amount << " health." << std::endl;
   health_lost_ += amount;
   if (amount > 0 && health_lost_ >= GetMaxHealth()) {
     Die();
