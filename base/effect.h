@@ -2,6 +2,7 @@
 #define BASE_EFFECT_H
 
 #include "clock.h"
+#include "units.h"
 
 // An Effect contains an Object that will be removed once the duration is
 // over.
@@ -10,14 +11,14 @@
 template <class T>
 class Effect : public TimedObject {
  public:
-  Effect(int duration, std::unique_ptr<T> timed_object)
+  Effect(Time duration, std::unique_ptr<T> timed_object)
       : duration_(duration), timed_object_(std::move(timed_object)) {}
 
   Effect(Effect<T>&&) = default;
   Effect<T>& operator=(Effect<T>&&) = default;
   ~Effect() override{};
 
-  void Tick(int time) override {
+  void Tick(Time time) override {
     if (duration_ <= time) {
       timed_object_.reset();
     }
@@ -32,7 +33,7 @@ class Effect : public TimedObject {
 
  private:
   Effect() = default;
-  int duration_ = 0;
+  Time duration_;
   std::unique_ptr<T> timed_object_;
 };
 

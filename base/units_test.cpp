@@ -3,8 +3,8 @@
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
-TEST(UnitsTest, SecondIs1000) { ASSERT_EQ(Second.value(), 1000); }
-TEST(UnitsTest, MillisecondIs1) { ASSERT_EQ(Millisecond.value(), 1); }
+TEST(UnitsTest, SecondIs1000) { ASSERT_EQ(Second.milliseconds(), 1000); }
+TEST(UnitsTest, MillisecondIs1) { ASSERT_EQ(Millisecond.milliseconds(), 1); }
 
 TEST(UnitsTest, MultiplicationCommutative) {
   ASSERT_EQ(Second * 25, 25 * Second);

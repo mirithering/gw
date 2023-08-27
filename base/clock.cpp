@@ -4,9 +4,9 @@
 
 namespace {
 std::list<TimedObject*> g_ticks;
-unsigned int g_time = 0;
+Time g_time(0);
 
-void TickAllTicks(int current_time) {
+void TickAllTicks(Time current_time) {
   for (auto it = std::begin(g_ticks); it != std::end(g_ticks); ++it) {
     auto size = g_ticks.size();
     if ((*it)->last_tick_at_ == current_time) continue;
@@ -35,10 +35,10 @@ void Remove(TimedObject* obj) {
 
 TimedObject::TimedObject() : creation_time_(g_time) { g_ticks.push_back(this); }
 
-TimedObject::TimedObject(TimedObject&& other) {
+TimedObject::TimedObject(TimedObject&& other)
+    : creation_time_(other.creation_time_) {
   Remove(&other);
   g_ticks.push_back(this);
-  creation_time_ = other.creation_time_;
   last_tick_at_ = other.last_tick_at_;
 }
 

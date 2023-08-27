@@ -8,7 +8,7 @@ class Counter : public TimedObject {
  public:
   Counter(int& counter) : counter_(counter) {}
 
-  void Tick(int) override { ++counter_; }
+  void Tick(Time) override { ++counter_; }
 
  private:
   int& counter_;
@@ -16,12 +16,12 @@ class Counter : public TimedObject {
 
 class Timer : public TimedObject {
  public:
-  Timer(int& time_passed) : time_passed_(time_passed) {}
+  Timer(Time& time_passed) : time_passed_(time_passed) {}
 
-  void Tick(int time_passed) override { time_passed_ = time_passed; }
+  void Tick(Time time_passed) override { time_passed_ = time_passed; }
 
  private:
-  int& time_passed_;
+  Time& time_passed_;
 };
 }  // namespace
 
@@ -55,24 +55,24 @@ TEST(ClockTest, AllTicksAreCalled) {
 }
 
 TEST(ClockTest, TimePassedIsHowOftenTicksWasCalled) {
-  int time_passed;
+  Time time_passed;
   std::unique_ptr<Timer> counter = std::make_unique<Timer>(time_passed);
   Tick();
   Tick();
-  ASSERT_EQ(time_passed, 2);
+  ASSERT_EQ(time_passed.milliseconds(), 2);
   counter = std::make_unique<Timer>(time_passed);
   Tick();
-  ASSERT_EQ(time_passed, 1);
+  ASSERT_EQ(time_passed.milliseconds(), 1);
 }
 
 TEST(ClockTest, MovedObjectKeepsTicking) {
-  int ticks;
-  Timer* counter = new Timer(ticks);
+  Time time;
+  Timer* counter = new Timer(time);
   std::vector<Timer> counters;
   counters.push_back(std::move(*counter));
   delete counter;
   Tick();
-  ASSERT_EQ(ticks, 1);
+  ASSERT_EQ(time.milliseconds(), 1);
 }
 
 namespace {
@@ -80,7 +80,7 @@ class Remover : public TimedObject {
  public:
   Remover(bool& deleted) : deleted_(deleted) {}
   ~Remover() override { deleted_ = true; }
-  void Tick(int) override { delete delete_on_tick_; }
+  void Tick(Time) override { delete delete_on_tick_; }
   void SetRemove(TimedObject* delete_on_tick) {
     delete_on_tick_ = delete_on_tick;
   }

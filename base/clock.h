@@ -3,6 +3,8 @@
 
 #include <bits/stdc++.h>
 
+#include "units.h"
+
 class TimedObject {
  public:
   TimedObject();
@@ -12,10 +14,11 @@ class TimedObject {
   TimedObject& operator=(TimedObject&& other);
   virtual ~TimedObject();
 
-  virtual void Tick(int time_passed) = 0;
+  // Called every 1ms of Game time.
+  virtual void Tick(Time time_passed) = 0;
 
-  int creation_time_ = 0;
-  int last_tick_at_ = -1;
+  Time creation_time_;
+  Time last_tick_at_ = Time(-1);
 };
 
 void Tick();

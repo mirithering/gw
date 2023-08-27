@@ -5,6 +5,11 @@
 
 #include "clock.h"
 
+namespace {
+const Time kTime = 10 * Second;
+constexpr int kNumber = 5;
+}  // namespace
+
 TEST(EffectTest, NoEffectIsAlwaysOver) {
   Effect<int> effect = Effect<int>::None();
   ASSERT_TRUE(effect.Ended());
@@ -13,11 +18,9 @@ TEST(EffectTest, NoEffectIsAlwaysOver) {
 }
 
 TEST(EffectTest, EffectLastsForCorrectTime) {
-  constexpr int kTime = 10;
-  constexpr int kNumber = 5;
   Effect<int> effect(kTime, std::make_unique<int>(kNumber));
 
-  for (int i = 0; i < kTime; ++i) {
+  for (int i = 0; i < kTime.milliseconds(); ++i) {
     ASSERT_FALSE(effect.Ended());
     ASSERT_EQ(*effect.get(), kNumber);
     Tick();
@@ -27,11 +30,9 @@ TEST(EffectTest, EffectLastsForCorrectTime) {
 }
 
 TEST(EffectTest, RemovedEffectIsGone) {
-  constexpr int kTime = 10;
-  constexpr int kNumber = 5;
   Effect<int> effect(kTime, std::make_unique<int>(kNumber));
 
-  for (int i = 0; i < kTime / 2; ++i) {
+  for (int i = 0; i < kTime.milliseconds() / 2; ++i) {
     ASSERT_FALSE(effect.Ended());
     ASSERT_EQ(*effect.get(), kNumber);
     Tick();
@@ -50,17 +51,16 @@ TEST(EffectTest, EffectWithTimedObject) {
   class Timer : public TimedObject {
    public:
     explicit Timer(int& ticks) : ticks_(ticks) {}
-    void Tick(int) override { ++ticks_; }
+    void Tick(Time) override { ++ticks_; }
     int& ticks_;
   };
 
-  constexpr int kTime = 10;
   Effect<Timer> effect(kTime, std::make_unique<Timer>(ticks));
-  for (int i = 1; i <= kTime; ++i) {
+  for (int i = 1; i <= kTime.milliseconds(); ++i) {
     Tick();
     ASSERT_EQ(ticks, i);
   }
   effect = Effect<Timer>::None();
   Tick();
-  ASSERT_EQ(ticks, kTime);
+  ASSERT_EQ(ticks, kTime.milliseconds());
 }

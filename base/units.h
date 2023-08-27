@@ -7,7 +7,20 @@ class Time {
  public:
   // TODO Ideally I would hide this constructor as private.
   explicit Time(int value) : value_(value){};
-  int value() const { return value_; }
+  Time() : value_(0){};
+  int milliseconds() const { return value_; }
+
+  // prefix increment
+  Time& operator++() {
+    ++value_;
+    return *this;
+  }
+  // postfix increment
+  Time operator++(int) {
+    Time old = *this;  // copy old value
+    operator++();      // prefix increment
+    return old;        // return old value
+  }
 
   friend Time operator*(Time lhs, unsigned int rhs) {
     return Time(lhs.value_ * rhs);
@@ -17,6 +30,9 @@ class Time {
   };
   friend Time operator+(Time lhs, Time rhs) {
     return Time(lhs.value_ + rhs.value_);
+  };
+  friend Time operator-(Time lhs, Time rhs) {
+    return Time(lhs.value_ - rhs.value_);
   };
 
   // Since C++20. Results in all comparison operators to be defined. :)
