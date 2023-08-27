@@ -87,7 +87,7 @@ TEST(ActionTest, WeaponAttackAttacksAfterHalfOfWeaponSpeed) {
 
   Action action = Action::WeaponAttack(character, character);
 
-  int expect_attack_at = character.GetBuild().GetWeapon().AttackSpeed() / 2;
+  int expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() / 2;
   for (int i = 0; i < expect_attack_at; ++i) {
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
     ASSERT_EQ(character.GetLostHealth(), 0);
@@ -102,7 +102,7 @@ TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
 
   Action action = Action::WeaponAttack(character, character);
 
-  int expect_end_at = character.GetBuild().GetWeapon().AttackSpeed();
+  int expect_end_at = character.GetBuild().GetWeapon().AttackDuration();
   for (int i = 0; i < expect_end_at - 1; ++i) {
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }

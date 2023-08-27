@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 
-TEST(SwordTest, AttackSpeedIsAsExpected) {
-  constexpr int kExpectedAttackSpeed = 1330;
+TEST(SwordTest, AttackDurationIsAsExpected) {
+  const Time kExpectedAttackDuration = 1330 * Millisecond;
 
   Sword sword;
-  ASSERT_EQ(sword.AttackSpeed(), kExpectedAttackSpeed);
+  ASSERT_EQ(sword.AttackDuration(), kExpectedAttackDuration);
 }
 
 TEST(SwordTest, DamageTypeIsSlashing) {

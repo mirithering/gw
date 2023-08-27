@@ -38,7 +38,7 @@ class DesperateStrike : public AttackSkill {
   int EnergyCost() const override { return 5; }
   int RechargeTime() const override { return 6000; }
   int ActivationTime(Creature& creature) const override {
-    return creature.GetBuild().GetWeapon().AttackSpeed();
+    return creature.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Dagger; };
 

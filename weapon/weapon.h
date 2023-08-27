@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "base/attribute.h"
+#include "base/units.h"
 
 // TODO critical hits. crit base rate is roughly weapon mastery / 100.
 
@@ -27,7 +28,7 @@ class Weapon {
 
   Weapon(std::pair<int, int> damage) : damage_(damage) {}
 
-  virtual int AttackSpeed() const = 0;
+  virtual Time AttackDuration() const = 0;
   virtual DamageType GetDamageType() const = 0;
   virtual Attribute GetAttribute() const = 0;
   virtual Type GetType() const = 0;

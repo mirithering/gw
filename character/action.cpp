@@ -10,7 +10,7 @@
 
 Action Action::WeaponAttack(Creature& source, Creature& target) {
   const Weapon& weapon = source.GetBuild().GetWeapon();
-  int attack_duration = weapon.AttackSpeed();
+  int attack_duration = weapon.AttackDuration();
 
   std::function<Action::Result(int duration)> tick = [&, attack_duration](
                                                          int duration) {

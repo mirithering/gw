@@ -5,9 +5,10 @@
 
 #include "base/attribute.h"
 #include "weapon.h"
+#include "base/units.h"
 
 namespace {
-const int kDaggerAttackSpeed = 1330;
+const Time kDaggerAttackDuration = 1330 * Millisecond;
 const int kDaggerMinDamage = 7;
 const int kDaggerMaxDamage = 17;
 }  // namespace
@@ -17,7 +18,7 @@ class Dagger : public Weapon {
   Dagger() : Weapon({kDaggerMinDamage, kDaggerMaxDamage}){};
   Dagger(int min_damage, int max_damage) : Weapon({min_damage, max_damage}){};
 
-  int AttackSpeed() const override { return kDaggerAttackSpeed; }
+  Time AttackDuration() const override { return kDaggerAttackDuration; }
   DamageType GetDamageType() const override {
     return DamageType::Piercing;
   }  // TODO some daggers to slashing damage.

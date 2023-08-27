@@ -19,7 +19,7 @@ class BarbarousSlice : public AttackSkill {
   int EnergyCost() const override { return 0; }
   int RechargeTime() const override { return 0; }
   int ActivationTime(Creature& character) const override {
-    return character.GetBuild().GetWeapon().AttackSpeed();
+    return character.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };
 
