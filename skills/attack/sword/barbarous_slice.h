@@ -15,7 +15,7 @@ class BarbarousSlice : public AttackSkill {
   void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
                         std::vector<Creature>& enemy_team) override;
 
-  int AdrenalineCost() const override { return 6 * 25; }
+  Adrenaline AdrenalineCost() const override { return 6 * Strike; }
   int EnergyCost() const override { return 0; }
   Time RechargeTime() const override { return Time(0); }
   Time ActivationTime(Creature& character) const override {

@@ -3,62 +3,86 @@
 
 #include <bits/stdc++.h>
 
-class Time {
+enum class UnitType { Time, Adrenaline, Health, Energy };
+
+template <UnitType type>
+class Unit {
  public:
   // TODO Ideally I would hide this constructor as private.
-  explicit Time(int value) : value_(value){};
-  Time() : value_(0){};
-  int milliseconds() const { return value_; }
+  explicit Unit(int value) : value_(value){};
+  Unit() : value_(0){};
 
   // prefix increment
-  Time& operator++() {
+  Unit& operator++() {
     ++value_;
     return *this;
   }
   // postfix increment
-  Time operator++(int) {
-    Time old = *this;  // copy old value
+  Unit operator++(int) {
+    Unit old = *this;  // copy old value
     operator++();      // prefix increment
     return old;        // return old value
   }
   // prefix decrement
-  Time& operator--() {
+  Unit& operator--() {
     --value_;
     return *this;
   }
   // postfix decrement
-  Time operator--(int) {
-    Time old = *this;  // copy old value
+  Unit operator--(int) {
+    Unit old = *this;  // copy old value
     operator--();      // prefix decrement
     return old;        // return old value
   }
 
-  friend Time operator*(Time lhs, int rhs) { return Time(lhs.value_ * rhs); }
-  friend Time operator*(int lhs, Time rhs) { return Time(lhs * rhs.value_); };
-  friend Time operator/(Time lhs, int rhs) { return Time(lhs.value_ / rhs); }
-  friend Time operator+(Time lhs, Time rhs) {
-    return Time(lhs.value_ + rhs.value_);
+  Unit& operator+=(const Unit& rhs) {
+    value_ += rhs.value();
+    return *this;
+  }
+
+  Unit& operator-=(const Unit& rhs) {
+    value_ -= rhs.value();
+    return *this;
+  }
+
+  friend Unit operator*(Unit lhs, int rhs) { return Unit(lhs.value_ * rhs); }
+  friend Unit operator*(int lhs, Unit rhs) { return Unit(lhs * rhs.value_); };
+  friend Unit operator/(Unit lhs, int rhs) { return Unit(lhs.value_ / rhs); }
+  friend Unit operator+(Unit lhs, Unit rhs) {
+    return Unit(lhs.value_ + rhs.value_);
   };
-  friend Time operator-(Time lhs, Time rhs) {
-    return Time(lhs.value_ - rhs.value_);
+  friend Unit operator-(Unit lhs, Unit rhs) {
+    return Unit(lhs.value_ - rhs.value_);
   };
-  friend Time operator%(Time lhs, Time rhs) {
-    return Time(lhs.value_ % rhs.value_);
+  friend Unit operator%(Unit lhs, Unit rhs) {
+    return Unit(lhs.value_ % rhs.value_);
   };
+  friend std::ostream& operator<<(std::ostream& out, const Unit& unit) {
+    out << unit.value();
+    return out;
+  }
 
   // Since C++20. Results in all comparison operators to be defined. :)
-  auto operator<=>(const Time&) const = default;
+  auto operator<=>(const Unit&) const = default;
+
+  int value() const { return value_; }
 
  private:
-  friend Time operator*(Time lhs, int rhs);
-  friend Time operator*(int lhs, Time rhs);
-  friend Time operator+(Time lhs, Time rhs);
-
   int value_;
 };
+
+using Time = Unit<UnitType::Time>;
 
 const Time Second = Time(1000);
 const Time Millisecond = Time(1);
 const Time Eternity = Time(INT_MAX);
+
+using Adrenaline = Unit<UnitType::Adrenaline>;
+
+const Adrenaline Strike = Adrenaline(25);
+
+using Health = Unit<UnitType::Health>;
+
+using Energy = Unit<UnitType::Energy>;
 
 #endif  // BASE_UNITS_H

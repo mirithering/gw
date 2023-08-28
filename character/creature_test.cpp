@@ -56,41 +56,41 @@ TEST_F(CreatureTest, StanceBlocksAttacks) {
 }
 
 TEST_F(CreatureTest, StartWithNoAdrenaline) {
-  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0);
+  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0 * Strike);
 }
 
 TEST_F(CreatureTest, OneHitBuildsOneStrikeOfAdrenalineOnAllSkills) {
   creature_.WeaponAttack(dummy_);
 
-  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 25);
-  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 25);
+  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), Strike);
+  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), Strike);
 }
 
 TEST_F(CreatureTest, GettingHitBuildsPercentageOfAdrenalineOnAllSkills) {
   creature_.ReceiveWeaponDamage(creature_.GetMaxHealth() / 2,
                                 Weapon::Type::Axe);
 
-  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 50);
-  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 50);
+  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 2 * Strike);
+  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 2 * Strike);
 }
 
 TEST_F(CreatureTest, DeathTakesAllAdrenaline) {
-  bonettis_defense_->AddAdrenaline(100);
-  barbarous_slice_->AddAdrenaline(50);
+  bonettis_defense_->AddAdrenaline(4 * Strike);
+  barbarous_slice_->AddAdrenaline(2 * Strike);
 
   creature_.ReceiveWeaponDamage(creature_.GetMaxHealth(), Weapon::Type::Axe);
-  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0);
-  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 0);
+  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0 * Strike);
+  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 0 * Strike);
 }
 
 TEST_F(CreatureTest, UsingSkillRemovesOneAdrenalineStrike) {
-  bonettis_defense_->AddAdrenaline(1000);
-  barbarous_slice_->AddAdrenaline(1000);
+  bonettis_defense_->AddAdrenaline(10 * Strike);
+  barbarous_slice_->AddAdrenaline(10 * Strike);
 
   std::vector<Creature> empty;
 
   bonettis_defense_->Activate(creature_, empty, empty);
 
-  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0);
-  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 1000 - 25);
+  ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0 * Strike);
+  ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 9 * Strike);
 }

@@ -37,19 +37,19 @@ TEST_F(BarbarousSliceTest, NoActivationWithoutAdrenaline) {
 }
 
 TEST_F(BarbarousSliceTest, NoActivationWithTooLittleAdrenaline) {
-  barbarous_slice->AddAdrenaline(5 * 25);
+  barbarous_slice->AddAdrenaline(5 * Strike);
   ASSERT_FALSE(barbarous_slice->CanActivate(character, empty_, empty_));
 }
 
 TEST_F(BarbarousSliceTest, ActivationWithEnoughAdrenaline) {
-  barbarous_slice->AddAdrenaline(6 * 25);
+  barbarous_slice->AddAdrenaline(6 * Strike);
   ASSERT_TRUE(barbarous_slice->CanActivate(character, empty_, empty_));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   constexpr int kExpectedSkillDamage = 25;
 
-  barbarous_slice->AddAdrenaline(6 * 25);
+  barbarous_slice->AddAdrenaline(6 * Strike);
   character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
 
   // Override random base attack damage to 0. Then, only skill damage is
@@ -67,7 +67,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
-  barbarous_slice->AddAdrenaline(6 * 25);
+  barbarous_slice->AddAdrenaline(6 * Strike);
   character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
 
   while (character.GetAction().GetType() != Action::Type::Idle) {
@@ -78,7 +78,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
-  barbarous_slice->AddAdrenaline(6 * 25);
+  barbarous_slice->AddAdrenaline(6 * Strike);
   character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
 
   character.SetStance(

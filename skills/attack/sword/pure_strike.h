@@ -20,7 +20,7 @@ class PureStrike : public AttackSkill {
                           /*blockable=*/(creature.GetStance() != nullptr));
   }
 
-  int AdrenalineCost() const override { return 0; }
+  Adrenaline AdrenalineCost() const override { return Adrenaline(0); }
   int EnergyCost() const override { return 5; }
   Time RechargeTime() const override { return 8 * Second; }
   Time ActivationTime(Creature& character) const override {

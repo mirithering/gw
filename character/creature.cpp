@@ -116,7 +116,7 @@ bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
   }
 
   int percentage = damage * 100 / GetMaxHealth();
-  AddAdrenaline(percentage);
+  AddAdrenaline(Adrenaline(percentage));
 
   LoseHealth(damage);
   return true;  // TODO return false if blocked.
@@ -138,16 +138,16 @@ bool Creature::WeaponAttack(Creature& target, int skill_damage,
       WeaponStrikeDamage(*this, target) + skill_damage,
       build_->GetWeapon().GetType(), blockable);
   if (success) {
-    AddAdrenaline(25);
+    AddAdrenaline(Strike);
   }
   return success;
 }
 
-void Creature::AddAdrenaline(int charges) {
+void Creature::AddAdrenaline(Adrenaline adrenaline) {
   const auto& skills = build_->GetSkills();
   std::for_each(std::begin(skills), std::end(skills),
-                [charges](const std::unique_ptr<Skill>& skill) {
-                  if (skill) skill->AddAdrenaline(charges);
+                [adrenaline](const std::unique_ptr<Skill>& skill) {
+                  if (skill) skill->AddAdrenaline(adrenaline);
                 });
 }
 
@@ -155,7 +155,7 @@ void Creature::RemoveOneAdrenalineStrike() {
   const auto& skills = build_->GetSkills();
   std::for_each(std::begin(skills), std::end(skills),
                 [](const std::unique_ptr<Skill>& skill) {
-                  if (skill) skill->LoseAdrenaline(25);
+                  if (skill) skill->LoseAdrenaline(Strike);
                 });
 }
 

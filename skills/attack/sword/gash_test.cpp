@@ -27,12 +27,12 @@ TEST_F(GashTest, NoActivationWithoutAdrenaline) {
 }
 
 TEST_F(GashTest, ActivationWithAdrenaline) {
-  gash_->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * Strike);
   ASSERT_TRUE(gash_->CanActivate(character_, empty_, empty_));
 }
 
 TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
-  gash_->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * Strike);
 
   OverrideRandomRollForTesting(10);
   int expected_damage = WeaponStrikeDamage(character_, dummy_);
@@ -50,7 +50,7 @@ TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
 TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   constexpr int kExpectedSkillDamage = 17;
   constexpr int kExpectedBleedingDamage = 6;
-  gash_->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * Strike);
 
   OverrideRandomRollForTesting(10);
   int expected_damage = WeaponStrikeDamage(character_, dummy_) +
@@ -69,7 +69,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
 }
 
 TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
-  gash_->AddAdrenaline(6 * 25);
+  gash_->AddAdrenaline(6 * Strike);
 
   dummy_.AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));

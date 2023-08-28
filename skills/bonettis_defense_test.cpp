@@ -22,7 +22,7 @@ TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
-  bonettis_defense_->AddAdrenaline(8 * 25);
+  bonettis_defense_->AddAdrenaline(8 * Strike);
   ASSERT_TRUE(bonettis_defense_->CanActivate(character_, {}, {}));
 
   character_.GetAction() =
@@ -36,7 +36,7 @@ TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
 
 TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
   character_.GetBuild().SetAttribute(Attribute::Tactics, 12);
-  bonettis_defense_->AddAdrenaline(8 * 25);
+  bonettis_defense_->AddAdrenaline(8 * Strike);
   ASSERT_TRUE(bonettis_defense_->CanActivate(character_, {}, {}));
 
   character_.GetAction() =

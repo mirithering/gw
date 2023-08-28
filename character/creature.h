@@ -81,7 +81,7 @@ class Creature : public TimedObject {
  private:
   void HealthGeneration();
   void EnergyGeneration();
-  void AddAdrenaline(int charges);
+  void AddAdrenaline(Adrenaline adrenaline);
   void Die();
   bool WillBlockAttack(Weapon::Type type);
 

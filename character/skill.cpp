@@ -42,12 +42,12 @@ Action Skill::Activate(Creature& creature, std::vector<Creature>& my_team,
 
 // TODO Check if skills can have a limited amount of adrenaline, e.g. only their
 // own costs.
-void Skill::AddAdrenaline(int units) { adrenaline_ += units; }
-void Skill::LoseAdrenaline(int units) {
-  adrenaline_ = std::max(adrenaline_ - units, 0);
+void Skill::AddAdrenaline(Adrenaline adrenaline) { adrenaline_ += adrenaline; }
+void Skill::LoseAdrenaline(Adrenaline adrenaline) {
+  adrenaline_ = std::max(adrenaline_ - adrenaline, Adrenaline(0));
 }
-void Skill::LoseAllAdrenaline() { adrenaline_ = 0; }
-int Skill::GetAdrenaline() const { return adrenaline_; }
+void Skill::LoseAllAdrenaline() { adrenaline_ = Adrenaline(0); }
+Adrenaline Skill::GetAdrenaline() const { return adrenaline_; }
 
 Creature* Skill::GetTarget(Creature& creature, std::vector<Creature>& my_team,
                            std::vector<Creature>& enemy_team) {
@@ -55,8 +55,8 @@ Creature* Skill::GetTarget(Creature& creature, std::vector<Creature>& my_team,
 }
 void Skill::ActivationStart(Creature& creature, std::vector<Creature>& my_team,
                             std::vector<Creature>& enemy_team) {
-  adrenaline_ = 0;
-  if (AdrenalineCost() > 0) {
+  adrenaline_ = Adrenaline(0);
+  if (AdrenalineCost() > Adrenaline(0)) {
     creature.RemoveOneAdrenalineStrike();
   }
   target_ = GetTarget(creature, my_team, enemy_team);

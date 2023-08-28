@@ -59,10 +59,10 @@ TEST(ClockTest, TimePassedIsHowOftenTicksWasCalled) {
   std::unique_ptr<Timer> counter = std::make_unique<Timer>(time_passed);
   Tick();
   Tick();
-  ASSERT_EQ(time_passed.milliseconds(), 2);
+  ASSERT_EQ(time_passed.value(), 2);
   counter = std::make_unique<Timer>(time_passed);
   Tick();
-  ASSERT_EQ(time_passed.milliseconds(), 1);
+  ASSERT_EQ(time_passed.value(), 1);
 }
 
 TEST(ClockTest, MovedObjectKeepsTicking) {
@@ -72,7 +72,7 @@ TEST(ClockTest, MovedObjectKeepsTicking) {
   counters.push_back(std::move(*counter));
   delete counter;
   Tick();
-  ASSERT_EQ(time.milliseconds(), 1);
+  ASSERT_EQ(time.value(), 1);
 }
 
 namespace {

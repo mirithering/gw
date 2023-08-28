@@ -26,16 +26,16 @@ class Skill : public TimedObject {
     recharge_ = std::max(Time(0), recharge_ - Millisecond);
   }
 
-  void AddAdrenaline(int units);
-  void LoseAdrenaline(int units);
+  void AddAdrenaline(Adrenaline adrenaline);
+  void LoseAdrenaline(Adrenaline adrenaline);
   void LoseAllAdrenaline();
-  int GetAdrenaline() const;
+  Adrenaline GetAdrenaline() const;
 
   virtual std::string Name() const = 0;
 
  protected:
   Creature* target_ = nullptr;
-  virtual int AdrenalineCost() const = 0;
+  virtual Adrenaline AdrenalineCost() const = 0;
   virtual int EnergyCost() const = 0;
   virtual Time RechargeTime() const = 0;
   virtual Time ActivationTime(Creature& character) const = 0;
@@ -52,8 +52,9 @@ class Skill : public TimedObject {
                              std::vector<Creature>& enemy_team);
 
  private:
-  int adrenaline_ = 0;  // In theory, adrenaline is also lost when being idle.
-                        // But I don't think I care.
+  Adrenaline adrenaline_ =
+      Adrenaline(0);  // In theory, adrenaline is also lost when being idle.
+                      // But I don't think I care.
   Time recharge_ = Time(0);
 };
 
