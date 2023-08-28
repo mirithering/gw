@@ -28,8 +28,8 @@ class BonettisDefense : public Skill {
 
   int AdrenalineCost() const override { return 8 * 25; }
   int EnergyCost() const override { return 0; }
-  int RechargeTime() const override { return 0; }
-  int ActivationTime(Creature& character) const override { return 0; }
+  Time RechargeTime() const override { return Time(0); }
+  Time ActivationTime(Creature& character) const override { return Time(0); }
 
  private:
   inline static const Attribute kAttribute = Attribute::Tactics;

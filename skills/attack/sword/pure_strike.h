@@ -22,8 +22,8 @@ class PureStrike : public AttackSkill {
 
   int AdrenalineCost() const override { return 0; }
   int EnergyCost() const override { return 5; }
-  int RechargeTime() const override { return 8000; }
-  int ActivationTime(Creature& character) const override {
+  Time RechargeTime() const override { return 8 * Second; }
+  Time ActivationTime(Creature& character) const override {
     return character.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };

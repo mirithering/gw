@@ -9,7 +9,7 @@
 bool Skill::CanActivate(const Creature& creature,
                         const std::vector<Creature>& my_team,
                         const std::vector<Creature>& enemy_team) const {
-  return recharge_ == 0 && adrenaline_ >= AdrenalineCost() &&
+  return recharge_ == Time(0) && adrenaline_ >= AdrenalineCost() &&
          creature.energy() >= EnergyCost();
 }
 
@@ -17,9 +17,10 @@ Action Skill::Activate(Creature& creature, std::vector<Creature>& my_team,
                        std::vector<Creature>& enemy_team) {
   ActivationStart(creature, my_team, enemy_team);
 
-  int activation_time = ActivationTime(creature);
+  Time activation_time = ActivationTime(creature);
 
-  std::function<Action::Result(int)> tick = [&, activation_time](int duration) {
+  std::function<Action::Result(Time)> tick = [&,
+                                              activation_time](Time duration) {
     if (duration == activation_time / 2) {
       ActivationMiddle(creature, my_team, enemy_team);
     }
@@ -27,7 +28,7 @@ Action Skill::Activate(Creature& creature, std::vector<Creature>& my_team,
     return Action::Result::Continue;
   };
 
-  if (activation_time == 0) {
+  if (activation_time == Time(0)) {
     ActivationEnd(creature, my_team, enemy_team);
     return kActionIdle;
   }

@@ -17,7 +17,7 @@ class Creature : public TimedObject {
   Creature& operator=(Creature&&) = default;
   ~Creature() override = default;
 
-  void Tick(int time_passed) override;
+  void Tick(Time time_passed) override;
 
   bool ReceiveWeaponDamage(int damage, Weapon::Type type,
                            bool blockable = true);

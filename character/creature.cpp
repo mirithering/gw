@@ -33,11 +33,11 @@ Creature::Creature(std::unique_ptr<Build> build) : build_(std::move(build)) {
   energy_ = kMaxEnergy[build_->GetFirstProfession()];
 }
 
-void Creature::Tick(int time_passed) {
-  if (time_passed % 3000 == 0) {
+void Creature::Tick(Time time_passed) {
+  if (time_passed % (3 * Second) == Time(0)) {
     EnergyGeneration();
   }
-  if (time_passed % 1000 == 0) {
+  if (time_passed % Second == Time(0)) {
     HealthGeneration();
   }
 

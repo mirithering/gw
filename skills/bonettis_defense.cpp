@@ -9,7 +9,7 @@
 void BonettisDefense::ActivationEnd(Creature& creature,
                                     std::vector<Creature>& my_team,
                                     std::vector<Creature>& enemy_team) {
-  int time = kDuration[creature.GetBuild().GetAttribute(kAttribute)] * 1000;
+  Time time = kDuration[creature.GetBuild().GetAttribute(kAttribute)] * Second;
   creature.SetStance(
       Effect<Stance>(time, std::make_unique<BonettisDefenseStance>(creature)));
 

@@ -44,7 +44,7 @@ TEST_F(CreatureTest, StanceBlocksAttacks) {
 
   BlockEverythingStance* stance =
       static_cast<BlockEverythingStance*>(creature_.SetStance(
-          Effect<Stance>(10, std::make_unique<BlockEverythingStance>())));
+          Effect<Stance>(Second, std::make_unique<BlockEverythingStance>())));
 
   ASSERT_FALSE(creature_.ReceiveWeaponDamage(100, Weapon::Type::Scythe));
   ASSERT_EQ(creature_.GetLostHealth(), 0);

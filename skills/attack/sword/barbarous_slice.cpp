@@ -11,9 +11,9 @@ void BarbarousSlice::ActivationMiddle(Creature& creature,
                                       std::vector<Creature>& enemy_team) {
   assert(target_ != nullptr);
   int skill_damage = kDamage[creature.GetBuild().GetAttribute(attribute)];
-  int bleeding_duration =
+  Time bleeding_duration =
       kBleedingDurationSeconds[creature.GetBuild().GetAttribute(attribute)] *
-      1000;
+      Second;
 
   bool success = creature.WeaponAttack(*target_, skill_damage);
   bool inflict_bleeding = (creature.GetStance() == nullptr);

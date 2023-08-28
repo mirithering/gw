@@ -22,16 +22,16 @@ TEST(ActionTest, DeathDoesntEndSoon) {
 
 TEST(ActionTest, TickFunctionCanEndAction) {
   Action action(
-      Action::Type::Busy, 10, [](int duration) { return Action::Result::End; },
-      []() {});
+      Action::Type::Busy, Second,
+      [](Time duration) { return Action::Result::End; }, []() {});
   ASSERT_EQ(action.Tick(), Action::Result::End);
 }
 
 TEST(ActionTest, TickFunctionIsCalledTickTimes) {
   int tick_called = 0;
   Action action(
-      Action::Type::Busy, 3,
-      [&](int duration) {
+      Action::Type::Busy, 3 * Millisecond,
+      [&](Time duration) {
         ++tick_called;
         return Action::Result::Continue;
       },
@@ -49,8 +49,8 @@ TEST(ActionTest, TickFunctionIsCalledTickTimes) {
 TEST(ActionTest, EndFunctionIsCalledOnce) {
   int end_called = 0;
   Action action(
-      Action::Type::Busy, 2,
-      [](int duration) { return Action::Result::Continue; },
+      Action::Type::Busy, 2 * Millisecond,
+      [](Time duration) { return Action::Result::Continue; },
       [&]() { ++end_called; });
   ASSERT_EQ(action.Tick(), Action::Result::Continue);
   ASSERT_EQ(action.Tick(), Action::Result::End);
@@ -61,8 +61,8 @@ TEST(ActionTest, EndFunctionIsCalledOnce) {
 TEST(ActionTest, EndFunctionIsCalledWithNoDuration) {
   int end_called = 0;
   Action action(
-      Action::Type::Busy, 0,
-      [](int duration) { return Action::Result::Continue; },
+      Action::Type::Busy, Time(0),
+      [](Time duration) { return Action::Result::Continue; },
       [&]() { ++end_called; });
   ASSERT_EQ(action.Tick(), Action::Result::End);
   ASSERT_EQ(end_called, 1);
@@ -87,8 +87,8 @@ TEST(ActionTest, WeaponAttackAttacksAfterHalfOfWeaponSpeed) {
 
   Action action = Action::WeaponAttack(character, character);
 
-  int expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() / 2;
-  for (int i = 0; i < expect_attack_at; ++i) {
+  Time expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() / 2;
+  for (int i = 0; i < expect_attack_at.milliseconds(); ++i) {
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
     ASSERT_EQ(character.GetLostHealth(), 0);
   }
@@ -102,8 +102,8 @@ TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
 
   Action action = Action::WeaponAttack(character, character);
 
-  int expect_end_at = character.GetBuild().GetWeapon().AttackDuration();
-  for (int i = 0; i < expect_end_at - 1; ++i) {
+  Time expect_end_at = character.GetBuild().GetWeapon().AttackDuration();
+  for (int i = 0; i < expect_end_at.milliseconds() - 1; ++i) {
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }
   ASSERT_EQ(action.Tick(), Action::Result::End);

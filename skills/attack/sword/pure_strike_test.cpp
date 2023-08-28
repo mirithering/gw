@@ -30,7 +30,7 @@ class PureStrikeTest : public ::testing::Test {
 
 TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
   auto* stance = static_cast<BlockEverythingStance*>(dummy.SetStance(
-      Effect<Stance>(INT_MAX, std::make_unique<BlockEverythingStance>())));
+      Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
   character.GetAction() = character.GetBuild().GetSkill<Skill>(0)->Activate(
       character, kEmpty, kEmpty);
   while (character.GetAction().GetType() != Action::Type::Idle) {
@@ -42,9 +42,9 @@ TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
 
 TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
   auto* stance = static_cast<BlockEverythingStance*>(dummy.SetStance(
-      Effect<Stance>(INT_MAX, std::make_unique<BlockEverythingStance>())));
+      Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
   static_cast<BlockEverythingStance*>(character.SetStance(
-      Effect<Stance>(INT_MAX, std::make_unique<BlockEverythingStance>())));
+      Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
 
   character.GetAction() = character.GetBuild().GetSkill<Skill>(0)->Activate(
       character, kEmpty, kEmpty);

@@ -17,8 +17,8 @@ class BarbarousSlice : public AttackSkill {
 
   int AdrenalineCost() const override { return 6 * 25; }
   int EnergyCost() const override { return 0; }
-  int RechargeTime() const override { return 0; }
-  int ActivationTime(Creature& character) const override {
+  Time RechargeTime() const override { return Time(0); }
+  Time ActivationTime(Creature& character) const override {
     return character.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };

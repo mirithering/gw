@@ -56,7 +56,8 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   // inflicted.
   OverrideRandomRollForTesting(0);
   // Put myself in a stance to avoid inflicting bleeding.
-  character.SetStance(Effect<Stance>(10000, std::make_unique<NoOpStance>()));
+  character.SetStance(
+      Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
   while (character.GetAction().GetType() != Action::Type::Idle) {
     Tick();
@@ -80,7 +81,8 @@ TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
   barbarous_slice->AddAdrenaline(6 * 25);
   character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
 
-  character.SetStance(Effect<Stance>(10000, std::make_unique<NoOpStance>()));
+  character.SetStance(
+      Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
   while (character.GetAction().GetType() != Action::Type::Idle) {
     Tick();

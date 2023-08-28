@@ -22,7 +22,9 @@ class Skill : public TimedObject {
   Action Activate(Creature& creature, std::vector<Creature>& my_team,
                   std::vector<Creature>& enemy_team);
 
-  void Tick(int) override final { recharge_ = std::max(0, recharge_ - 1); }
+  void Tick(Time) override final {
+    recharge_ = std::max(Time(0), recharge_ - Millisecond);
+  }
 
   void AddAdrenaline(int units);
   void LoseAdrenaline(int units);
@@ -35,8 +37,8 @@ class Skill : public TimedObject {
   Creature* target_ = nullptr;
   virtual int AdrenalineCost() const = 0;
   virtual int EnergyCost() const = 0;
-  virtual int RechargeTime() const = 0;
-  virtual int ActivationTime(Creature& character) const = 0;
+  virtual Time RechargeTime() const = 0;
+  virtual Time ActivationTime(Creature& character) const = 0;
 
   Creature* GetTarget(Creature& creature, std::vector<Creature>& my_team,
                       std::vector<Creature>& enemy_team);
@@ -52,7 +54,7 @@ class Skill : public TimedObject {
  private:
   int adrenaline_ = 0;  // In theory, adrenaline is also lost when being idle.
                         // But I don't think I care.
-  int recharge_ = 0;
+  Time recharge_ = Time(0);
 };
 
 #endif

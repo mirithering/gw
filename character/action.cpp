@@ -10,10 +10,10 @@
 
 Action Action::WeaponAttack(Creature& source, Creature& target) {
   const Weapon& weapon = source.GetBuild().GetWeapon();
-  int attack_duration = weapon.AttackDuration();
+  Time attack_duration = weapon.AttackDuration();
 
-  std::function<Action::Result(int duration)> tick = [&, attack_duration](
-                                                         int duration) {
+  std::function<Action::Result(Time duration)> tick = [&, attack_duration](
+                                                          Time duration) {
     if (duration == attack_duration / 2 &&
         target.GetAction().type_ != Action::Type::Dead) {
       source.WeaponAttack(target);
@@ -34,5 +34,5 @@ Action Action::WeaponAttack(Creature& source, Creature& target) {
   return Action(Action::Type::Busy, attack_duration, tick, &DoNothingEnd);
 }
 
-Action::Result DoNothingTick(int) { return Action::Result::Continue; }
+Action::Result DoNothingTick(Time) { return Action::Result::Continue; }
 void DoNothingEnd() {}
