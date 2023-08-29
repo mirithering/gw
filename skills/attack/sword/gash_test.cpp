@@ -57,7 +57,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
                         kExpectedSkillDamage + kExpectedBleedingDamage;
 
   dummy_.AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(10 * Second, std::make_unique<Bleeding>(dummy_)));
   ASSERT_TRUE(dummy_.HasCondition(Condition::Type::Bleeding));
 
   OverrideRandomRollForTesting(10);
@@ -75,7 +75,7 @@ TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
   dummy_.AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(10 * Second, std::make_unique<Bleeding>(dummy_)));
   character_.GetAction() = gash_->Activate(character_, empty_, empty_);
   while (character_.GetAction().GetType() != Action::Type::Idle) {
     Tick();

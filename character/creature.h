@@ -6,6 +6,7 @@
 #include "action.h"
 #include "base/clock.h"
 #include "base/effect.h"
+#include "base/function_list.h"
 #include "build.h"
 #include "condition.h"
 #include "stance.h"
@@ -15,7 +16,7 @@ class Creature : public TimedObject {
   Creature(std::unique_ptr<Build> build);
   Creature(Creature&&) = default;
   Creature& operator=(Creature&&) = default;
-  ~Creature() override = default;
+  ~Creature() override { conditions_.clear(); };
 
   void Tick(Time time_passed) override;
 
@@ -56,19 +57,20 @@ class Creature : public TimedObject {
 
   std::string name_ = "Lovely Princess";  // For debugging.
 
-  typedef std::_List_iterator<std::function<int(const Creature& character)>>
-      MaxHealthModifierRef;
-
-  MaxHealthModifierRef AddMaxHealthModifier(
-      std::function<int(const Creature&)> modifier);
-
-  void RemoveMaxHealthModifier(MaxHealthModifierRef modifier_reference);
-
   Build& GetBuild() const { return *build_.get(); }
 
   // Creatures lock on one target, but will attack other targets with skills if
   // the locked target would be pointless.
   Creature* target_ = nullptr;
+
+  FunctionList<int(const Creature& character)>&
+  GetModifiersMaxHealthPercentage() {
+    return modifiers_max_health_percentage_;
+  }
+
+  FunctionList<int()>& GetModifiersHealthGeneration() {
+    return modifiers_health_generation_;
+  }
 
  private:
   void HealthGeneration();
@@ -77,15 +79,12 @@ class Creature : public TimedObject {
   void Die();
   bool WillBlockAttack(Weapon::Type type);
 
+  FunctionList<int(const Creature& character)> modifiers_max_health_percentage_;
+  FunctionList<int()> modifiers_health_generation_;
+
   std::unique_ptr<Build> build_;
 
   Action action_ = kActionIdle;
-
-  // TODO if I create a class out of this, I might want to add a check that it's
-  // empty before destruction. If it's not, someone probably holds a reference
-  // to something that isn't here anymore.
-  std::list<std::function<int(const Creature& character)>>
-      max_health_modifiers_;
 
   Effect<Stance> stance_ = Effect<Stance>::None();
   std::map<Condition::Type, Effect<Condition>> conditions_;

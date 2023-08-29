@@ -25,7 +25,6 @@ class CreatureTest : public ::testing::Test {
   Creature creature_ = ConstructCreature(Profession::Warrior, Sword(), {},
                                          BonettisDefense(), BarbarousSlice());
   Creature dummy_ = ConstructCreature(Profession::Warrior, Sword(), {});
-  ;
 };
 
 TEST_F(CreatureTest, WarriorRecharges2EnergyEvery3000Ticks) {
@@ -109,13 +108,13 @@ TEST_F(CreatureTest, UsingSkillRemovesAllAdrenalingFromItself) {
 
 TEST_F(CreatureTest, AddConditionAddsCondition) {
   creature_.AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(10 * Second, std::make_unique<Bleeding>(creature_)));
   ASSERT_TRUE(creature_.HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(CreatureTest, AddTwoConditionsAddsTwoCondition) {
   creature_.AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(10 * Second, std::make_unique<Bleeding>(creature_)));
   ASSERT_TRUE(creature_.HasCondition(Condition::Type::Bleeding));
   creature_.AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<DeepWound>(creature_)));
@@ -124,20 +123,38 @@ TEST_F(CreatureTest, AddTwoConditionsAddsTwoCondition) {
 
 TEST_F(CreatureTest, SecondConditionOverridesIfLonger) {
   creature_.AddCondition(
-      Effect<Condition>(9 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(9 * Second, std::make_unique<Bleeding>(creature_)));
   ASSERT_TRUE(creature_.HasCondition(Condition::Type::Bleeding));
   auto bleeding_ = creature_.AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(10 * Second, std::make_unique<Bleeding>(creature_)));
   ASSERT_NE(bleeding_, nullptr);
   ASSERT_TRUE(creature_.HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(CreatureTest, SecondConditionDoesNotOverrideIfShorter) {
   creature_.AddCondition(
-      Effect<Condition>(9 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(9 * Second, std::make_unique<Bleeding>(creature_)));
   ASSERT_TRUE(creature_.HasCondition(Condition::Type::Bleeding));
   auto bleeding_ = creature_.AddCondition(
-      Effect<Condition>(8 * Second, std::make_unique<Bleeding>()));
+      Effect<Condition>(8 * Second, std::make_unique<Bleeding>(creature_)));
   ASSERT_EQ(bleeding_, nullptr);
   ASSERT_TRUE(creature_.HasCondition(Condition::Type::Bleeding));
+}
+
+TEST_F(CreatureTest, MovingCreatureDoesNotAffectConditions) {
+  int max_health = creature_.GetMaxHealth();
+  creature_.AddCondition(
+      Effect<Condition>(1 * Second, std::make_unique<DeepWound>(creature_)));
+  ASSERT_TRUE(creature_.HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(creature_.GetMaxHealth(), max_health * 0.8);
+  auto moved_creature = std::move(creature_);
+  ASSERT_TRUE(moved_creature.HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(moved_creature.GetMaxHealth(), max_health * 0.8);
+  for (int i = 0; Time(i) < Second; ++i) {
+    ASSERT_TRUE(moved_creature.HasCondition(Condition::Type::DeepWound));
+    ASSERT_EQ(moved_creature.GetMaxHealth(), max_health * 0.8);
+    Tick();
+  }
+  ASSERT_FALSE(moved_creature.HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(moved_creature.GetMaxHealth(), max_health);
 }

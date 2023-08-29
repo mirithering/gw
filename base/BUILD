@@ -11,6 +11,7 @@ cc_library(
         "attribute.h",
         "clock.h",
         "effect.h",
+        "function_list.h",
         "profession.h",
         "random.h",
         "units.h",
@@ -24,6 +25,7 @@ cc_test(
     srcs = [
         "clock_test.cpp",
         "effect_test.cpp",
+        "function_list_test.cpp",
         "random_test.cpp",
         "units_test.cpp",
     ],

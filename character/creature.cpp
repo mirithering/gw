@@ -49,10 +49,9 @@ void Creature::Tick(Time time_passed) {
 void Creature::HealthGeneration() {
   int health_generation = 0;  // Base is 0.
 
-  for (auto& condition : conditions_) {
-    if (!condition.second.Ended()) {
-      health_generation += condition.second.get()->HealthGeneration();
-    }
+  for (auto& modifier_health_generation :
+       modifiers_health_generation_.GetList()) {
+    health_generation += modifier_health_generation();
   }
 
   health_generation =
@@ -82,7 +81,7 @@ void Creature::LoseHealth(int amount) {
 int Creature::GetMaxHealth() const {
   int max_health = kMaxHealth;
   int percentage = 100;
-  for (auto modifier : max_health_modifiers_) {
+  for (auto modifier : modifiers_max_health_percentage_.GetList()) {
     percentage += modifier(*this);
   }
   // TODO I think there is a cap to this.. E.g. cannot lose more than 100 max
@@ -94,6 +93,7 @@ Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
   // TODO Once I register effects with character, I need to make sure the
   // condition is unregistered if its not added. But that should happen
   // automatically because it is destroyed.
+  // TODO not all creatures can have all conditions, e.g. bleeding, deep wound.
   assert(condition.get());
   Condition::Type type = condition.get()->GetType();
   if (conditions_[type].RemainingDuration() >= condition.RemainingDuration()) {
@@ -104,17 +104,6 @@ Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
   }
   conditions_[type] = std::move(condition);
   return &conditions_[type];
-}
-
-Creature::MaxHealthModifierRef Creature::AddMaxHealthModifier(
-    std::function<int(const Creature&)> modifier) {
-  max_health_modifiers_.push_front(modifier);
-  return std::begin(max_health_modifiers_);
-}
-
-void Creature::RemoveMaxHealthModifier(
-    MaxHealthModifierRef modifier_reference) {
-  max_health_modifiers_.erase(modifier_reference);
 }
 
 bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,

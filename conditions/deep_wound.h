@@ -10,16 +10,19 @@
 class DeepWound : public Condition {
  public:
   DeepWound(Creature& character) : character_(character) {
-    reference_ = character.AddMaxHealthModifier(
+    reference_ = character.GetModifiersMaxHealthPercentage().AddFunction(
         [](const Creature& character) { return -20; });
   }
-  ~DeepWound() override { character_.RemoveMaxHealthModifier(reference_); }
+  ~DeepWound() override {
+    std::cout << "destroying deep wound" << std::endl;
+    character_.GetModifiersMaxHealthPercentage().RemoveFunction(reference_);
+  }
 
   Type GetType() const override { return Type::DeepWound; }
 
  private:
   Creature& character_;
-  Creature::MaxHealthModifierRef reference_;
+  FunctionList<int(const Creature& character)>::ref reference_;
 };
 
 #endif  // CONDITIONS_DEEP_WOUND_H
