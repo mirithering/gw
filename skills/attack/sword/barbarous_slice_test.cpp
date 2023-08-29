@@ -67,14 +67,21 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
+  Time expected_duration = 13 * Second;
   barbarous_slice->AddAdrenaline(6 * Strike);
   character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
 
   while (character.GetAction().GetType() != Action::Type::Idle) {
     Tick();
+    if (dummy.HasCondition(Condition::Type::Bleeding)) {
+      expected_duration--;
+    }
   }
-
-  ASSERT_TRUE(dummy.HasCondition(Condition::Type::Bleeding));
+  while (--expected_duration >= Time(0)) {
+    ASSERT_TRUE(dummy.HasCondition(Condition::Type::Bleeding));
+    Tick();
+  }
+  ASSERT_FALSE(dummy.HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {

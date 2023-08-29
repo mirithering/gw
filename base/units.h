@@ -48,6 +48,7 @@ class Unit {
   friend Unit operator*(Unit lhs, int rhs) { return Unit(lhs.value_ * rhs); }
   friend Unit operator*(int lhs, Unit rhs) { return Unit(lhs * rhs.value_); };
   friend Unit operator/(Unit lhs, int rhs) { return Unit(lhs.value_ / rhs); }
+  friend int operator/(Unit lhs, Unit rhs) { return lhs.value_ / rhs.value_; }
   friend Unit operator+(Unit lhs, Unit rhs) {
     return Unit(lhs.value_ + rhs.value_);
   };

@@ -11,20 +11,30 @@
 template <class T>
 class Effect : public TimedObject {
  public:
+  Effect() = default;
   Effect(Time duration, std::unique_ptr<T> timed_object)
       : duration_(duration), timed_object_(std::move(timed_object)) {}
 
-  Effect(Effect<T>&&) = default;
-  Effect<T>& operator=(Effect<T>&&) = default;
+  Effect(Effect<T>&& other) {
+    timed_object_ = std::move(other.timed_object_);
+    duration_ = std::move(other.duration_);
+  }
+  Effect<T>& operator=(Effect<T>&& other) {
+    timed_object_ = std::move(other.timed_object_);
+    duration_ = std::move(other.duration_);
+    return *this;
+  }
   ~Effect() override{};
 
-  void Tick(Time time) override {
-    if (duration_ <= time) {
+  void Tick(Time) override {
+    duration_--;
+    if (duration_ <= Time(0)) {
       timed_object_.reset();
     }
   }
 
-  bool Ended() { return timed_object_ == nullptr; }
+  bool Ended() const { return timed_object_ == nullptr; }
+  Time RemainingDuration() const { return duration_; }
 
   T* get() { return timed_object_.get(); }
   const T* get() const { return timed_object_.get(); }
@@ -32,7 +42,6 @@ class Effect : public TimedObject {
   static Effect<T> None() { return Effect<T>(); }
 
  private:
-  Effect() = default;
   Time duration_;
   std::unique_ptr<T> timed_object_;
 };

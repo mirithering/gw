@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "character/condition.h"
+#include "character/creature.h"
 
 // TODO deep wound also reduces healing effect, but I dongf
 class DeepWound : public Condition {

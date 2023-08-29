@@ -21,6 +21,7 @@ TEST(EffectTest, EffectLastsForCorrectTime) {
   Effect<int> effect(kTime, std::make_unique<int>(kNumber));
 
   for (int i = 0; i < kTime.value(); ++i) {
+    ASSERT_EQ(effect.RemainingDuration(), kTime - Time(i));
     ASSERT_FALSE(effect.Ended());
     ASSERT_EQ(*effect.get(), kNumber);
     Tick();

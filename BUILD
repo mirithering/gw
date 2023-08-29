@@ -33,6 +33,7 @@ test_suite(
         "//armor:test",
         "//base:test",
         "//character:test",
+        "//conditions:test",
         "//skills:test",
         "//weapon:test",
     ],

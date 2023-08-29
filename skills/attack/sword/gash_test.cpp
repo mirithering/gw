@@ -58,6 +58,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
 
   dummy_.AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::Bleeding));
 
   OverrideRandomRollForTesting(10);
   character_.GetAction() = gash_->Activate(character_, empty_, empty_);
@@ -65,6 +66,8 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
     Tick();
   }
 
+  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::DeepWound));
   ASSERT_EQ(dummy_.GetLostHealth(), expected_damage);
 }
 

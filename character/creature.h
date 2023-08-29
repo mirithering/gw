@@ -39,20 +39,12 @@ class Creature : public TimedObject {
     return GetStance();
   }
 
-  Effect<Condition>* AddCondition(Effect<Condition> condition) {
-    // TODO what about duplicate conditions.
-    conditions_.push_back(std::move(condition));
-    return &conditions_.back();
+  Effect<Condition>* AddCondition(Effect<Condition> condition);
+  const Effect<Condition>& GetCondition(Condition::Type type) {
+    return conditions_[type];
   }
 
-  bool HasCondition(Condition::Type type) {
-    for (auto& condition : conditions_) {
-      if (!condition.Ended() && condition.get()->GetType() == type) {
-        return true;
-      }
-    }
-    return false;
-  }
+  bool HasCondition(Condition::Type type) { return !conditions_[type].Ended(); }
 
   Action& GetAction() { return action_; }
 
@@ -89,13 +81,14 @@ class Creature : public TimedObject {
 
   Action action_ = kActionIdle;
 
-  Effect<Stance> stance_ = Effect<Stance>::None();
-  // TODO how to get rid of old conditions, and how to deal with duplicated
-  // ones?
+  // TODO if I create a class out of this, I might want to add a check that it's
+  // empty before destruction. If it's not, someone probably holds a reference
+  // to something that isn't here anymore.
   std::list<std::function<int(const Creature& character)>>
       max_health_modifiers_;
 
-  std::vector<Effect<Condition>> conditions_;
+  Effect<Stance> stance_ = Effect<Stance>::None();
+  std::map<Condition::Type, Effect<Condition>> conditions_;
 
   int health_lost_;
   int energy_;

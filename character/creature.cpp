@@ -44,16 +44,14 @@ void Creature::Tick(Time time_passed) {
   if (GetAction().Tick() == Action::Result::End) {
     GetAction() = kActionIdle;
   }
-
-  // TODO Remove ended conditions.
 }
 
 void Creature::HealthGeneration() {
   int health_generation = 0;  // Base is 0.
 
   for (auto& condition : conditions_) {
-    if (!condition.Ended()) {
-      health_generation += condition.get()->HealthGeneration();
+    if (!condition.second.Ended()) {
+      health_generation += condition.second.get()->HealthGeneration();
     }
   }
 
@@ -90,6 +88,22 @@ int Creature::GetMaxHealth() const {
   // TODO I think there is a cap to this.. E.g. cannot lose more than 100 max
   // health via deep wound.
   return (max_health * percentage) / 100;
+}
+
+Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
+  // TODO Once I register effects with character, I need to make sure the
+  // condition is unregistered if its not added. But that should happen
+  // automatically because it is destroyed.
+  assert(condition.get());
+  Condition::Type type = condition.get()->GetType();
+  if (conditions_[type].RemainingDuration() >= condition.RemainingDuration()) {
+    // Existing condition last longer, not adding anything.
+    std::cout << "Not adding new condition because the old one is longer"
+              << std::endl;
+    return nullptr;
+  }
+  conditions_[type] = std::move(condition);
+  return &conditions_[type];
 }
 
 Creature::MaxHealthModifierRef Creature::AddMaxHealthModifier(
