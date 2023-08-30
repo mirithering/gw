@@ -21,7 +21,7 @@ void BarbarousSlice::ActivationMiddle(Creature& creature,
     // TODO it seems wrong that I have to pass target_ here twice. Maybe I can
     // do the modifier registration when adding the condition to a creature, and
     // not when creating it?
-    target_->AddCondition(Effect<Condition>(
-        bleeding_duration, std::make_unique<Bleeding>(*target_)));
+    target_->AddCondition(
+        Effect<Condition>(bleeding_duration, std::make_unique<Bleeding>()));
   }
 }

@@ -7,7 +7,7 @@
 
 double BaseDamage(const Weapon& weapon, bool requirement_met) {
   double modifier = 1;
-  if (!requirement_met) modifier = 0.33;
+  if (!requirement_met) modifier = 1.0 / 3.0;
   return RandomValue(weapon.MinDamage(), weapon.MaxDamage()) * modifier;
 }
 

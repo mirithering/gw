@@ -5,10 +5,24 @@
 
 #include "base/clock.h"
 
+class Creature;
+
 class Condition {
  public:
   virtual ~Condition() = default;
-  enum class Type { Bleeding, DeepWound };
+  virtual void AddModifiers(Creature& creature) = 0;
+  enum class Type {
+    Bleeding,
+    Blind,
+    Burning,
+    CrackedArmor,
+    Crippled,
+    Dazed,
+    DeepWound,
+    Disease,
+    Poison,
+    Weakness
+  };
   virtual Type GetType() const = 0;
 };
 

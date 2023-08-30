@@ -30,6 +30,7 @@ cc_test(
         "action_test.cpp",
         "build_test.cpp",
         "creature_test.cpp",
+        "damage_test.cpp",
     ],
     deps = [
         "character",

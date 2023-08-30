@@ -8,19 +8,29 @@
 
 class Bleeding : public Condition {
  public:
-  Bleeding(Creature& creature) : creature_(creature) {
-    reference_ = creature.GetModifiersHealthGeneration().AddFunction(
-        []() { return -3; });
+  void AddModifiers(Creature& creature) override {
+    modifier_ = {
+        .creature = &creature,
+        .reference = creature.GetModifiersHealthGeneration().AddFunction(
+            []() { return -3; }),
+    };
   }
 
   ~Bleeding() override {
-    creature_.GetModifiersHealthGeneration().RemoveFunction(reference_);
+    if (modifier_.has_value()) {
+      modifier_->creature->GetModifiersHealthGeneration().RemoveFunction(
+          modifier_->reference);
+    }
   }
   Type GetType() const override { return Type::Bleeding; }
 
  private:
-  Creature& creature_;
-  FunctionList<int()>::ref reference_;
+  struct Modifier {
+    Creature* creature;
+    FunctionList<int()>::ref reference;
+  };
+
+  std::optional<Modifier> modifier_;
 };
 
 #endif  // CONDITIONS_BLEEDING_H

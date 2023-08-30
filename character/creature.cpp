@@ -90,9 +90,6 @@ int Creature::GetMaxHealth() const {
 }
 
 Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
-  // TODO Once I register effects with character, I need to make sure the
-  // condition is unregistered if its not added. But that should happen
-  // automatically because it is destroyed.
   // TODO not all creatures can have all conditions, e.g. bleeding, deep wound.
   assert(condition.get());
   Condition::Type type = condition.get()->GetType();
@@ -103,6 +100,7 @@ Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
     return nullptr;
   }
   conditions_[type] = std::move(condition);
+  conditions_[type].get()->AddModifiers(*this);
   return &conditions_[type];
 }
 
