@@ -61,3 +61,15 @@ TEST(RandomTest, OverrideValue) {
   OverrideRandomValueForTesting(1337);
   ASSERT_EQ(RandomValue(0, 1), 1337);
 }
+
+TEST(RandomTest, ChanceForTrueIsCorrect) {
+  int kLarge = 100000000;
+  int hits = 0;
+  for (int i = 0; i < kLarge; ++i) {
+    if (RandomDecision(Percent(50))) {
+      ++hits;
+    }
+  }
+  std::cout << static_cast<double>(hits) / kLarge << std::endl;
+  ASSERT_TRUE(std::abs(static_cast<double>(hits) / kLarge - 0.5) < 0.00001);
+}

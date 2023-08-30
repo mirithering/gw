@@ -36,7 +36,7 @@ Percent RandomPercent() {
     g_chance_override = std::nullopt;
     return override;
   }
-  return Percent(RandomImpl(0, 100));
+  return Percent(RandomImpl(0, 99));
 }
 }  // namespace
 
