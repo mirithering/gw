@@ -3,13 +3,12 @@
 
 #include <bits/stdc++.h>
 
-enum class UnitType { Time, Adrenaline, Health, Energy };
+enum class UnitType { Time, Adrenaline, Health, Energy, Percent };
 
-template <UnitType type>
+template <UnitType type, class ValueType>
 class Unit {
  public:
-  // TODO Ideally I would hide this constructor as private.
-  explicit Unit(int value) : value_(value){};
+  explicit Unit(ValueType value) : value_(value){};
   Unit() : value_(0){};
 
   // prefix increment
@@ -45,10 +44,18 @@ class Unit {
     return *this;
   }
 
-  friend Unit operator*(Unit lhs, int rhs) { return Unit(lhs.value_ * rhs); }
-  friend Unit operator*(int lhs, Unit rhs) { return Unit(lhs * rhs.value_); };
-  friend Unit operator/(Unit lhs, int rhs) { return Unit(lhs.value_ / rhs); }
-  friend int operator/(Unit lhs, Unit rhs) { return lhs.value_ / rhs.value_; }
+  friend Unit operator*(Unit lhs, ValueType rhs) {
+    return Unit(lhs.value_ * rhs);
+  }
+  friend Unit operator*(ValueType lhs, Unit rhs) {
+    return Unit(lhs * rhs.value_);
+  };
+  friend Unit operator/(Unit lhs, ValueType rhs) {
+    return Unit(lhs.value_ / rhs);
+  }
+  friend ValueType operator/(Unit lhs, Unit rhs) {
+    return lhs.value_ / rhs.value_;
+  }
   friend Unit operator+(Unit lhs, Unit rhs) {
     return Unit(lhs.value_ + rhs.value_);
   };
@@ -66,24 +73,30 @@ class Unit {
   // Since C++20. Results in all comparison operators to be defined. :)
   auto operator<=>(const Unit&) const = default;
 
-  int value() const { return value_; }
+  ValueType value() const { return value_; }
 
  private:
-  int value_;
+  ValueType value_;
 };
 
-using Time = Unit<UnitType::Time>;
+using Time = Unit<UnitType::Time, int>;
 
 const Time Second = Time(1000);
 const Time Millisecond = Time(1);
 const Time Eternity = Time(INT_MAX);
 
-using Adrenaline = Unit<UnitType::Adrenaline>;
+using Adrenaline = Unit<UnitType::Adrenaline, int>;
 
 const Adrenaline Strike = Adrenaline(25);
 
-using Health = Unit<UnitType::Health>;
+using Health = Unit<UnitType::Health, double>;
+using Energy = Unit<UnitType::Energy, double>;
 
-using Energy = Unit<UnitType::Energy>;
+using Percent = Unit<UnitType::Percent, double>;
+
+template <class T>
+T of(T value, Percent percent) {
+  return value * percent.value() / 100.0;
+}
 
 #endif  // BASE_UNITS_H

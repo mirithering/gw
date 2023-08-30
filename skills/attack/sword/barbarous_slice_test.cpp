@@ -54,7 +54,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
 
   // Override random base attack damage to 0. Then, only skill damage is
   // inflicted.
-  OverrideRandomRollForTesting(0);
+  OverrideRandomValueForTesting(0);
   // Put myself in a stance to avoid inflicting bleeding.
   character.SetStance(
       Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));

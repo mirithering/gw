@@ -20,7 +20,7 @@ TEST(DamageTest, DamageWithoutArmorOrAttributeIsBaseDamage) {
 
   const int kDamage = 10;
 
-  OverrideRandomRollForTesting(kDamage);
+  OverrideRandomValueForTesting(kDamage);
 
   EXPECT_EQ(WeaponStrikeDamage(attacker, defender),
             static_cast<int>(kDamage * kExpectedReqNotMetModifier));
@@ -38,7 +38,7 @@ TEST(DamageTest, DamageWithoutArmorIsBaseDamageModifiedByAttribute) {
 
   const int kDamage = 20;
 
-  OverrideRandomRollForTesting(kDamage);
+  OverrideRandomValueForTesting(kDamage);
 
   double expected_factor = std::pow(2.0, 5 * kAttribute / 40.0);
 
@@ -57,7 +57,7 @@ TEST(DamageTest, DamageWithoutAttributeIsBaseDamageModifiedByArmor) {
 
   const int kDamage = 16;
 
-  OverrideRandomRollForTesting(kDamage);
+  OverrideRandomValueForTesting(kDamage);
 
   double expected_factor = std::pow(2.0, (-kArmor) / 40.0);
 
@@ -72,7 +72,7 @@ TEST(DamageTest, DamageWithAttributeAndArmorIsExpectedFormula) {
   const int kDamage = 25;
   double expected_factor = std::pow(2.0, (5 * kAttribute - kArmor) / 40.0);
 
-  OverrideRandomRollForTesting(kDamage);
+  OverrideRandomValueForTesting(kDamage);
 
   Creature attacker = ConstructCreature(
       Profession::Warrior, Sword(), {{Attribute::Swordsmanship, kAttribute}});

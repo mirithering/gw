@@ -126,7 +126,7 @@ bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
 bool Creature::WillBlockAttack(Weapon::Type type) {
   if (GetStance()) {
     int chance = GetStance()->BlockChance(type);
-    if (RandomDecision(Chance(chance))) {
+    if (RandomDecision(Percent(chance))) {
       return true;
     }
   }

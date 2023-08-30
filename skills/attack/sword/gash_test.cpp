@@ -34,10 +34,10 @@ TEST_F(GashTest, ActivationWithAdrenaline) {
 TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
-  OverrideRandomRollForTesting(10);
+  OverrideRandomValueForTesting(10);
   int expected_damage = WeaponStrikeDamage(character_, dummy_);
 
-  OverrideRandomRollForTesting(10);
+  OverrideRandomValueForTesting(10);
   character_.GetAction() = gash_->Activate(character_, empty_, empty_);
   while (character_.GetAction().GetType() != Action::Type::Idle) {
     Tick();
@@ -52,7 +52,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   constexpr int kExpectedBleedingDamage = 6;
   gash_->AddAdrenaline(6 * Strike);
 
-  OverrideRandomRollForTesting(10);
+  OverrideRandomValueForTesting(10);
   int expected_damage = WeaponStrikeDamage(character_, dummy_) +
                         kExpectedSkillDamage + kExpectedBleedingDamage;
 
@@ -60,7 +60,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
   ASSERT_TRUE(dummy_.HasCondition(Condition::Type::Bleeding));
 
-  OverrideRandomRollForTesting(10);
+  OverrideRandomValueForTesting(10);
   character_.GetAction() = gash_->Activate(character_, empty_, empty_);
   while (character_.GetAction().GetType() != Action::Type::Idle) {
     Tick();

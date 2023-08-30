@@ -3,24 +3,16 @@
 
 #include <bits/stdc++.h>
 
-class Chance {
- public:
-  explicit Chance(int percentage) {
-    assert((percentage >= 0 && percentage <= 100));
-    percentage_ = percentage;
-  }
+#include "base/units.h"
 
-  int GetPercentage() { return percentage_; }
-
- private:
-  int percentage_;
-};
-
-bool RandomDecision(Chance chance_for_true);
+bool RandomDecision(Percent chance_for_true);
 
 // Returns a random value in [minimum, maximum].
 int RandomValue(int minimum, int maximum);
 
-void OverrideRandomRollForTesting(int roll_result);
+void OverrideRandomValueForTesting(int roll_result);
+
+void OverrideRandomDecisionForTesting(
+    Percent everythinig_greater_than_this_will_be_true);
 
 #endif  // BASE_RANDOM_H

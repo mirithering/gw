@@ -3,61 +3,61 @@
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
-TEST(RandomTest, OverrideToNoChance) {
-  OverrideRandomRollForTesting(99);
-  ASSERT_TRUE(RandomDecision(Chance(100)));
+TEST(RandomTest, OverrideToNoPercent) {
+  OverrideRandomDecisionForTesting(Percent(99));
+  ASSERT_TRUE(RandomDecision(Percent(100)));
 
-  OverrideRandomRollForTesting(99);
-  ASSERT_FALSE(RandomDecision(Chance(99)));
+  OverrideRandomDecisionForTesting(Percent(99));
+  ASSERT_FALSE(RandomDecision(Percent(99)));
 
-  OverrideRandomRollForTesting(99);
-  ASSERT_FALSE(RandomDecision(Chance(50)));
+  OverrideRandomDecisionForTesting(Percent(99));
+  ASSERT_FALSE(RandomDecision(Percent(50)));
 
-  OverrideRandomRollForTesting(99);
-  ASSERT_FALSE(RandomDecision(Chance(1)));
+  OverrideRandomDecisionForTesting(Percent(99));
+  ASSERT_FALSE(RandomDecision(Percent(1)));
 
-  OverrideRandomRollForTesting(99);
-  ASSERT_FALSE(RandomDecision(Chance(0)));
+  OverrideRandomDecisionForTesting(Percent(99));
+  ASSERT_FALSE(RandomDecision(Percent(0)));
 }
 
-TEST(RandomTest, OverrideToHalfChance) {
-  OverrideRandomRollForTesting(49);
-  ASSERT_TRUE(RandomDecision(Chance(100)));
+TEST(RandomTest, OverrideToHalfPercent) {
+  OverrideRandomDecisionForTesting(Percent(49));
+  ASSERT_TRUE(RandomDecision(Percent(100)));
 
-  OverrideRandomRollForTesting(49);
-  ASSERT_TRUE(RandomDecision(Chance(99)));
+  OverrideRandomDecisionForTesting(Percent(49));
+  ASSERT_TRUE(RandomDecision(Percent(99)));
 
-  OverrideRandomRollForTesting(49);
-  ASSERT_TRUE(RandomDecision(Chance(50)));
+  OverrideRandomDecisionForTesting(Percent(49));
+  ASSERT_TRUE(RandomDecision(Percent(50)));
 
-  OverrideRandomRollForTesting(49);
-  ASSERT_FALSE(RandomDecision(Chance(1)));
+  OverrideRandomDecisionForTesting(Percent(49));
+  ASSERT_FALSE(RandomDecision(Percent(1)));
 
-  OverrideRandomRollForTesting(49);
-  ASSERT_FALSE(RandomDecision(Chance(0)));
+  OverrideRandomDecisionForTesting(Percent(49));
+  ASSERT_FALSE(RandomDecision(Percent(0)));
 }
 
-TEST(RandomTest, OverrideToAllChance) {
-  OverrideRandomRollForTesting(0);
-  ASSERT_TRUE(RandomDecision(Chance(100)));
+TEST(RandomTest, OverrideToAllPercent) {
+  OverrideRandomDecisionForTesting(Percent(0));
+  ASSERT_TRUE(RandomDecision(Percent(100)));
 
-  OverrideRandomRollForTesting(0);
-  ASSERT_TRUE(RandomDecision(Chance(99)));
+  OverrideRandomDecisionForTesting(Percent(0));
+  ASSERT_TRUE(RandomDecision(Percent(99)));
 
-  OverrideRandomRollForTesting(0);
-  ASSERT_TRUE(RandomDecision(Chance(50)));
+  OverrideRandomDecisionForTesting(Percent(0));
+  ASSERT_TRUE(RandomDecision(Percent(50)));
 
-  OverrideRandomRollForTesting(0);
-  ASSERT_TRUE(RandomDecision(Chance(1)));
+  OverrideRandomDecisionForTesting(Percent(0));
+  ASSERT_TRUE(RandomDecision(Percent(1)));
 
-  OverrideRandomRollForTesting(0);
-  ASSERT_FALSE(RandomDecision(Chance(0)));
+  OverrideRandomDecisionForTesting(Percent(0));
+  ASSERT_FALSE(RandomDecision(Percent(0)));
 }
 
 TEST(RandomTest, OverrideValue) {
-  OverrideRandomRollForTesting(1337);
+  OverrideRandomValueForTesting(1337);
   ASSERT_EQ(RandomValue(0, 1000), 1337);
 
-  OverrideRandomRollForTesting(1337);
+  OverrideRandomValueForTesting(1337);
   ASSERT_EQ(RandomValue(0, 1), 1337);
 }

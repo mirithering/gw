@@ -23,7 +23,7 @@ Action Action::WeaponAttack(Creature& source, Creature& target) {
         int double_strike_chance =
             2 + kDoubleStrikeChance.at(
                     source.GetBuild().GetAttribute(Attribute::DaggerMastery));
-        if (RandomDecision(Chance(double_strike_chance))) {
+        if (RandomDecision(Percent(double_strike_chance))) {
           source.WeaponAttack(target);
         }
       }
