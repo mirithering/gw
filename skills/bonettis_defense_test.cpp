@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "base/clock.h"
+#include "base/random.h"
 #include "bonettis_defense.h"
 #include "character/creature.h"
 #include "weapon/sword.h"
@@ -48,21 +49,29 @@ TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
   ASSERT_EQ(character_.GetStance(), nullptr);
 }
 
-TEST_F(BonettisDefenseTest, BlockChanceDependsOnWeaponType) {
-  BonettisDefenseStance stance(character_);
-  ASSERT_EQ(stance.BlockChance(Weapon::Type::Hammer), 75);
-  ASSERT_EQ(stance.BlockChance(Weapon::Type::Staff), 0);
+TEST_F(BonettisDefenseTest, BlockChanceIs75ForMeele) {
+  character_.SetStance(
+      Effect<Stance>(20 * Second, std::make_unique<BonettisDefenseStance>()));
+
+  Creature attacker = ConstructCreature(Profession::Warrior, Sword());
+
+  OverrideRandomDecisionForTesting(Percent(74));
+  ASSERT_FALSE(attacker.WeaponAttack(character_));
+  OverrideRandomDecisionForTesting(Percent(75));
+  ASSERT_TRUE(attacker.WeaponAttack(character_));
 }
 
+// TODO write a test for projectile and one for staff.
+
 TEST_F(BonettisDefenseTest, BlockingMeeleGivesEnergy) {
-  BonettisDefenseStance stance(character_);
+  character_.SetStance(
+      Effect<Stance>(20 * Second, std::make_unique<BonettisDefenseStance>()));
+
+  Creature attacker = ConstructCreature(Profession::Warrior, Sword());
 
   character_.UseEnergy(character_.energy());
   ASSERT_EQ(character_.energy(), 0);
-
-  stance.AttackBlocked(Weapon::Type::Bow);
-  ASSERT_EQ(character_.energy(), 0);
-
-  stance.AttackBlocked(Weapon::Type::Sword);
+  OverrideRandomDecisionForTesting(Percent(74));
+  ASSERT_FALSE(attacker.WeaponAttack(character_));
   ASSERT_EQ(character_.energy(), 5);
 }

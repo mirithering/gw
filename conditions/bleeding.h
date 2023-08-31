@@ -11,14 +11,15 @@ class Bleeding : public Condition {
   void AddModifiers(Creature& creature) override {
     modifier_ = {
         .creature = &creature,
-        .reference = creature.GetModifiersHealthGeneration().AddFunction(
-            []() { return -3; }),
+        .reference =
+            creature.callbacks_health_generation_.AddFunctionDeprecated(
+                []() { return -3; }),
     };
   }
 
   ~Bleeding() override {
     if (modifier_.has_value()) {
-      modifier_->creature->GetModifiersHealthGeneration().RemoveFunction(
+      modifier_->creature->callbacks_health_generation_.RemoveFunction(
           modifier_->reference);
     }
   }

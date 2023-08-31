@@ -5,6 +5,7 @@ cc_library(
         "creature.cpp",
         "damage.cpp",
         "skill.cpp",
+        "stance.cpp",
     ],
     hdrs = [
         "action.h",

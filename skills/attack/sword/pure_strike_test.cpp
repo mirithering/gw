@@ -6,17 +6,6 @@
 #include "base/effect.h"
 #include "weapon/sword.h"
 
-namespace {
-// TODO create a few files with helper classes and factory functions.
-class BlockEverythingStance : public Stance {
- public:
-  BlockEverythingStance() {}
-  int BlockChance(Weapon::Type) override { return 100; }
-  void AttackBlocked(Weapon::Type) override { ++attack_blocked_called_; }
-  int attack_blocked_called_ = 0;
-};
-}  // namespace
-
 class PureStrikeTest : public ::testing::Test {
   void SetUp() override { character.target_ = &dummy; }
 

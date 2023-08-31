@@ -96,6 +96,7 @@ using Percent = Unit<UnitType::Percent, double>;
 
 template <class T>
 T of(T value, Percent percent) {
+  assert(percent.value() >= 0 && percent.value() <= 100);
   return value * percent.value() / 100.0;
 }
 

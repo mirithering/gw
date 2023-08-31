@@ -34,14 +34,6 @@ TEST_F(CreatureTest, WarriorRecharges2EnergyEvery3000Ticks) {
 }
 
 TEST_F(CreatureTest, StanceBlocksAttacks) {
-  class BlockEverythingStance : public Stance {
-   public:
-    BlockEverythingStance() {}
-    int BlockChance(Weapon::Type) override { return 100; }
-    void AttackBlocked(Weapon::Type) override { ++attack_blocked_called_; }
-    int attack_blocked_called_ = 0;
-  };
-
   BlockEverythingStance* stance =
       static_cast<BlockEverythingStance*>(creature_.SetStance(
           Effect<Stance>(Second, std::make_unique<BlockEverythingStance>())));

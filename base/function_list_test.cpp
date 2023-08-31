@@ -5,14 +5,14 @@
 
 TEST(FunctionListTest, CanNotDeleteEmptyList) {
   auto* list = new FunctionList<void(void)>();
-  list->AddFunction([]() {});
+  list->AddFunctionDeprecated([]() {});
   ASSERT_DEATH(delete list, "empty");
 }
 
 TEST(FunctionListTest, AddAndRemoveElement) {
   FunctionList<void(void)> list;
   int called = 0;
-  auto ref = list.AddFunction([&]() { called++; });
+  auto ref = list.AddFunctionDeprecated([&]() { called++; });
   ASSERT_EQ(list.GetList().size(), 1);
   list.GetList().front()();
   ASSERT_EQ(called, 1);
@@ -23,7 +23,7 @@ TEST(FunctionListTest, AddAndRemoveElement) {
 TEST(FunctionListTest, ListCanBeMoved) {
   FunctionList<void(void)> list;
   int called = 0;
-  auto ref = list.AddFunction([&]() { called++; });
+  auto ref = list.AddFunctionDeprecated([&]() { called++; });
   ASSERT_EQ(list.GetList().size(), 1);
   list.GetList().front()();
   ASSERT_EQ(called, 1);
@@ -40,8 +40,8 @@ TEST(FunctionListTest, ListCanBeMoved) {
 TEST(FunctionListTest, MultipleFunctionsAreCalledInAddOrder) {
   FunctionList<int(int)> list;
 
-  auto ref1 = list.AddFunction([](int a) { return a + 1; });
-  auto ref2 = list.AddFunction([](int b) { return b + 3; });
+  auto ref1 = list.AddFunctionDeprecated([](int a) { return a + 1; });
+  auto ref2 = list.AddFunctionDeprecated([](int b) { return b + 3; });
 
   int x = 0;
   auto it = list.GetList().begin();

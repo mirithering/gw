@@ -3,19 +3,53 @@
 
 #include <bits/stdc++.h>
 
+#include "base/function_list.h"
+#include "base/units.h"
 #include "character/creature.h"
 #include "character/skill.h"
 #include "character/stance.h"
 
 class BonettisDefenseStance : public Stance {
  public:
-  BonettisDefenseStance(Creature& character) : character_(character) {}
+  void AddModifiers(Creature& creature) override {
+    modifier_ = {
+        .creature = &creature,
+        .block_modifier =
+            creature.callbacks_block_chance_.AddFunctionDeprecated(
+                [](const Creature& character, Weapon::Type type) {
+                  if (IsMeele(type) || IsProjectile(type)) {
+                    return Percent(75);
+                  }
+                  return Percent(0);
+                }),
+        .block_callback =
+            creature.callbacks_attack_blocked_.AddFunctionDeprecated(
+                [](Creature& character, Weapon::Type type) {
+                  if (IsMeele(type)) {
+                    character.AddEnergy(5);
+                  }
+                }),
+    };
+  }
 
-  virtual int BlockChance(Weapon::Type type) override;
-  virtual void AttackBlocked(Weapon::Type type) override;
+  ~BonettisDefenseStance() override {
+    if (modifier_.has_value()) {
+      modifier_->creature->callbacks_block_chance_.RemoveFunction(
+          modifier_->block_modifier);
+      modifier_->creature->callbacks_attack_blocked_.RemoveFunction(
+          modifier_->block_callback);
+    }
+  }
 
  private:
-  Creature& character_;
+  struct Modifier {
+    Creature* creature;
+    FunctionList<Percent(const Creature& creature, Weapon::Type)>::ref
+        block_modifier;
+    FunctionList<void(Creature& creature, Weapon::Type)>::ref block_callback;
+  };
+
+  std::optional<Modifier> modifier_;
 };
 
 class BonettisDefense : public Skill {

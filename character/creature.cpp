@@ -50,7 +50,7 @@ void Creature::HealthGeneration() {
   int health_generation = 0;  // Base is 0.
 
   for (auto& modifier_health_generation :
-       modifiers_health_generation_.GetList()) {
+       callbacks_health_generation_.GetList()) {
     health_generation += modifier_health_generation();
   }
 
@@ -80,13 +80,13 @@ void Creature::LoseHealth(int amount) {
 
 int Creature::GetMaxHealth() const {
   int max_health = kMaxHealth;
-  int percentage = 100;
-  for (auto modifier : modifiers_max_health_percentage_.GetList()) {
-    percentage += modifier(*this);
+  Percent percent(100);
+  for (const auto& modifier : callbacks_max_health_.GetList()) {
+    percent += modifier(*this);
   }
   // TODO I think there is a cap to this.. E.g. cannot lose more than 100 max
   // health via deep wound.
-  return (max_health * percentage) / 100;
+  return of(max_health, percent);
 }
 
 Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
@@ -107,10 +107,8 @@ Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
 bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
                                    bool blockable) {
   if (blockable && WillBlockAttack(type)) {
-    // TODO maybe I can have a list of functions that want to be called on
-    // certain events.
-    if (GetStance()) {
-      GetStance()->AttackBlocked(type);
+    for (const auto& callback : callbacks_attack_blocked_.GetList()) {
+      callback(*this, type);
     }
 
     return false;
@@ -123,12 +121,13 @@ bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
   return true;  // TODO return false if blocked.
 }
 
-bool Creature::WillBlockAttack(Weapon::Type type) {
-  if (GetStance()) {
-    int chance = GetStance()->BlockChance(type);
-    if (RandomDecision(Percent(chance))) {
-      return true;
-    }
+bool Creature::WillBlockAttack(Weapon::Type type) const {
+  Percent block_chance(0);
+  for (auto& modifier : callbacks_block_chance_.GetList()) {
+    block_chance += modifier(*this, type);
+  }
+  if (RandomDecision(block_chance)) {
+    return true;
   }
   return false;
 }

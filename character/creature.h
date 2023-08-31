@@ -37,6 +37,7 @@ class Creature : public TimedObject {
 
   Stance* SetStance(Effect<Stance> stance) {
     stance_ = std::move(stance);
+    GetStance()->AddModifiers(*this);
     return GetStance();
   }
 
@@ -47,9 +48,9 @@ class Creature : public TimedObject {
 
   bool HasCondition(Condition::Type type) { return !conditions_[type].Ended(); }
 
-  Action& GetAction() { return action_; }
-
   Stance* GetStance() { return stance_.get(); }
+
+  Action& GetAction() { return action_; }
 
   int GetMaxHealth() const;
   int GetLostHealth() const { return health_lost_; }
@@ -63,24 +64,19 @@ class Creature : public TimedObject {
   // the locked target would be pointless.
   Creature* target_ = nullptr;
 
-  FunctionList<int(const Creature& character)>&
-  GetModifiersMaxHealthPercentage() {
-    return modifiers_max_health_percentage_;
-  }
-
-  FunctionList<int()>& GetModifiersHealthGeneration() {
-    return modifiers_health_generation_;
-  }
+  FunctionList<Percent(const Creature& creature)> callbacks_max_health_;
+  FunctionList<int()> callbacks_health_generation_;
+  FunctionList<Percent(const Creature& creature, Weapon::Type type)>
+      callbacks_block_chance_;
+  FunctionList<void(Creature& creature, Weapon::Type type)>
+      callbacks_attack_blocked_;
 
  private:
   void HealthGeneration();
   void EnergyGeneration();
   void AddAdrenaline(Adrenaline adrenaline);
   void Die();
-  bool WillBlockAttack(Weapon::Type type);
-
-  FunctionList<int(const Creature& character)> modifiers_max_health_percentage_;
-  FunctionList<int()> modifiers_health_generation_;
+  bool WillBlockAttack(Weapon::Type type) const;
 
   std::unique_ptr<Build> build_;
 

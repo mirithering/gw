@@ -13,8 +13,7 @@ namespace {
 class NoOpStance : public Stance {
  public:
   NoOpStance() {}
-  int BlockChance(Weapon::Type) override { return 0; }
-  void AttackBlocked(Weapon::Type) override {}
+  void AddModifiers(Creature&) override {}
 };
 }  // namespace
 
