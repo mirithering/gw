@@ -20,19 +20,15 @@ class BlockEverythingStance : public Stance {
   BlockEverythingStance() = default;
   void AddModifiers(Creature& creature) override;
 
-  ~BlockEverythingStance() override;
+  ~BlockEverythingStance() override = default;
 
   int attack_blocked_called_ = 0;
 
  private:
-  struct Modifier {
-    Creature* creature;
-    FunctionList<Percent(const Creature& creature, Weapon::Type)>::ref
-        block_modifier;
-    FunctionList<void(Creature& creature, Weapon::Type)>::ref block_callback;
-  };
-
-  std::optional<Modifier> modifier_;
+  FunctionList<Percent(const Creature& creature, Weapon::Type)>::UniqueReference
+      block_modifier;
+  FunctionList<void(Creature& creature, Weapon::Type)>::UniqueReference
+      block_callback;
 };
 
 #endif  // CHARACTER_STANCE_H

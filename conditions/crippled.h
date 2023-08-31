@@ -15,12 +15,6 @@ class Crippled : public Condition {
   Type GetType() const override { return Type::Crippled; }
 
  private:
-  struct Modifier {
-    Creature* creature;
-    FunctionList<int()>::ref reference;
-  };
-
-  std::optional<Modifier> modifier_;
 };
 
 #endif  // CONDITIONS_BLEEDING_H
