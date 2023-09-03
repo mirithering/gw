@@ -33,7 +33,9 @@ void Remove(TimedObject* obj) {
 
 }  // namespace
 
-TimedObject::TimedObject() : creation_time_(g_time) { g_ticks.push_back(this); }
+TimedObject::TimedObject() : creation_time_(g_time), last_tick_at_(g_time) {
+  g_ticks.push_back(this);
+}
 
 TimedObject::TimedObject(TimedObject&& other)
     : creation_time_(other.creation_time_) {
@@ -56,4 +58,8 @@ TimedObject::~TimedObject() { Remove(this); }
 void Tick() {
   ++g_time;
   TickAllTicks(g_time);
+}
+
+Time Now() {
+  return g_time;
 }

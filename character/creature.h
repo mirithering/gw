@@ -6,6 +6,7 @@
 #include "action.h"
 #include "base/clock.h"
 #include "base/effect.h"
+#include "base/event.h"
 #include "base/function_list.h"
 #include "build.h"
 #include "condition.h"
@@ -14,6 +15,7 @@
 class Creature : public TimedObject {
  public:
   Creature(std::unique_ptr<Build> build);
+  // TODO disallow move, it's dangerous.
   Creature(Creature&&) = default;
   Creature& operator=(Creature&&) = default;
   ~Creature() override { conditions_.clear(); };
@@ -52,6 +54,10 @@ class Creature : public TimedObject {
 
   Action& GetAction() { return action_; }
 
+  void AddProjectile(Event<>&& projectile) {
+    incoming_projectiles_.push_back(std::move(projectile));
+  }
+
   int GetMaxHealth() const;
   int GetLostHealth() const { return health_lost_; }
   int energy() const { return energy_; }
@@ -81,6 +87,8 @@ class Creature : public TimedObject {
   std::unique_ptr<Build> build_;
 
   Action action_ = kActionIdle;
+
+  std::vector<Event<>> incoming_projectiles_;
 
   Effect<Stance> stance_ = Effect<Stance>::None();
   std::map<Condition::Type, Effect<Condition>> conditions_;

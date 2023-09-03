@@ -18,9 +18,12 @@ class TimedObject {
   virtual void Tick(Time time_passed) = 0;
 
   Time creation_time_;
-  Time last_tick_at_ = Time(-1);
+  Time last_tick_at_;
 };
 
 void Tick();
+
+// Don't use this except for testing and logging. Use TimedObjects.
+Time Now();
 
 #endif  // BASE_CLOCK_H

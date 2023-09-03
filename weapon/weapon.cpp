@@ -13,6 +13,8 @@ bool IsMeele(Weapon::Type type) {
   }
 }
 
+bool IsRanged(Weapon::Type type) { return !IsMeele(type); }
+
 bool IsProjectile(Weapon::Type type) {
   switch (type) {
     case Weapon::Type::Spear:

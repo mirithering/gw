@@ -7,12 +7,16 @@
 
 namespace {
 std::map<Profession, int> kArmorRating = {{Profession::Warrior, 80},
-                                          {Profession::Assassin, 70}};
+                                          {Profession::Assassin, 70},
+                                          {Profession::Ranger, 70}};
 }
 
 struct ArmorPiece {
   int armor;
 };
+
+// TODO amor provides boni that are always present. (But I accidently put at
+// least the energy bonus into character.cpp)
 
 class Armor {
  public:

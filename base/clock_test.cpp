@@ -89,6 +89,19 @@ class Remover : public TimedObject {
   TimedObject* delete_on_tick_ = nullptr;
   bool& deleted_;
 };
+
+class Adder : public TimedObject {
+ public:
+  Adder(int& counter) : counter_(counter) {}
+  ~Adder() override { delete create_on_tick_; }
+  void Tick(Time) override {
+    if (!create_on_tick_) create_on_tick_ = new Counter(counter_);
+  }
+
+ private:
+  TimedObject* create_on_tick_ = nullptr;
+  int& counter_;
+};
 }  // namespace
 
 TEST(ClockTest, TickRemovesItself) {
@@ -113,4 +126,13 @@ TEST(ClockTest, TickRemovesOtherTick) {
   ASSERT_TRUE(remover2_deleted);
   ASSERT_FALSE(remover1_deleted);
   delete remover1;
+}
+
+TEST(ClockTest, TickIsOnlyCalledAfterCreationOnTick) {
+  int counter = 0;
+  Adder adder(counter);
+  Tick();
+  EXPECT_EQ(counter, 0);
+  Tick();
+  EXPECT_EQ(counter, 1);
 }

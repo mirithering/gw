@@ -72,6 +72,8 @@ class Build {
   std::map<Attribute, int> attributes_;
   // Note that Skills themselves are modifiable even in const builds. This is on
   // purpose because skills recharge etc.
+  // TODO when adding skills, make sure to only allow skills of the correct
+  // class and only one elite attack.
   std::vector<std::unique_ptr<Skill>> skills_;
 
   int attribute_points_ = 200;

@@ -13,7 +13,11 @@ enum class Attribute {
   CricalStrikes,
   DaggerMastery,
   DeadlyArts,
-  ShadowArts
+  ShadowArts,
+  Marksmanship,
+  Expertise,
+  BeastMastery,
+  WildernessSurvival,
 };
 
 // Double strike chance for DaggerMastery attribute.

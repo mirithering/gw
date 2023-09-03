@@ -18,11 +18,12 @@ class Action {
 
   Result Tick() {
     Result result = Result::Continue;
-    if (duration_ > Time(0)) {
-      result = tick_(duration_);
-    }
 
     --duration_;
+
+    if (duration_ >= Time(0)) {
+      result = tick_(duration_);
+    }
 
     if (duration_ <= Time(0) && end_.has_value()) {
       end_.value()();

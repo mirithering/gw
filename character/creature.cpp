@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 
 #include "base/attribute.h"
+#include "base/logging.h"
 #include "base/profession.h"
 #include "base/random.h"
 #include "damage.h"
@@ -17,7 +18,8 @@ std::map<Profession, int> kMaxEnergy = {
     {Profession::Monk, 30},        {Profession::Mesmer, 30},
     {Profession::Necromancer, 30}, {Profession::Ritualist, 30}};
 
-// 1 means 1 energy every 3 seconds.
+// 1 means 1 energy every 3 seconds. TODO this is wrong, the additional energy
+// and energy regen is actually provided by armor.
 std::map<Profession, int> kEnergyRegeneration = {
     {Profession::Warrior, 2},     {Profession::Ranger, 3},
     {Profession::Dervish, 4},     {Profession::Assassin, 4},
@@ -70,8 +72,7 @@ void Creature::AddEnergy(int amount) {
 }
 
 void Creature::LoseHealth(int amount) {
-  if (amount > 0)
-    std::cout << name_ << " losing " << amount << " health." << std::endl;
+  if (amount > 0) LOG << name_ << " losing " << amount << " health.";
   health_lost_ += amount;
   if (amount > 0 && health_lost_ >= GetMaxHealth()) {
     Die();
@@ -95,8 +96,6 @@ Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
   Condition::Type type = condition.get()->GetType();
   if (conditions_[type].RemainingDuration() >= condition.RemainingDuration()) {
     // Existing condition last longer, not adding anything.
-    std::cout << "Not adding new condition because the old one is longer"
-              << std::endl;
     return nullptr;
   }
   conditions_[type] = std::move(condition);
@@ -118,7 +117,7 @@ bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
   AddAdrenaline(Adrenaline(percentage));
 
   LoseHealth(damage);
-  return true;  // TODO return false if blocked.
+  return true;
 }
 
 bool Creature::WillBlockAttack(Weapon::Type type) const {
@@ -134,9 +133,9 @@ bool Creature::WillBlockAttack(Weapon::Type type) const {
 
 bool Creature::WeaponAttack(Creature& target, int skill_damage,
                             bool blockable) {
+  int damage = WeaponStrikeDamage(*this, target);
   bool success = target.ReceiveWeaponDamage(
-      WeaponStrikeDamage(*this, target) + skill_damage,
-      build_->GetWeapon().GetType(), blockable);
+      damage + skill_damage, build_->GetWeapon().GetType(), blockable);
   if (success) {
     AddAdrenaline(Strike);
   }

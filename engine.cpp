@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 
 #include "base/clock.h"
+#include "base/logging.h"
 #include "character/action.h"
 #include "character/creature.h"
 #include "character/skill.h"
@@ -24,18 +25,14 @@ Action NextAction(Creature& creature, std::vector<Creature>& my_team,
   for (unsigned int i = 0; i < creature.GetBuild().GetSkills().size(); ++i) {
     Skill* skill = creature.GetBuild().GetSkill<Skill>(i);
     assert(skill);
-    std::cout << creature.name_ << ": " << skill->Name() << " adrenaline "
-              << skill->GetAdrenaline() << std::endl;
     if (skill->CanActivate(creature, my_team, enemy_team)) {
-      std::cout << creature.name_ << ": Activating" << skill->Name()
-                << std::endl;
+      LOG << creature.name_ << " activating " << skill->Name();
       return skill->Activate(creature, my_team, enemy_team);
     }
   }
 
   if (creature.target_ != nullptr) {
-    std::cout << creature.name_ << ": "
-              << "weapon attack" << std::endl;
+    LOG << creature.name_ << " starting weapon attack.";
     return Action::WeaponAttack(creature, *creature.target_);
   }
 

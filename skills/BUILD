@@ -7,8 +7,10 @@ cc_library(
     ],
     hdrs = [
         "attack/attack_skill.h",
+        "attack/bow/arcing_shot.h",
         "attack/dagger/desperate_strike.h",
         "attack/sword/barbarous_slice.h",
+        "attack/sword/crippling_slash.h",
         "attack/sword/gash.h",
         "attack/sword/jaizenju_strike.h",
         "attack/sword/pure_strike.h",
@@ -25,7 +27,9 @@ cc_test(
     name = "test",
     size = "small",
     srcs = [
+        "attack/bow/arcing_shot_test.cpp",
         "attack/sword/barbarous_slice_test.cpp",
+        "attack/sword/crippling_slash_test.cpp",
         "attack/sword/gash_test.cpp",
         "attack/sword/pure_strike_test.cpp",
         "bonettis_defense_test.cpp",

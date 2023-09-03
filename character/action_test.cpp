@@ -5,6 +5,7 @@
 #include "base/profession.h"
 #include "creature.h"
 #include "weapon/dagger.h"
+#include "weapon/flatbow.h"
 #include "weapon/sword.h"
 
 TEST(ActionTest, IdleEndsAfterOneTick) {
@@ -82,18 +83,16 @@ TEST(ActionTest, WeaponAttackTypeIsBusy) {
   ASSERT_EQ(action.GetType(), Action::Type::Busy);
 }
 
-TEST(ActionTest, WeaponAttackAttacksAfterHalfOfWeaponSpeed) {
+TEST(ActionTest, MeeleWeaponAttackAttacksAfterHalfOfWeaponSpeed) {
   Creature character = ConstructCreature(Profession::Warrior, Sword());
 
   Action action = Action::WeaponAttack(character, character);
 
   Time expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() / 2;
   for (int i = 0; i < expect_attack_at.value(); ++i) {
-    ASSERT_EQ(action.Tick(), Action::Result::Continue);
     ASSERT_EQ(character.GetLostHealth(), 0);
+    ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }
-
-  ASSERT_EQ(action.Tick(), Action::Result::Continue);
   ASSERT_NE(character.GetLostHealth(), 0);
 }
 
@@ -107,6 +106,20 @@ TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }
   ASSERT_EQ(action.Tick(), Action::Result::End);
+}
+
+TEST(ActionTest, MeeleWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
+  Creature character = ConstructCreature(Profession::Ranger, Flatbow());
+
+  character.GetAction() = Action::WeaponAttack(character, character);
+
+  Time expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() +
+                          character.GetBuild().GetWeapon().FlightTime();
+  for (int i = 0; i < expect_attack_at.value(); ++i) {
+    ASSERT_EQ(character.GetLostHealth(), 0);
+    Tick();
+  }
+  ASSERT_NE(character.GetLostHealth(), 0);
 }
 
 // TODO double strike chance for daggers.

@@ -14,8 +14,13 @@ Action Action::WeaponAttack(Creature& source, Creature& target) {
 
   std::function<Action::Result(Time duration)> tick = [&, attack_duration](
                                                           Time duration) {
-    if (duration == attack_duration / 2 &&
-        target.GetAction().type_ != Action::Type::Dead) {
+    if (target.GetAction().type_ == Action::Type::Dead) {
+      return Action::Result::End;
+    }
+    // There are two types of weapons: Meele weapons attack after half of the
+    // attack duration. Ranged wepons emit a projectile at the end of the attack
+    // duration.
+    if (IsMeele(weapon.GetType()) && duration == attack_duration / 2) {
       source.WeaponAttack(target);
 
       // Daggers may attack twice.
@@ -31,7 +36,14 @@ Action Action::WeaponAttack(Creature& source, Creature& target) {
     return Action::Result::Continue;
   };
 
-  return Action(Action::Type::Busy, attack_duration, tick, &DoNothingEnd);
+  std::function<void()> end = [&]() {
+    if (IsRanged(weapon.GetType())) {
+      target.AddProjectile(
+          Event<>(weapon.FlightTime(), [&]() { source.WeaponAttack(target); }));
+    }
+  };
+
+  return Action(Action::Type::Busy, attack_duration, tick, end);
 }
 
 Action::Result DoNothingTick(Time) { return Action::Result::Continue; }

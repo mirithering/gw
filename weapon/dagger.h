@@ -4,8 +4,8 @@
 #include <bits/stdc++.h>
 
 #include "base/attribute.h"
-#include "weapon.h"
 #include "base/units.h"
+#include "weapon.h"
 
 namespace {
 const Time kDaggerAttackDuration = 1330 * Millisecond;

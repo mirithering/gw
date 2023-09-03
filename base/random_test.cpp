@@ -70,6 +70,6 @@ TEST(RandomTest, ChanceForTrueIsCorrect) {
       ++hits;
     }
   }
-  std::cout << static_cast<double>(hits) / kLarge << std::endl;
-  ASSERT_TRUE(std::abs(static_cast<double>(hits) / kLarge - 0.5) < 0.00001);
+  ASSERT_TRUE(std::abs(static_cast<double>(hits) / kLarge - 0.5) < 0.00001)
+      << static_cast<double>(hits) / kLarge;
 }

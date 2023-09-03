@@ -5,6 +5,7 @@ cc_library(
     ],
     hdrs = [
         "dagger.h",
+        "flatbow.h",
         "sword.h",
         "weapon.h",
     ],
