@@ -28,6 +28,7 @@ cc_test(
     size = "small",
     srcs = [
         "attack/bow/arcing_shot_test.cpp",
+        "attack/dagger/desperate_strike_test.cpp",
         "attack/sword/barbarous_slice_test.cpp",
         "attack/sword/crippling_slash_test.cpp",
         "attack/sword/gash_test.cpp",

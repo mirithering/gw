@@ -34,10 +34,10 @@ class DesperateStrike : public AttackSkill {
     creature.WeaponAttack(*target_, skill_damage);
   }
 
-  int AdrenalineCost() const override { return 0; }
+  Adrenaline AdrenalineCost() const override { return Adrenaline(0); }
   int EnergyCost() const override { return 5; }
-  int RechargeTime() const override { return 6000; }
-  int ActivationTime(Creature& creature) const override {
+  Time RechargeTime() const override { return 6 * Second; }
+  Time ActivationTime(Creature& creature) const override {
     return creature.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Dagger; };
