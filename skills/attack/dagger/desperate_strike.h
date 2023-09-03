@@ -25,7 +25,7 @@ class DesperateStrike : public AttackSkill {
         healthAndDamage.at(creature.GetBuild().GetAttribute(attribute)).second;
 
     int skill_damage = 0;
-    if ((creature.GetMaxHealth() - creature.GetLostHealth()) /
+    if ((creature.GetMaxHealth() - creature.GetLostHealth()) * 100 /
             creature.GetMaxHealth() <
         health_below) {
       skill_damage = added_damage;
