@@ -7,71 +7,76 @@
 #include "base/random.h"
 #include "bonettis_defense.h"
 #include "character/creature.h"
+#include "test/test.h"
 #include "weapon/sword.h"
 
-class BonettisDefenseTest : public ::testing::Test {
+class BonettisDefenseTest : public GwTest {
+ public:
+  void SetUp() override {
+    warrior_ = AddWarriorTo(team());
+    bonettis_defense_ =
+        warrior_->GetBuild().AddSkill(std::make_unique<BonettisDefense>());
+
+    enemy_ = AddWarriorTo(enemies());
+  }
+
  protected:
-  Creature character_ =
-      ConstructCreature(Profession::Warrior, Sword(), {}, BonettisDefense());
-  BonettisDefense* bonettis_defense_ =
-      character_.GetBuild().GetSkill<BonettisDefense>(0);
-  std::vector<Creature> kEmpty;
+  Creature* warrior_;
+  BonettisDefense* bonettis_defense_;
+
+  Creature* enemy_;
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
-  ASSERT_FALSE(bonettis_defense_->CanActivate(character_, {}, {}));
+  ASSERT_FALSE(bonettis_defense_->CanActivate(*warrior_, {}, {}));
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
   bonettis_defense_->AddAdrenaline(8 * Strike);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(character_, {}, {}));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, {}, {}));
 
-  character_.GetAction() =
-      bonettis_defense_->Activate(character_, kEmpty, kEmpty);
+  warrior_->GetAction() =
+      bonettis_defense_->Activate(*warrior_, team(), enemies());
   for (int i = 1; i <= 5000; ++i) {
-    ASSERT_NE(character_.GetStance(), nullptr);
+    ASSERT_NE(warrior_->GetStance(), nullptr);
     Tick();
   }
-  ASSERT_EQ(character_.GetStance(), nullptr);
+  ASSERT_EQ(warrior_->GetStance(), nullptr);
 }
 
 TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
-  character_.GetBuild().SetAttribute(Attribute::Tactics, 12);
+  warrior_->GetBuild().SetAttribute(Attribute::Tactics, 12);
   bonettis_defense_->AddAdrenaline(8 * Strike);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(character_, {}, {}));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, team(), enemies()));
 
-  character_.GetAction() =
-      bonettis_defense_->Activate(character_, kEmpty, kEmpty);
-  for (int i = 1; i <= 10000; ++i) {
-    ASSERT_NE(character_.GetStance(), nullptr);
+  warrior_->GetAction() =
+      bonettis_defense_->Activate(*warrior_, team(), enemies());
+  for (int i = 1; Time(i) <= 10 * Second; ++i) {
+    ASSERT_NE(warrior_->GetStance(), nullptr);
     Tick();
   }
-  ASSERT_EQ(character_.GetStance(), nullptr);
+  ASSERT_EQ(warrior_->GetStance(), nullptr);
 }
 
 TEST_F(BonettisDefenseTest, BlockChanceIs75ForMeele) {
-  character_.SetStance(
+  warrior_->SetStance(
       Effect<Stance>(20 * Second, std::make_unique<BonettisDefenseStance>()));
 
-  Creature attacker = ConstructCreature(Profession::Warrior, Sword());
-
   OverrideRandomDecisionForTesting(Percent(74));
-  ASSERT_FALSE(attacker.WeaponAttack(character_));
+  ASSERT_FALSE(enemy_->WeaponAttack(*warrior_));
   OverrideRandomDecisionForTesting(Percent(75));
-  ASSERT_TRUE(attacker.WeaponAttack(character_));
+  ASSERT_TRUE(enemy_->WeaponAttack(*warrior_));
 }
 
 // TODO write a test for projectile and one for staff.
 
 TEST_F(BonettisDefenseTest, BlockingMeeleGivesEnergy) {
-  character_.SetStance(
+  warrior_->SetStance(
       Effect<Stance>(20 * Second, std::make_unique<BonettisDefenseStance>()));
 
-  Creature attacker = ConstructCreature(Profession::Warrior, Sword());
-
-  character_.UseEnergy(character_.energy());
-  ASSERT_EQ(character_.energy(), 0);
+  warrior_->UseEnergy(warrior_->energy());
+  ASSERT_EQ(warrior_->energy(), 0);
   OverrideRandomDecisionForTesting(Percent(74));
-  ASSERT_FALSE(attacker.WeaponAttack(character_));
-  ASSERT_EQ(character_.energy(), 5);
+  ASSERT_FALSE(enemy_->WeaponAttack(*warrior_));
+  ASSERT_EQ(warrior_->energy(), 5);
 }

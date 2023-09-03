@@ -14,8 +14,9 @@ class CripplingSlash : public AttackSkill {
   std::string Name() const override { return "Crippling Slash"; }
 
  protected:
-  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
-                        std::vector<Creature>& enemy_team) override {
+  void ActivationMiddle(
+      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
+      std::vector<std::unique_ptr<Creature>>& enemy_team) override {
     assert(target_);
     bool success = creature.WeaponAttack(*target_);
     if (success) {

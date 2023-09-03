@@ -4,42 +4,46 @@
 #include <gtest/gtest.h>
 
 #include "base/effect.h"
+#include "test/test.h"
 #include "weapon/sword.h"
 
-class PureStrikeTest : public ::testing::Test {
-  void SetUp() override { character.target_ = &dummy; }
+class PureStrikeTest : public GwTest {
+  void SetUp() override {
+    character_ = AddWarriorTo(team());
+    character_->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);
+    pure_strike_ =
+        character_->GetBuild().AddSkill(std::make_unique<PureStrike>());
+
+    dummy_ = AddWarriorTo(enemies());
+
+    character_->target_ = dummy_;
+  }
 
  protected:
-  Creature character =
-      ConstructCreature(Profession::Warrior, Sword(),
-                        {{Attribute::Swordsmanship, 12}}, PureStrike());
-  Creature dummy = ConstructCreature(Profession::Warrior, Sword());
-  std::vector<Creature> kEmpty;
+  Creature* character_;
+  PureStrike* pure_strike_;
+  Creature* dummy_;
 };
 
 TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
-  auto* stance = static_cast<BlockEverythingStance*>(dummy.SetStance(
+  auto* stance = static_cast<BlockEverythingStance*>(dummy_->SetStance(
       Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
-  character.GetAction() = character.GetBuild().GetSkill<Skill>(0)->Activate(
-      character, kEmpty, kEmpty);
-  while (character.GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  character_->GetAction() =
+      pure_strike_->Activate(*character_, team(), enemies());
+  TickUntilIdle(character_);
   ASSERT_EQ(stance->attack_blocked_called_, 0);
-  ASSERT_NE(dummy.GetLostHealth(), 0);
+  ASSERT_NE(dummy_->GetLostHealth(), 0);
 }
 
 TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
-  auto* stance = static_cast<BlockEverythingStance*>(dummy.SetStance(
+  auto* stance = static_cast<BlockEverythingStance*>(dummy_->SetStance(
       Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
-  static_cast<BlockEverythingStance*>(character.SetStance(
+  static_cast<BlockEverythingStance*>(character_->SetStance(
       Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
 
-  character.GetAction() = character.GetBuild().GetSkill<Skill>(0)->Activate(
-      character, kEmpty, kEmpty);
-  while (character.GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  character_->GetAction() =
+      pure_strike_->Activate(*character_, team(), enemies());
+  TickUntilIdle(character_);
   ASSERT_EQ(stance->attack_blocked_called_, 1);
-  ASSERT_EQ(dummy.GetLostHealth(), 0);
+  ASSERT_EQ(dummy_->GetLostHealth(), 0);
 }

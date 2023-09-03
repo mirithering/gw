@@ -37,21 +37,21 @@ TimedObject::TimedObject() : creation_time_(g_time), last_tick_at_(g_time) {
   g_ticks.push_back(this);
 }
 
-TimedObject::TimedObject(TimedObject&& other)
-    : creation_time_(other.creation_time_) {
-  Remove(&other);
-  g_ticks.push_back(this);
-  last_tick_at_ = other.last_tick_at_;
-}
+// TimedObject::TimedObject(TimedObject&& other)
+//     : creation_time_(other.creation_time_) {
+//   Remove(&other);
+//   g_ticks.push_back(this);
+//   last_tick_at_ = other.last_tick_at_;
+// }
 
-TimedObject& TimedObject::operator=(TimedObject&& other) {
-  Remove(&other);
-  Remove(this);
-  g_ticks.push_back(this);
-  creation_time_ = other.creation_time_;
-  last_tick_at_ = other.last_tick_at_;
-  return *this;
-}
+// TimedObject& TimedObject::operator=(TimedObject&& other) {
+//   Remove(&other);
+//   Remove(this);
+//   g_ticks.push_back(this);
+//   creation_time_ = other.creation_time_;
+//   last_tick_at_ = other.last_tick_at_;
+//   return *this;
+// }
 
 TimedObject::~TimedObject() { Remove(this); }
 
@@ -60,6 +60,4 @@ void Tick() {
   TickAllTicks(g_time);
 }
 
-Time Now() {
-  return g_time;
-}
+Time Now() { return g_time; }

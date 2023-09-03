@@ -12,8 +12,9 @@ class PureStrike : public AttackSkill {
   std::string Name() const override { return "Pure Strike"; }
 
  protected:
-  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
-                        std::vector<Creature>& enemy_team) override {
+  void ActivationMiddle(
+      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
+      std::vector<std::unique_ptr<Creature>>& enemy_team) override {
     assert(target_);
     int skill_damage = kDamage.at(creature.GetBuild().GetAttribute(kAttribute));
     creature.WeaponAttack(*target_, skill_damage,

@@ -10,6 +10,10 @@
 
 class Build {
  public:
+  Build() = default;
+  Build(const Build&) = delete;
+  Build& operator=(const Build&) = delete;
+
   void SetFirstProfession(Profession profession) {
     first_profession_ = profession;
   }
@@ -49,8 +53,14 @@ class Build {
   }
 
   template <class... S>
-  void SetSkills(S&&... skills) {
-    (skills_.emplace_back(std::make_unique<S>(std::move(skills))), ...);
+  void SetSkills(std::unique_ptr<S>... skills) {
+    (skills_.push_back(std::move(skills)), ...);
+  }
+  template <class S>
+  S* AddSkill(std::unique_ptr<S> skill) {
+    assert(skills_.size() < 8);
+    skills_.push_back(std::move(skill));
+    return GetSkill<S>(skills_.size() - 1);
   }
   template <class S>
   S* GetSkill(unsigned int pos) const {
@@ -74,22 +84,25 @@ class Build {
   // purpose because skills recharge etc.
   // TODO when adding skills, make sure to only allow skills of the correct
   // class and only one elite attack.
+
   std::vector<std::unique_ptr<Skill>> skills_;
 
   int attribute_points_ = 200;
 };
 
 template <class W, class... S>
-Build ConstructBuild(Profession first_profession, W&& weapon,
-                     std::map<Attribute, int> attributes = {}, S&&... skills) {
-  Build build;
-  build.SetFirstProfession(first_profession);
-  build.SetWeapon(std::make_unique<W>(weapon));
-  build.SetArmor(std::make_unique<Armor>(first_profession));
+std::unique_ptr<Build> ConstructBuild(Profession first_profession,
+                                      std::unique_ptr<W> weapon,
+                                      std::map<Attribute, int> attributes = {},
+                                      std::unique_ptr<S>... skills) {
+  std::unique_ptr<Build> build = std::make_unique<Build>();
+  build->SetFirstProfession(first_profession);
+  build->SetWeapon(std::move(weapon));
+  build->SetArmor(std::make_unique<Armor>(first_profession));
   for (std::pair<Attribute, int> attribute : attributes) {
-    build.SetAttribute(attribute.first, attribute.second);
+    build->SetAttribute(attribute.first, attribute.second);
   }
-  build.SetSkills(std::forward<S>(skills)...);
+  build->SetSkills(std::move(skills)...);
   return build;
 }
 

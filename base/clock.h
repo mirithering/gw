@@ -10,8 +10,6 @@ class TimedObject {
   TimedObject();
   TimedObject(const TimedObject& obj) = delete;
   TimedObject& operator=(const TimedObject& obj) = delete;
-  TimedObject(TimedObject&& other);
-  TimedObject& operator=(TimedObject&& other);
   virtual ~TimedObject();
 
   // Called every 1ms of Game time.

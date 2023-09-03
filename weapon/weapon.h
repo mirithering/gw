@@ -26,7 +26,11 @@ class Weapon {
     Shield
   };
 
+  Weapon() = default;
   Weapon(std::pair<int, int> damage) : damage_(damage) {}
+
+  Weapon(const Weapon&) = delete;
+  Weapon& operator=(const Weapon&) = delete;
 
   virtual Time AttackDuration() const = 0;
   virtual DamageType GetDamageType() const = 0;

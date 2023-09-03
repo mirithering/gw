@@ -65,15 +65,15 @@ TEST(ClockTest, TimePassedIsHowOftenTicksWasCalled) {
   ASSERT_EQ(time_passed.value(), 1);
 }
 
-TEST(ClockTest, MovedObjectKeepsTicking) {
-  Time time;
-  Timer* counter = new Timer(time);
-  std::vector<Timer> counters;
-  counters.push_back(std::move(*counter));
-  delete counter;
-  Tick();
-  ASSERT_EQ(time.value(), 1);
-}
+// TEST(ClockTest, MovedObjectKeepsTicking) {
+//   Time time;
+//   Timer* counter = new Timer(time);
+//   std::vector<Timer> counters;
+//   counters.push_back(std::move(*counter));
+//   delete counter;
+//   Tick();
+//   ASSERT_EQ(time.value(), 1);
+// }
 
 namespace {
 class Remover : public TimedObject {

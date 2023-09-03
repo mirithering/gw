@@ -1,29 +1,25 @@
 cc_library(
-    name = "conditions",
+    name = "test",
     srcs = [
+        "test.cpp",
     ],
     hdrs = [
-        "bleeding.h",
-        "crippled.h",
-        "deep_wound.h",
+        "test.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//character",
+        "//weapon",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
 cc_test(
-    name = "test",
+    name = "tests",
     size = "small",
     srcs = [
-        "deep_wound_test.cpp",
     ],
     deps = [
-        "conditions",
-        "//character",
-        "//test",
-        "//weapon",
         "@com_google_googletest//:gtest_main",
     ],
 )

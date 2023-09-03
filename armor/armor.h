@@ -23,6 +23,9 @@ class Armor {
   Armor(Profession profession) : Armor(kArmorRating[profession]) {}
   Armor(int rating) { head_ = chest_ = arms_ = legs_ = feet_ = {rating}; }
 
+  Armor(const Armor&) = delete;
+  Armor& operator=(const Armor&) = delete;
+
   // TODO simplified to only hit chest for now. I assume all armor is the same.
   int Rating() const { return chest_.armor; }
 

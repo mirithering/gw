@@ -8,43 +8,49 @@
 #include "character/creature.h"
 #include "character/damage.h"
 #include "conditions/bleeding.h"
+#include "test/test.h"
 #include "weapon/sword.h"
 
-class GashTest : public ::testing::Test {
+class GashTest : public GwTest {
  public:
-  void SetUp() override { character_.target_ = &dummy_; }
+  void SetUp() override {
+    warrior_ = AddWarriorTo(team());
+    warrior_->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);
+    gash_ = warrior_->GetBuild().AddSkill(std::make_unique<Gash>());
+
+    enemy_ = AddWarriorTo(enemies());
+    warrior_->target_ = enemy_;
+  }
 
  protected:
-  Creature character_ = ConstructCreature(
-      Profession::Warrior, Sword(), {{Attribute::Swordsmanship, 12}}, Gash());
-  Creature dummy_ = ConstructCreature(Profession::Warrior, Sword());
-  Gash* gash_ = character_.GetBuild().GetSkill<Gash>(0);
-  std::vector<Creature> empty_;
+  Creature* warrior_;
+  Creature* enemy_;
+  Gash* gash_;
 };
 
 TEST_F(GashTest, NoActivationWithoutAdrenaline) {
-  ASSERT_FALSE(gash_->CanActivate(character_, empty_, empty_));
+  ASSERT_FALSE(gash_->CanActivate(*warrior_, team(), enemies()));
 }
 
 TEST_F(GashTest, ActivationWithAdrenaline) {
   gash_->AddAdrenaline(6 * Strike);
-  ASSERT_TRUE(gash_->CanActivate(character_, empty_, empty_));
+  ASSERT_TRUE(gash_->CanActivate(*warrior_, team(), enemies()));
 }
 
 TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
   OverrideRandomValueForTesting(10);
-  int expected_damage = WeaponStrikeDamage(character_, dummy_);
+  int expected_damage = WeaponStrikeDamage(*warrior_, *enemy_);
 
   OverrideRandomValueForTesting(10);
-  character_.GetAction() = gash_->Activate(character_, empty_, empty_);
-  while (character_.GetAction().GetType() != Action::Type::Idle) {
+  warrior_->GetAction() = gash_->Activate(*warrior_, team(), enemies());
+  while (warrior_->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  ASSERT_EQ(dummy_.GetLostHealth(), expected_damage);
-  ASSERT_FALSE(dummy_.HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(enemy_->GetLostHealth(), expected_damage);
+  ASSERT_FALSE(enemy_->HasCondition(Condition::Type::DeepWound));
 }
 
 TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
@@ -53,33 +59,33 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
   OverrideRandomValueForTesting(10);
-  int expected_damage = WeaponStrikeDamage(character_, dummy_) +
+  int expected_damage = WeaponStrikeDamage(*warrior_, *enemy_) +
                         kExpectedSkillDamage + kExpectedBleedingDamage;
 
-  dummy_.AddCondition(
+  enemy_->AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
-  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
 
   OverrideRandomValueForTesting(10);
-  character_.GetAction() = gash_->Activate(character_, empty_, empty_);
-  while (character_.GetAction().GetType() != Action::Type::Idle) {
+  warrior_->GetAction() = gash_->Activate(*warrior_, team(), enemies());
+  while (warrior_->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::Bleeding));
-  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::DeepWound));
-  ASSERT_EQ(dummy_.GetLostHealth(), expected_damage);
+  ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(enemy_->HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(enemy_->GetLostHealth(), expected_damage);
 }
 
 TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
-  dummy_.AddCondition(
+  enemy_->AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
-  character_.GetAction() = gash_->Activate(character_, empty_, empty_);
-  while (character_.GetAction().GetType() != Action::Type::Idle) {
+  warrior_->GetAction() = gash_->Activate(*warrior_, team(), enemies());
+  while (warrior_->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  ASSERT_TRUE(dummy_.HasCondition(Condition::Type::DeepWound));
+  ASSERT_TRUE(enemy_->HasCondition(Condition::Type::DeepWound));
 }

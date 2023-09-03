@@ -6,6 +6,7 @@
 #include "base/random.h"
 #include "character/build.h"
 #include "character/creature.h"
+#include "test/test.h"
 #include "weapon/sword.h"
 
 namespace {
@@ -17,82 +18,90 @@ class NoOpStance : public Stance {
 };
 }  // namespace
 
-class BarbarousSliceTest : public ::testing::Test {
+class BarbarousSliceTest : public GwTest {
  public:
-  void SetUp() override { character.target_ = &dummy; }
+  void SetUp() override {
+    character = AddWarriorTo(team());
+    character->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);
+    barbarous_slice =
+        character->GetBuild().AddSkill(std::make_unique<BarbarousSlice>());
+
+    dummy = AddWarriorTo(enemies());
+
+    character->target_ = dummy;
+  }
 
  protected:
-  Creature character =
-      ConstructCreature(Profession::Warrior, Sword(),
-                        {{Attribute::Swordsmanship, 12}}, BarbarousSlice());
-  Creature dummy = ConstructCreature(Profession::Warrior, Sword());
-  BarbarousSlice* barbarous_slice =
-      character.GetBuild().GetSkill<BarbarousSlice>(0);
-  std::vector<Creature> empty_;
+  Creature* character;
+  Creature* dummy;
+  BarbarousSlice* barbarous_slice;
 };
 
 TEST_F(BarbarousSliceTest, NoActivationWithoutAdrenaline) {
-  ASSERT_FALSE(barbarous_slice->CanActivate(character, empty_, empty_));
+  ASSERT_FALSE(barbarous_slice->CanActivate(*character, team(), enemies()));
 }
 
 TEST_F(BarbarousSliceTest, NoActivationWithTooLittleAdrenaline) {
   barbarous_slice->AddAdrenaline(5 * Strike);
-  ASSERT_FALSE(barbarous_slice->CanActivate(character, empty_, empty_));
+  ASSERT_FALSE(barbarous_slice->CanActivate(*character, team(), enemies()));
 }
 
 TEST_F(BarbarousSliceTest, ActivationWithEnoughAdrenaline) {
   barbarous_slice->AddAdrenaline(6 * Strike);
-  ASSERT_TRUE(barbarous_slice->CanActivate(character, empty_, empty_));
+  ASSERT_TRUE(barbarous_slice->CanActivate(*character, team(), enemies()));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   constexpr int kExpectedSkillDamage = 25;
 
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
+  character->GetAction() =
+      barbarous_slice->Activate(*character, team(), enemies());
 
   // Override random base attack damage to 0. Then, only skill damage is
   // inflicted.
   OverrideRandomValueForTesting(0);
   // Put myself in a stance to avoid inflicting bleeding.
-  character.SetStance(
+  character->SetStance(
       Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
-  while (character.GetAction().GetType() != Action::Type::Idle) {
+  while (character->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  ASSERT_EQ(dummy.GetLostHealth(), kExpectedSkillDamage);
+  ASSERT_EQ(dummy->GetLostHealth(), kExpectedSkillDamage);
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
   Time expected_duration = 13 * Second;
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
+  character->GetAction() =
+      barbarous_slice->Activate(*character, team(), enemies());
 
-  while (character.GetAction().GetType() != Action::Type::Idle) {
+  while (character->GetAction().GetType() != Action::Type::Idle) {
     Tick();
-    if (dummy.HasCondition(Condition::Type::Bleeding)) {
+    if (dummy->HasCondition(Condition::Type::Bleeding)) {
       expected_duration--;
     }
   }
   while (--expected_duration >= Time(0)) {
-    ASSERT_TRUE(dummy.HasCondition(Condition::Type::Bleeding));
+    ASSERT_TRUE(dummy->HasCondition(Condition::Type::Bleeding));
     Tick();
   }
-  ASSERT_FALSE(dummy.HasCondition(Condition::Type::Bleeding));
+  ASSERT_FALSE(dummy->HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character.GetAction() = barbarous_slice->Activate(character, empty_, empty_);
+  character->GetAction() =
+      barbarous_slice->Activate(*character, team(), enemies());
 
-  character.SetStance(
+  character->SetStance(
       Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
-  while (character.GetAction().GetType() != Action::Type::Idle) {
+  while (character->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
 
-  ASSERT_FALSE(dummy.HasCondition(Condition::Type::Bleeding));
+  ASSERT_FALSE(dummy->HasCondition(Condition::Type::Bleeding));
 }

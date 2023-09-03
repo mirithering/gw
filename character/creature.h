@@ -15,9 +15,11 @@
 class Creature : public TimedObject {
  public:
   Creature(std::unique_ptr<Build> build);
-  // TODO disallow move, it's dangerous.
-  Creature(Creature&&) = default;
-  Creature& operator=(Creature&&) = default;
+  // TODO this is a sign of bad design. Maybe I can fix my dependencies at some
+  // point and make creatures movable?
+  Creature(const Creature&) = delete;
+  Creature& operator=(const Creature&) = delete;
+
   ~Creature() override { conditions_.clear(); };
 
   void Tick(Time time_passed) override;
@@ -52,6 +54,7 @@ class Creature : public TimedObject {
 
   Stance* GetStance() { return stance_.get(); }
 
+  // TODO return const and add a function to do stuff.
   Action& GetAction() { return action_; }
 
   void AddProjectile(Event<>&& projectile) {
@@ -64,6 +67,8 @@ class Creature : public TimedObject {
 
   std::string name_ = "Lovely Princess";  // For debugging.
 
+  // TODO this violates Tell don't ask principle, I have to redirect a lot.. Not
+  // sure how to get rid of it.
   Build& GetBuild() const { return *build_.get(); }
 
   // Creatures lock on one target, but will attack other targets with skills if
@@ -100,12 +105,11 @@ class Creature : public TimedObject {
 std::ostream& operator<<(std::ostream& out, const Creature& character);
 
 template <class W, class... S>
-Creature ConstructCreature(Profession first_profession, W&& weapon,
-                           std::map<Attribute, int> attributes = {},
-                           S&&... skills) {
-  return Creature(std::make_unique<Build>(
-      ConstructBuild(first_profession, std::move(weapon), attributes,
-                     std::forward<S>(skills)...)));
+std::unique_ptr<Creature> ConstructCreature(
+    Profession first_profession, std::unique_ptr<W> weapon,
+    std::map<Attribute, int> attributes = {}, std::unique_ptr<S>... skills) {
+  return std::make_unique<Creature>(ConstructBuild(
+      first_profession, std::move(weapon), attributes, std::move(skills)...));
 }
 
 #endif  // CREATURE_H

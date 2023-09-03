@@ -9,7 +9,11 @@ class Creature;
 
 class Condition {
  public:
+  Condition() = default;
+  Condition(const Condition&) = delete;
+  Condition& operator=(const Condition&) = delete;
   virtual ~Condition() = default;
+
   virtual void AddModifiers(Creature& creature) = 0;
   enum class Type {
     Bleeding,

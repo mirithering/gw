@@ -7,17 +7,19 @@
 #include "character/skill.h"
 
 namespace {
-Creature* NextTarget(Creature& creature, std::vector<Creature>& enemies) {
+Creature* NextTarget(Creature& creature,
+                     std::vector<std::unique_ptr<Creature>>& enemies) {
   for (auto& enemy : enemies) {
-    if (enemy.GetAction().GetType() != Action::Type::Dead) {
-      return &enemy;
+    if (enemy->GetAction().GetType() != Action::Type::Dead) {
+      return enemy.get();
     }
   }
   return nullptr;
 }
 
-Action NextAction(Creature& creature, std::vector<Creature>& my_team,
-                  std::vector<Creature>& enemy_team) {
+Action NextAction(Creature& creature,
+                  std::vector<std::unique_ptr<Creature>>& my_team,
+                  std::vector<std::unique_ptr<Creature>>& enemy_team) {
   if (creature.target_ == nullptr) {
     creature.target_ = NextTarget(creature, enemy_team);
   }
@@ -40,16 +42,17 @@ Action NextAction(Creature& creature, std::vector<Creature>& my_team,
 }
 }  // namespace
 
-void NextActions(std::vector<Creature>& team, std::vector<Creature>& enemies) {
+void NextActions(std::vector<std::unique_ptr<Creature>>& team,
+                 std::vector<std::unique_ptr<Creature>>& enemies) {
   for (auto& creature : team) {
-    if (creature.GetAction().GetType() == Action::Type::Idle) {
-      creature.GetAction() = NextAction(creature, team, enemies);
+    if (creature->GetAction().GetType() == Action::Type::Idle) {
+      creature->GetAction() = NextAction(*creature, team, enemies);
     }
   }
 
   for (auto& creature : enemies) {
-    if (creature.GetAction().GetType() == Action::Type::Idle) {
-      creature.GetAction() = NextAction(creature, enemies, team);
+    if (creature->GetAction().GetType() == Action::Type::Idle) {
+      creature->GetAction() = NextAction(*creature, enemies, team);
     }
   }
 }

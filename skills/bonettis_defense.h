@@ -57,8 +57,9 @@ class BonettisDefense : public Skill {
   std::string Name() const override { return "Bonetti's Defense"; }
 
  protected:
-  void ActivationEnd(Creature& creature, std::vector<Creature>& my_team,
-                     std::vector<Creature>& enemy_team) override;
+  void ActivationEnd(
+      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
+      std::vector<std::unique_ptr<Creature>>& enemy_team) override;
 
   Adrenaline AdrenalineCost() const override { return 8 * Strike; }
   int EnergyCost() const override { return 0; }

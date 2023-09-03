@@ -15,8 +15,9 @@ class DesperateStrike : public AttackSkill {
   std::string Name() const override { return "Desperate Strike"; }
 
  protected:
-  void ActivationMiddle(Creature& creature, std::vector<Creature>& my_team,
-                        std::vector<Creature>& enemy_team) override {
+  void ActivationMiddle(
+      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
+      std::vector<std::unique_ptr<Creature>>& enemy_team) override {
     assert(target_ != nullptr);
 
     int health_below =

@@ -5,6 +5,7 @@
 
 class Creature;
 
-void NextActions(std::vector<Creature>& team, std::vector<Creature>& enemies);
+void NextActions(std::vector<std::unique_ptr<Creature>>& team,
+                 std::vector<std::unique_ptr<Creature>>& enemies);
 
 #endif  // ENGINE_H

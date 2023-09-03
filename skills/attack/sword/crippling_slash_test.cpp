@@ -6,26 +6,34 @@
 #include "base/random.h"
 #include "character/build.h"
 #include "character/creature.h"
+#include "test/test.h"
 #include "weapon/dagger.h"
 #include "weapon/sword.h"
 
-TEST(CripplingSlashTest, InflictBleedingAndCrippled) {
-  Creature attacker =
-      ConstructCreature(Profession::Warrior, Sword(),
-                        {{Attribute::Swordsmanship, 12}}, CripplingSlash());
-  Creature defender = ConstructCreature(Profession::Assassin, Dagger());
-  attacker.target_ = &defender;
+class CripplingSlashTest : public GwTest {
+ public:
+  void SetUp() override {
+    attacker = AddWarriorTo(team());
+    attacker->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);
+    crippling_slash =
+        attacker->GetBuild().AddSkill(std::make_unique<CripplingSlash>());
 
-  CripplingSlash* crippling_slash =
-      attacker.GetBuild().GetSkill<CripplingSlash>(0);
-
-  std::vector<Creature> empty_;
-
-  crippling_slash->AddAdrenaline(6 * Strike);
-  attacker.GetAction() = crippling_slash->Activate(attacker, empty_, empty_);
-  while (attacker.GetAction().GetType() != Action::Type::Idle) {
-    Tick();
+    defender = AddAssassinTo(enemies());
   }
-  ASSERT_TRUE(defender.HasCondition(Condition::Type::Bleeding));
-  ASSERT_TRUE(defender.HasCondition(Condition::Type::Crippled));
+
+ protected:
+  Creature* attacker;
+  CripplingSlash* crippling_slash;
+  Creature* defender;
+};
+
+TEST_F(CripplingSlashTest, InflictBleedingAndCrippled) {
+  crippling_slash->AddAdrenaline(6 * Strike);
+  attacker->target_ = defender;
+
+  attacker->GetAction() =
+      crippling_slash->Activate(*attacker, team(), enemies());
+  TickUntilIdle(attacker);
+  ASSERT_TRUE(defender->HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(defender->HasCondition(Condition::Type::Crippled));
 }

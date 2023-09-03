@@ -78,30 +78,34 @@ TEST(ActionTest, DeadTypeIsDead) {
 }
 
 TEST(ActionTest, WeaponAttackTypeIsBusy) {
-  Creature character = ConstructCreature(Profession::Warrior, Sword());
-  Action action = Action::WeaponAttack(character, character);
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
+  Action action = Action::WeaponAttack(*character, *character);
   ASSERT_EQ(action.GetType(), Action::Type::Busy);
 }
 
 TEST(ActionTest, MeeleWeaponAttackAttacksAfterHalfOfWeaponSpeed) {
-  Creature character = ConstructCreature(Profession::Warrior, Sword());
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
 
-  Action action = Action::WeaponAttack(character, character);
+  Action action = Action::WeaponAttack(*character, *character);
 
-  Time expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() / 2;
+  Time expect_attack_at =
+      character->GetBuild().GetWeapon().AttackDuration() / 2;
   for (int i = 0; i < expect_attack_at.value(); ++i) {
-    ASSERT_EQ(character.GetLostHealth(), 0);
+    ASSERT_EQ(character->GetLostHealth(), 0);
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }
-  ASSERT_NE(character.GetLostHealth(), 0);
+  ASSERT_NE(character->GetLostHealth(), 0);
 }
 
 TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
-  Creature character = ConstructCreature(Profession::Warrior, Sword());
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
 
-  Action action = Action::WeaponAttack(character, character);
+  Action action = Action::WeaponAttack(*character, *character);
 
-  Time expect_end_at = character.GetBuild().GetWeapon().AttackDuration();
+  Time expect_end_at = character->GetBuild().GetWeapon().AttackDuration();
   for (int i = 0; i < expect_end_at.value() - 1; ++i) {
     ASSERT_EQ(action.Tick(), Action::Result::Continue);
   }
@@ -109,17 +113,18 @@ TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
 }
 
 TEST(ActionTest, MeeleWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
-  Creature character = ConstructCreature(Profession::Ranger, Flatbow());
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>());
 
-  character.GetAction() = Action::WeaponAttack(character, character);
+  character->GetAction() = Action::WeaponAttack(*character, *character);
 
-  Time expect_attack_at = character.GetBuild().GetWeapon().AttackDuration() +
-                          character.GetBuild().GetWeapon().FlightTime();
+  Time expect_attack_at = character->GetBuild().GetWeapon().AttackDuration() +
+                          character->GetBuild().GetWeapon().FlightTime();
   for (int i = 0; i < expect_attack_at.value(); ++i) {
-    ASSERT_EQ(character.GetLostHealth(), 0);
+    ASSERT_EQ(character->GetLostHealth(), 0);
     Tick();
   }
-  ASSERT_NE(character.GetLostHealth(), 0);
+  ASSERT_NE(character->GetLostHealth(), 0);
 }
 
 // TODO double strike chance for daggers.

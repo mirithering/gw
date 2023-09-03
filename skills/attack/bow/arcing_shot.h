@@ -12,8 +12,9 @@ class ArcingShot : public AttackSkill {
   std::string Name() const override { return "Arcing Shot"; }
 
  protected:
-  void ActivationEnd(Creature& creature, std::vector<Creature>& my_team,
-                     std::vector<Creature>& enemy_team) override {
+  void ActivationEnd(
+      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
+      std::vector<std::unique_ptr<Creature>>& enemy_team) override {
     int additional_damage =
         creature.GetBuild().GetAttribute(Attribute::Marksmanship) + 10;
     // TODO flight time actually also depends on distance to target, and

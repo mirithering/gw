@@ -38,6 +38,7 @@ cc_test(
     deps = [
         "skills",
         "//character",
+        "//test",
         "@com_google_googletest//:gtest_main",
     ],
 )

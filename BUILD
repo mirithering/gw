@@ -17,11 +17,12 @@ cc_library(
 )
 
 cc_test(
-    name = "test",
+    name = "engine_test",
     size = "small",
     srcs = ["engine_test.cpp"],
     deps = [
         ":engine",
+        "//test",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -29,7 +30,7 @@ cc_test(
 test_suite(
     name = "tests",
     tests = [
-        "test",
+        "engine_test",
         "//armor:test",
         "//base:test",
         "//character:test",
