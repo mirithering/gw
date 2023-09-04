@@ -84,9 +84,9 @@ TEST_F(CreatureTest, UsingSkillRemovesOneAdrenalineStrikeFromOthers) {
   bonettis_defense_->AddAdrenaline(10 * Strike);
   barbarous_slice_->AddAdrenaline(10 * Strike);
 
-  std::vector<std::unique_ptr<Creature>> empty;
+  World empty;
 
-  bonettis_defense_->Activate(*creature_, empty, empty);
+  bonettis_defense_->Activate(*creature_, empty);
 
   ASSERT_EQ(bonettis_defense_->GetAdrenaline(), 0 * Strike);
   ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 9 * Strike);
@@ -95,9 +95,9 @@ TEST_F(CreatureTest, UsingSkillRemovesOneAdrenalineStrikeFromOthers) {
 TEST_F(CreatureTest, UsingSkillRemovesAllAdrenalingFromItself) {
   barbarous_slice_->AddAdrenaline(10 * Strike);
 
-  std::vector<std::unique_ptr<Creature>> empty;
+  World empty;
 
-  barbarous_slice_->Activate(*creature_, empty, empty);
+  barbarous_slice_->Activate(*creature_, empty);
 
   ASSERT_EQ(barbarous_slice_->GetAdrenaline(), 0 * Strike);
 }

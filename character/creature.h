@@ -9,14 +9,17 @@
 #include "base/event.h"
 #include "base/function_list.h"
 #include "build.h"
+#include "character/world.h"
 #include "condition.h"
 #include "stance.h"
 
 class Creature : public TimedObject {
  public:
   Creature(std::unique_ptr<Build> build);
-  // TODO this is a sign of bad design. Maybe I can fix my dependencies at some
-  // point and make creatures movable?
+  // TODO I needed to remove the move constructor because a lot of code depends
+  // on references and ptrs to creatures to stay valid. This is a sign of bad
+  // design. Maybe I can fix my dependencies at some point and make creatures
+  // movable?
   Creature(const Creature&) = delete;
   Creature& operator=(const Creature&) = delete;
 

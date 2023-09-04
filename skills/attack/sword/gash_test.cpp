@@ -29,12 +29,12 @@ class GashTest : public GwTest {
 };
 
 TEST_F(GashTest, NoActivationWithoutAdrenaline) {
-  ASSERT_FALSE(gash_->CanActivate(*warrior_, team(), enemies()));
+  ASSERT_FALSE(gash_->CanActivate(*warrior_, world()));
 }
 
 TEST_F(GashTest, ActivationWithAdrenaline) {
   gash_->AddAdrenaline(6 * Strike);
-  ASSERT_TRUE(gash_->CanActivate(*warrior_, team(), enemies()));
+  ASSERT_TRUE(gash_->CanActivate(*warrior_, world()));
 }
 
 TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
@@ -44,7 +44,7 @@ TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
   int expected_damage = WeaponStrikeDamage(*warrior_, *enemy_);
 
   OverrideRandomValueForTesting(10);
-  warrior_->GetAction() = gash_->Activate(*warrior_, team(), enemies());
+  warrior_->GetAction() = gash_->Activate(*warrior_, world());
   while (warrior_->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
@@ -67,7 +67,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
 
   OverrideRandomValueForTesting(10);
-  warrior_->GetAction() = gash_->Activate(*warrior_, team(), enemies());
+  warrior_->GetAction() = gash_->Activate(*warrior_, world());
   while (warrior_->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }
@@ -82,7 +82,7 @@ TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
 
   enemy_->AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
-  warrior_->GetAction() = gash_->Activate(*warrior_, team(), enemies());
+  warrior_->GetAction() = gash_->Activate(*warrior_, world());
   while (warrior_->GetAction().GetType() != Action::Type::Idle) {
     Tick();
   }

@@ -28,15 +28,14 @@ class BonettisDefenseTest : public GwTest {
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
-  ASSERT_FALSE(bonettis_defense_->CanActivate(*warrior_, {}, {}));
+  ASSERT_FALSE(bonettis_defense_->CanActivate(*warrior_, {}));
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
   bonettis_defense_->AddAdrenaline(8 * Strike);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, {}, {}));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, {}));
 
-  warrior_->GetAction() =
-      bonettis_defense_->Activate(*warrior_, team(), enemies());
+  warrior_->GetAction() = bonettis_defense_->Activate(*warrior_, world());
   for (int i = 1; i <= 5000; ++i) {
     ASSERT_NE(warrior_->GetStance(), nullptr);
     Tick();
@@ -47,10 +46,9 @@ TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
 TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
   warrior_->GetBuild().SetAttribute(Attribute::Tactics, 12);
   bonettis_defense_->AddAdrenaline(8 * Strike);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, team(), enemies()));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, world()));
 
-  warrior_->GetAction() =
-      bonettis_defense_->Activate(*warrior_, team(), enemies());
+  warrior_->GetAction() = bonettis_defense_->Activate(*warrior_, world());
   for (int i = 1; Time(i) <= 10 * Second; ++i) {
     ASSERT_NE(warrior_->GetStance(), nullptr);
     Tick();

@@ -5,16 +5,14 @@
 
 #include "character/creature.h"
 #include "character/skill.h"
+#include "character/world.h"
 #include "weapon/weapon.h"
 
 class AttackSkill : public Skill {
  public:
   AttackSkill() = default;
   virtual ~AttackSkill() = default;
-  bool CanActivate(
-      const Creature& creature,
-      const std::vector<std::unique_ptr<Creature>>& my_team,
-      const std::vector<std::unique_ptr<Creature>>& enemy_team) const override;
+  bool CanActivate(const Creature& creature, const World& world) const override;
 
  protected:
   virtual Weapon::Type WeaponType() const = 0;

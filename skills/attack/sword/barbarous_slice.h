@@ -5,6 +5,7 @@
 
 #include "../attack_skill.h"
 #include "character/creature.h"
+#include "character/world.h"
 #include "conditions/bleeding.h"
 
 class BarbarousSlice : public AttackSkill {
@@ -12,9 +13,7 @@ class BarbarousSlice : public AttackSkill {
   std::string Name() const override { return "Barbarous Slice"; }
 
  protected:
-  void ActivationMiddle(
-      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
-      std::vector<std::unique_ptr<Creature>>& enemy_team) override;
+  void ActivationMiddle(Creature& creature, World& world) override;
 
   Adrenaline AdrenalineCost() const override { return 6 * Strike; }
   int EnergyCost() const override { return 0; }

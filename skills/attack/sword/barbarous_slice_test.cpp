@@ -38,25 +38,24 @@ class BarbarousSliceTest : public GwTest {
 };
 
 TEST_F(BarbarousSliceTest, NoActivationWithoutAdrenaline) {
-  ASSERT_FALSE(barbarous_slice->CanActivate(*character, team(), enemies()));
+  ASSERT_FALSE(barbarous_slice->CanActivate(*character, world()));
 }
 
 TEST_F(BarbarousSliceTest, NoActivationWithTooLittleAdrenaline) {
   barbarous_slice->AddAdrenaline(5 * Strike);
-  ASSERT_FALSE(barbarous_slice->CanActivate(*character, team(), enemies()));
+  ASSERT_FALSE(barbarous_slice->CanActivate(*character, world()));
 }
 
 TEST_F(BarbarousSliceTest, ActivationWithEnoughAdrenaline) {
   barbarous_slice->AddAdrenaline(6 * Strike);
-  ASSERT_TRUE(barbarous_slice->CanActivate(*character, team(), enemies()));
+  ASSERT_TRUE(barbarous_slice->CanActivate(*character, world()));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   constexpr int kExpectedSkillDamage = 25;
 
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character->GetAction() =
-      barbarous_slice->Activate(*character, team(), enemies());
+  character->GetAction() = barbarous_slice->Activate(*character, world());
 
   // Override random base attack damage to 0. Then, only skill damage is
   // inflicted.
@@ -75,8 +74,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
   Time expected_duration = 13 * Second;
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character->GetAction() =
-      barbarous_slice->Activate(*character, team(), enemies());
+  character->GetAction() = barbarous_slice->Activate(*character, world());
 
   while (character->GetAction().GetType() != Action::Type::Idle) {
     Tick();
@@ -93,8 +91,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character->GetAction() =
-      barbarous_slice->Activate(*character, team(), enemies());
+  character->GetAction() = barbarous_slice->Activate(*character, world());
 
   character->SetStance(
       Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));

@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "base/clock.h"
+#include "character/world.h"
 
 class Action;
 class Creature;
@@ -12,15 +13,12 @@ class Skill : public TimedObject {
  public:
   Skill() = default;
 
-  virtual bool CanActivate(
-      const Creature& creature,
-      const std::vector<std::unique_ptr<Creature>>& my_team,
-      const std::vector<std::unique_ptr<Creature>>& enemy_team) const;
+  virtual bool CanActivate(const Creature& creature, const World& world) const;
   virtual ~Skill() override = default;
 
   Action Activate(Creature& creature,
-                  std::vector<std::unique_ptr<Creature>>& my_team,
-                  std::vector<std::unique_ptr<Creature>>& enemy_team);
+
+                  World& world);
 
   void Tick(Time) override final {
     recharge_ = std::max(Time(0), recharge_ - Millisecond);
@@ -41,17 +39,11 @@ class Skill : public TimedObject {
   virtual Time ActivationTime(Creature& character) const = 0;
 
   Creature* GetTarget(Creature& creature,
-                      std::vector<std::unique_ptr<Creature>>& my_team,
-                      std::vector<std::unique_ptr<Creature>>& enemy_team);
-  virtual void ActivationStart(
-      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
-      std::vector<std::unique_ptr<Creature>>& enemy_team);
-  virtual void ActivationMiddle(
-      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
-      std::vector<std::unique_ptr<Creature>>& enemy_team){};
-  virtual void ActivationEnd(
-      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
-      std::vector<std::unique_ptr<Creature>>& enemy_team);
+
+                      World& world);
+  virtual void ActivationStart(Creature& creature, World& world);
+  virtual void ActivationMiddle(Creature& creature, World& world){};
+  virtual void ActivationEnd(Creature& creature, World& world);
 
  private:
   Adrenaline adrenaline_ =

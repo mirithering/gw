@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "character/creature.h"
+#include "character/world.h"
 #include "weapon/dagger.h"
 #include "weapon/flatbow.h"
 #include "weapon/sword.h"
@@ -14,12 +15,13 @@ class GwTest : public ::testing::Test {
   GwTest() {}
 
  protected:
-  std::vector<std::unique_ptr<Creature>>& team() { return team_; }
-  std::vector<std::unique_ptr<Creature>>& enemies() { return enemies_; }
+  std::vector<std::unique_ptr<Creature>>& team() { return world_.team; }
+  std::vector<std::unique_ptr<Creature>>& enemies() { return world_.enemies; }
+
+  World& world() { return world_; }
 
  private:
-  std::vector<std::unique_ptr<Creature>> team_;
-  std::vector<std::unique_ptr<Creature>> enemies_;
+  World world_;
 };
 
 Creature* AddWarriorTo(std::vector<std::unique_ptr<Creature>>& group);

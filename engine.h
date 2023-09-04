@@ -3,9 +3,10 @@
 
 #include <bits/stdc++.h>
 
+#include "character/world.h"
+
 class Creature;
 
-void NextActions(std::vector<std::unique_ptr<Creature>>& team,
-                 std::vector<std::unique_ptr<Creature>>& enemies);
+void NextActions(World& world);
 
 #endif  // ENGINE_H

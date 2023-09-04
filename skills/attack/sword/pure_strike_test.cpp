@@ -28,8 +28,7 @@ class PureStrikeTest : public GwTest {
 TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
   auto* stance = static_cast<BlockEverythingStance*>(dummy_->SetStance(
       Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
-  character_->GetAction() =
-      pure_strike_->Activate(*character_, team(), enemies());
+  character_->GetAction() = pure_strike_->Activate(*character_, world());
   TickUntilIdle(character_);
   ASSERT_EQ(stance->attack_blocked_called_, 0);
   ASSERT_NE(dummy_->GetLostHealth(), 0);
@@ -41,8 +40,7 @@ TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
   static_cast<BlockEverythingStance*>(character_->SetStance(
       Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
 
-  character_->GetAction() =
-      pure_strike_->Activate(*character_, team(), enemies());
+  character_->GetAction() = pure_strike_->Activate(*character_, world());
   TickUntilIdle(character_);
   ASSERT_EQ(stance->attack_blocked_called_, 1);
   ASSERT_EQ(dummy_->GetLostHealth(), 0);

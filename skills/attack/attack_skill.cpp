@@ -4,12 +4,11 @@
 
 #include "character/creature.h"
 #include "character/skill.h"
+#include "character/world.h"
 #include "weapon/weapon.h"
 
-bool AttackSkill::CanActivate(
-    const Creature& creature,
-    const std::vector<std::unique_ptr<Creature>>& my_team,
-    const std::vector<std::unique_ptr<Creature>>& enemy_team) const {
+bool AttackSkill::CanActivate(const Creature& creature,
+                              const World& world) const {
   return creature.GetBuild().GetWeapon().GetType() == WeaponType() &&
-         Skill::CanActivate(creature, my_team, enemy_team);
+         Skill::CanActivate(creature, world);
 }

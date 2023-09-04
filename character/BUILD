@@ -15,6 +15,7 @@ cc_library(
         "damage.h",
         "skill.h",
         "stance.h",
+        "world.h",
     ],
     visibility = ["//visibility:public"],
     deps = [

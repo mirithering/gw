@@ -31,10 +31,12 @@ TEST_F(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
   attacker->GetBuild().SetSkills(
       std::make_unique<PureStrike>(), std::make_unique<JaizenjuStrike>(),
       std::make_unique<BarbarousSlice>(), std::make_unique<Gash>());
+  attacker->name_ = "Attacker";
 
   auto defender = AddWarriorTo(enemies());
   defender->GetBuild().SetAttribute(Attribute::Tactics, 12);
   defender->GetBuild().AddSkill(std::make_unique<BonettisDefense>());
+  defender->name_ = "Defender";
 
   for (int ticks = 0; ticks < kTime; ++ticks) {
     ASSERT_NE(attacker->GetAction().GetType(), Action::Type::Dead)
@@ -42,7 +44,7 @@ TEST_F(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
     ASSERT_NE(defender->GetAction().GetType(), Action::Type::Dead)
         << " " << ticks;
     Tick();
-    NextActions(team(), enemies());
+    NextActions(world());
   }
   ASSERT_EQ(defender->GetAction().GetType(), Action::Type::Dead);
 }
@@ -59,7 +61,7 @@ TEST_F(EngineTest, RangerAgainstWarriorAttackTiming) {
   int expected_ticks_to_warrior_idle = 1330;
   int expected_ticks_to_ranger_idle = 2025;
   int expected_ticks_to_ranger_attack = 2025 + 880;
-  NextActions(team(), enemies());
+  NextActions(world());
 
   int ticks = 0;
   for (; ticks < expected_ticks_to_warrior_attack; ++ticks) {

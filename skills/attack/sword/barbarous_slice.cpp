@@ -6,9 +6,7 @@
 #include "character/creature.h"
 #include "conditions/bleeding.h"
 
-void BarbarousSlice::ActivationMiddle(
-    Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
-    std::vector<std::unique_ptr<Creature>>& enemy_team) {
+void BarbarousSlice::ActivationMiddle(Creature& creature, World& world) {
   assert(target_ != nullptr);
   int skill_damage = kDamage[creature.GetBuild().GetAttribute(attribute)];
   Time bleeding_duration =

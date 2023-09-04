@@ -17,19 +17,13 @@ Creature* NextTarget(Creature& creature,
   return nullptr;
 }
 
-Action NextAction(Creature& creature,
-                  std::vector<std::unique_ptr<Creature>>& my_team,
-                  std::vector<std::unique_ptr<Creature>>& enemy_team) {
-  if (creature.target_ == nullptr) {
-    creature.target_ = NextTarget(creature, enemy_team);
-  }
-
+Action NextAction(Creature& creature, World& world) {
   for (unsigned int i = 0; i < creature.GetBuild().GetSkills().size(); ++i) {
     Skill* skill = creature.GetBuild().GetSkill<Skill>(i);
     assert(skill);
-    if (skill->CanActivate(creature, my_team, enemy_team)) {
+    if (skill->CanActivate(creature, world)) {
       LOG << creature.name_ << " activating " << skill->Name();
-      return skill->Activate(creature, my_team, enemy_team);
+      return skill->Activate(creature, world);
     }
   }
 
@@ -42,17 +36,24 @@ Action NextAction(Creature& creature,
 }
 }  // namespace
 
-void NextActions(std::vector<std::unique_ptr<Creature>>& team,
-                 std::vector<std::unique_ptr<Creature>>& enemies) {
-  for (auto& creature : team) {
+void NextActions(World& world) {
+  for (auto& creature : world.team) {
     if (creature->GetAction().GetType() == Action::Type::Idle) {
-      creature->GetAction() = NextAction(*creature, team, enemies);
+      if (creature->target_ == nullptr) {
+        creature->target_ = NextTarget(*creature, world.enemies);
+      }
+
+      creature->GetAction() = NextAction(*creature, world);
     }
   }
 
-  for (auto& creature : enemies) {
+  for (auto& creature : world.enemies) {
     if (creature->GetAction().GetType() == Action::Type::Idle) {
-      creature->GetAction() = NextAction(*creature, enemies, team);
+      if (creature->target_ == nullptr) {
+        creature->target_ = NextTarget(*creature, world.team);
+      }
+
+      creature->GetAction() = NextAction(*creature, world);
     }
   }
 }

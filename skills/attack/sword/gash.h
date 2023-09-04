@@ -12,9 +12,7 @@ class Gash : public AttackSkill {
   std::string Name() const override { return "Gash"; }
 
  protected:
-  void ActivationMiddle(
-      Creature& creature, std::vector<std::unique_ptr<Creature>>& my_team,
-      std::vector<std::unique_ptr<Creature>>& enemy_team) override {
+  void ActivationMiddle(Creature& creature, World& world) override {
     assert(target_);
     bool is_bleeding = target_->HasCondition(Condition::Type::Bleeding);
     int skill_damage = 0;

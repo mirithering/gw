@@ -37,7 +37,7 @@ TEST_F(ArcingShotTest, Test) {
   OverrideRandomValueForTesting((22));
   ranger->target_ = enemy;
 
-  ranger->GetAction() = arcing_shot->Activate(*ranger, team(), enemies());
+  ranger->GetAction() = arcing_shot->Activate(*ranger, world());
 
   int until_shot_fired =
       (2025 * Millisecond).value();  // flatbow attack duration
