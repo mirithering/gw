@@ -6,6 +6,7 @@ cc_library(
         "effect.cpp",
         "profession.cpp",
         "random.cpp",
+        "units.cpp",
     ],
     hdrs = [
         "attribute.h",
