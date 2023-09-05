@@ -116,7 +116,8 @@ TEST(ActionTest, MeeleWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
   std::unique_ptr<Creature> character =
       ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>());
 
-  character->GetAction() = Action::WeaponAttack(*character, *character);
+  character->target_ = character.get();
+  character->StartWeaponAttack();
 
   Time expect_attack_at = character->GetBuild().GetWeapon().AttackDuration() +
                           character->GetBuild().GetWeapon().FlightTime();

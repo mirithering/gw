@@ -2,6 +2,7 @@
 
 #include <bits/stdc++.h>
 
+#include "action.h"
 #include "base/attribute.h"
 #include "base/logging.h"
 #include "base/profession.h"
@@ -30,7 +31,8 @@ std::map<Profession, int> kEnergyRegeneration = {
 constexpr int kMaxHealth = 480;  // At level 20
 }  // namespace
 
-Creature::Creature(std::unique_ptr<Build> build) : build_(std::move(build)) {
+Creature::Creature(std::unique_ptr<Build> build, Position initial_position)
+    : build_(std::move(build)), position_(initial_position) {
   health_lost_ = 0;
   energy_ = kMaxEnergy[build_->GetFirstProfession()];
 }
@@ -43,8 +45,8 @@ void Creature::Tick(Time time_passed) {
     HealthGeneration();
   }
 
-  if (GetAction().Tick() == Action::Result::End) {
-    GetAction() = kActionIdle;
+  if (action_.Tick() == Action::Result::End) {
+    action_ = kActionIdle;
   }
 }
 
@@ -168,4 +170,14 @@ void Creature::Die() {
                 });
   health_lost_ = GetMaxHealth();
   energy_ = 0;
+}
+
+void Creature::UseSkill(Skill* skill, World& world) {
+  assert(skill->CanActivate(*this, world));
+  action_ = skill->Activate(*this, world);
+}
+
+void Creature::StartWeaponAttack() {
+  assert(target_ != nullptr);
+  action_ = Action::WeaponAttack(*this, *target_);
 }

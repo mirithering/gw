@@ -35,7 +35,7 @@ TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
   bonettis_defense_->AddAdrenaline(8 * Strike);
   ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, {}));
 
-  warrior_->GetAction() = bonettis_defense_->Activate(*warrior_, world());
+  warrior_->UseSkill(bonettis_defense_, world());
   for (int i = 1; i <= 5000; ++i) {
     ASSERT_NE(warrior_->GetStance(), nullptr);
     Tick();
@@ -48,7 +48,7 @@ TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
   bonettis_defense_->AddAdrenaline(8 * Strike);
   ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, world()));
 
-  warrior_->GetAction() = bonettis_defense_->Activate(*warrior_, world());
+  warrior_->UseSkill(bonettis_defense_, world());
   for (int i = 1; Time(i) <= 10 * Second; ++i) {
     ASSERT_NE(warrior_->GetStance(), nullptr);
     Tick();

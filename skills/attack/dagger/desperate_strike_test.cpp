@@ -36,8 +36,8 @@ TEST_F(DesperateStrikeTest, AdditionalDamageIfBelowHealth) {
   int skill_damage = 51;
 
   assassin->target_ = enemy;
-  assassin->GetAction() = desperate_strike->Activate(*assassin, world());
-  TickUntilIdle(assassin);
+  assassin->UseSkill(desperate_strike, world());
+  AwaitIdle(assassin);
   EXPECT_EQ(enemy->GetLostHealth(), weapon_damage + skill_damage);
 }
 
@@ -53,7 +53,7 @@ TEST_F(DesperateStrikeTest, NoAdditionalDamageIfNotBelowHealth) {
   int skill_damage = 0;
 
   assassin->target_ = enemy;
-  assassin->GetAction() = desperate_strike->Activate(*assassin, world());
-  TickUntilIdle(assassin);
+  assassin->UseSkill(desperate_strike, world());
+  AwaitIdle(assassin);
   EXPECT_EQ(enemy->GetLostHealth(), weapon_damage + skill_damage);
 }

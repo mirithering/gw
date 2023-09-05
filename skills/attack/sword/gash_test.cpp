@@ -44,10 +44,8 @@ TEST_F(GashTest, GashIsNormalAttackIfNotBleeding) {
   int expected_damage = WeaponStrikeDamage(*warrior_, *enemy_);
 
   OverrideRandomValueForTesting(10);
-  warrior_->GetAction() = gash_->Activate(*warrior_, world());
-  while (warrior_->GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  warrior_->UseSkill(gash_, world());
+  AwaitIdle(warrior_);
 
   ASSERT_EQ(enemy_->GetLostHealth(), expected_damage);
   ASSERT_FALSE(enemy_->HasCondition(Condition::Type::DeepWound));
@@ -67,10 +65,8 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
 
   OverrideRandomValueForTesting(10);
-  warrior_->GetAction() = gash_->Activate(*warrior_, world());
-  while (warrior_->GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  warrior_->UseSkill(gash_, world());
+  AwaitIdle(warrior_);
 
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::DeepWound));
@@ -82,10 +78,8 @@ TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
 
   enemy_->AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
-  warrior_->GetAction() = gash_->Activate(*warrior_, world());
-  while (warrior_->GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  warrior_->UseSkill(gash_, world());
+  AwaitIdle(warrior_);
 
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::DeepWound));
 }

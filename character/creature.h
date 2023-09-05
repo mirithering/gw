@@ -15,7 +15,8 @@
 
 class Creature : public TimedObject {
  public:
-  Creature(std::unique_ptr<Build> build);
+  Creature(std::unique_ptr<Build> build,
+           Position initial_position = {Inches(0), Inches(0)});
   // TODO I needed to remove the move constructor because a lot of code depends
   // on references and ptrs to creatures to stay valid. This is a sign of bad
   // design. Maybe I can fix my dependencies at some point and make creatures
@@ -57,8 +58,11 @@ class Creature : public TimedObject {
 
   Stance* GetStance() { return stance_.get(); }
 
-  // TODO return const and add a function to do stuff.
-  Action& GetAction() { return action_; }
+  Action::Type GetActionType() const { return action_.GetType(); }
+
+  void UseSkill(Skill* skill, World& world);
+
+  void StartWeaponAttack();
 
   void AddProjectile(Event<>&& projectile) {
     incoming_projectiles_.push_back(std::move(projectile));
@@ -93,6 +97,8 @@ class Creature : public TimedObject {
   bool WillBlockAttack(Weapon::Type type) const;
 
   std::unique_ptr<Build> build_;
+
+  Position position_;
 
   Action action_ = kActionIdle;
 

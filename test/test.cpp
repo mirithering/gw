@@ -27,8 +27,8 @@ Creature* AddAssassinTo(std::vector<std::unique_ptr<Creature>>& group) {
   return group.back().get();
 }
 
-void TickUntilIdle(Creature* creature) {
-  while (creature->GetAction().GetType() != Action::Type::Idle) {
+void AwaitIdle(Creature* creature) {
+  while (creature->GetActionType() != Action::Type::Idle) {
     Tick();
   }
 }

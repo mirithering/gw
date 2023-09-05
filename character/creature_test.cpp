@@ -8,6 +8,7 @@
 #include "conditions/bleeding.h"
 #include "conditions/deep_wound.h"
 #include "skills/attack/sword/barbarous_slice.h"
+#include "skills/attack/sword/pure_strike.h"
 #include "skills/bonettis_defense.h"
 #include "test/test.h"
 #include "weapon/sword.h"
@@ -20,6 +21,8 @@ class CreatureTest : public GwTest {
         creature_->GetBuild().AddSkill(std::make_unique<BonettisDefense>());
     barbarous_slice_ =
         creature_->GetBuild().AddSkill(std::make_unique<BarbarousSlice>());
+    pure_strike_ =
+        creature_->GetBuild().AddSkill(std::make_unique<PureStrike>());
 
     dummy_ = AddWarriorTo(enemies());
   }
@@ -27,6 +30,8 @@ class CreatureTest : public GwTest {
  protected:
   BonettisDefense* bonettis_defense_;
   BarbarousSlice* barbarous_slice_;
+  PureStrike* pure_strike_;
+
   Creature* creature_;
   Creature* dummy_;
 };
@@ -135,4 +140,20 @@ TEST_F(CreatureTest, SecondConditionDoesNotOverrideIfShorter) {
       Effect<Condition>(8 * Second, std::make_unique<Bleeding>()));
   ASSERT_EQ(bleeding_, nullptr);
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
+}
+
+TEST_F(CreatureTest, ActivateSkillDoesDamage) {
+  creature_->target_ = dummy_;
+  creature_->UseSkill(pure_strike_, world());
+  ASSERT_EQ(creature_->GetActionType(), Action::Type::Busy);
+  AwaitIdle(creature_);
+  ASSERT_NE(dummy_->GetLostHealth(), 0);
+}
+
+TEST_F(CreatureTest, StartWeaponAttackDoesDamage) {
+  creature_->target_ = dummy_;
+  creature_->StartWeaponAttack();
+  ASSERT_EQ(creature_->GetActionType(), Action::Type::Busy);
+  AwaitIdle(creature_);
+  ASSERT_NE(dummy_->GetLostHealth(), 0);
 }

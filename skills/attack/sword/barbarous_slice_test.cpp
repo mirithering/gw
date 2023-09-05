@@ -55,7 +55,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   constexpr int kExpectedSkillDamage = 25;
 
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character->GetAction() = barbarous_slice->Activate(*character, world());
+  character->UseSkill(barbarous_slice, world());
 
   // Override random base attack damage to 0. Then, only skill damage is
   // inflicted.
@@ -64,9 +64,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   character->SetStance(
       Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
-  while (character->GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  AwaitIdle(character);
 
   ASSERT_EQ(dummy->GetLostHealth(), kExpectedSkillDamage);
 }
@@ -74,9 +72,9 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
 TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
   Time expected_duration = 13 * Second;
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character->GetAction() = barbarous_slice->Activate(*character, world());
+  character->UseSkill(barbarous_slice, world());
 
-  while (character->GetAction().GetType() != Action::Type::Idle) {
+  while (character->GetActionType() != Action::Type::Idle) {
     Tick();
     if (dummy->HasCondition(Condition::Type::Bleeding)) {
       expected_duration--;
@@ -91,14 +89,12 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
   barbarous_slice->AddAdrenaline(6 * Strike);
-  character->GetAction() = barbarous_slice->Activate(*character, world());
+  character->UseSkill(barbarous_slice, world());
 
   character->SetStance(
       Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
-  while (character->GetAction().GetType() != Action::Type::Idle) {
-    Tick();
-  }
+  AwaitIdle(character);
 
   ASSERT_FALSE(dummy->HasCondition(Condition::Type::Bleeding));
 }

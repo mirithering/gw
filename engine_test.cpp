@@ -39,14 +39,12 @@ TEST_F(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
   defender->name_ = "Defender";
 
   for (int ticks = 0; ticks < kTime; ++ticks) {
-    ASSERT_NE(attacker->GetAction().GetType(), Action::Type::Dead)
-        << " " << ticks;
-    ASSERT_NE(defender->GetAction().GetType(), Action::Type::Dead)
-        << " " << ticks;
+    ASSERT_NE(attacker->GetActionType(), Action::Type::Dead) << " " << ticks;
+    ASSERT_NE(defender->GetActionType(), Action::Type::Dead) << " " << ticks;
     Tick();
     NextActions(world());
   }
-  ASSERT_EQ(defender->GetAction().GetType(), Action::Type::Dead);
+  ASSERT_EQ(defender->GetActionType(), Action::Type::Dead);
 }
 
 TEST_F(EngineTest, RangerAgainstWarriorAttackTiming) {
@@ -65,29 +63,29 @@ TEST_F(EngineTest, RangerAgainstWarriorAttackTiming) {
 
   int ticks = 0;
   for (; ticks < expected_ticks_to_warrior_attack; ++ticks) {
-    ASSERT_EQ(warrior->GetAction().GetType(), Action::Type::Busy) << ticks;
-    ASSERT_EQ(ranger->GetAction().GetType(), Action::Type::Busy) << ticks;
+    ASSERT_EQ(warrior->GetActionType(), Action::Type::Busy) << ticks;
+    ASSERT_EQ(ranger->GetActionType(), Action::Type::Busy) << ticks;
     ASSERT_EQ(ranger->GetLostHealth(), 0) << ticks;
     ASSERT_EQ(warrior->GetLostHealth(), 0) << ticks;
     Tick();
   }
   for (; ticks < expected_ticks_to_warrior_idle; ++ticks) {
-    ASSERT_EQ(warrior->GetAction().GetType(), Action::Type::Busy) << ticks;
-    ASSERT_EQ(ranger->GetAction().GetType(), Action::Type::Busy) << ticks;
+    ASSERT_EQ(warrior->GetActionType(), Action::Type::Busy) << ticks;
+    ASSERT_EQ(ranger->GetActionType(), Action::Type::Busy) << ticks;
     ASSERT_NE(ranger->GetLostHealth(), 0) << ticks;
     ASSERT_EQ(warrior->GetLostHealth(), 0) << ticks;
     Tick();
   }
   for (; ticks < expected_ticks_to_ranger_idle; ++ticks) {
-    ASSERT_EQ(warrior->GetAction().GetType(), Action::Type::Idle) << ticks;
-    ASSERT_EQ(ranger->GetAction().GetType(), Action::Type::Busy) << ticks;
+    ASSERT_EQ(warrior->GetActionType(), Action::Type::Idle) << ticks;
+    ASSERT_EQ(ranger->GetActionType(), Action::Type::Busy) << ticks;
     ASSERT_NE(ranger->GetLostHealth(), 0) << ticks;
     ASSERT_EQ(warrior->GetLostHealth(), 0) << ticks;
     Tick();
   }
   for (; ticks < expected_ticks_to_ranger_attack; ++ticks) {
-    ASSERT_EQ(warrior->GetAction().GetType(), Action::Type::Idle) << ticks;
-    ASSERT_EQ(ranger->GetAction().GetType(), Action::Type::Idle) << ticks;
+    ASSERT_EQ(warrior->GetActionType(), Action::Type::Idle) << ticks;
+    ASSERT_EQ(ranger->GetActionType(), Action::Type::Idle) << ticks;
     ASSERT_NE(ranger->GetLostHealth(), 0) << ticks;
     ASSERT_EQ(warrior->GetLostHealth(), 0) << ticks;
     Tick();

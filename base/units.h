@@ -18,6 +18,8 @@ class Unit {
  public:
   explicit Unit(ValueType value) : value_(value){};
   Unit() : value_(0){};
+  Unit(const Unit&) = default;
+  Unit& operator=(const Unit&) = default;
 
   // prefix increment
   Unit& operator++() {

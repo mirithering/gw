@@ -31,8 +31,8 @@ TEST_F(CripplingSlashTest, InflictBleedingAndCrippled) {
   crippling_slash->AddAdrenaline(6 * Strike);
   attacker->target_ = defender;
 
-  attacker->GetAction() = crippling_slash->Activate(*attacker, world());
-  TickUntilIdle(attacker);
+  attacker->UseSkill(crippling_slash, world());
+  AwaitIdle(attacker);
   ASSERT_TRUE(defender->HasCondition(Condition::Type::Bleeding));
   ASSERT_TRUE(defender->HasCondition(Condition::Type::Crippled));
 }

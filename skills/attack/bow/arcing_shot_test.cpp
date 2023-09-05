@@ -37,15 +37,15 @@ TEST_F(ArcingShotTest, Test) {
   OverrideRandomValueForTesting((22));
   ranger->target_ = enemy;
 
-  ranger->GetAction() = arcing_shot->Activate(*ranger, world());
+  ranger->UseSkill(arcing_shot, world());
 
   int until_shot_fired =
       (2025 * Millisecond).value();  // flatbow attack duration
   for (int i = 0; i < until_shot_fired; ++i) {
-    EXPECT_EQ(ranger[0].GetAction().GetType(), Action::Type::Busy);
+    EXPECT_EQ(ranger[0].GetActionType(), Action::Type::Busy);
     Tick();
   }
-  EXPECT_EQ(ranger[0].GetAction().GetType(), Action::Type::Idle);
+  EXPECT_EQ(ranger[0].GetActionType(), Action::Type::Idle);
 
   // 150% of flatbow flight time
   int flight_time = 1320;

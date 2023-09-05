@@ -29,6 +29,6 @@ Creature* AddRangerTo(std::vector<std::unique_ptr<Creature>>& group);
 
 Creature* AddAssassinTo(std::vector<std::unique_ptr<Creature>>& group);
 
-void TickUntilIdle(Creature* creature);
+void AwaitIdle(Creature* creature);
 
 #endif  // TEST_TEST_H

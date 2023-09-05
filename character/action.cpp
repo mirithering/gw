@@ -14,7 +14,7 @@ Action Action::WeaponAttack(Creature& source, Creature& target) {
 
   std::function<Action::Result(Time duration)> tick = [&, attack_duration](
                                                           Time duration) {
-    if (target.GetAction().type_ == Action::Type::Dead) {
+    if (target.GetActionType() == Action::Type::Dead) {
       return Action::Result::End;
     }
     // There are two types of weapons: Meele weapons attack after half of the
