@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 
 #include "base/attribute.h"
+#include "base/logging.h"
 #include "base/random.h"
 #include "creature.h"
 #include "damage.h"
@@ -10,6 +11,7 @@
 
 Action Action::WeaponAttack(Creature& source, Creature& target) {
   const Weapon& weapon = source.GetBuild().GetWeapon();
+  // TODO walk towards target if not in range.
   Time attack_duration = weapon.AttackDuration();
 
   std::function<Action::Result(Time duration)> tick = [&, attack_duration](
@@ -38,12 +40,32 @@ Action Action::WeaponAttack(Creature& source, Creature& target) {
 
   std::function<void()> end = [&]() {
     if (IsRanged(weapon.GetType())) {
+      Inches distance_to_target =
+          Distance(source.GetPosition(), target.GetPosition());
+      assert(distance_to_target <= weapon.GetRange());
+
+      Time flight_time = distance_to_target / weapon.GetFlightSpeed();
       target.AddProjectile(
-          Event<>(weapon.FlightTime(), [&]() { source.WeaponAttack(target); }));
+          Event<>(flight_time, [&]() { source.WeaponAttack(target); }));
     }
   };
 
   return Action(Action::Type::Busy, attack_duration, tick, end);
+}
+
+Action Action::WalkTowardsUntilInRange(Creature& source, const Creature& target,
+                                       Inches range) {
+  std::function<Action::Result(Time duration)> tick = [&,
+                                                       range](Time duration) {
+    if (InRange(source.GetPosition(), target.GetPosition(), range)) {
+      return Action::Result::End;
+    }
+    source.OneStepTowards(target.GetPosition());
+    return Action::Result::Continue;
+  };
+  // TODO I'm guessing that we would give up eventually, need to figure out what
+  // NPCs do if they can never reach their target.
+  return Action(Action::Type::Busy, Time(INT_MAX), tick, &DoNothingEnd);
 }
 
 Action::Result DoNothingTick(Time) { return Action::Result::Continue; }

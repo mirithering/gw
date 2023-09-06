@@ -24,6 +24,8 @@ class Dagger : public Weapon {
   }  // TODO some daggers to slashing damage.
   Attribute GetAttribute() const override { return Attribute::DaggerMastery; }
   Type GetType() const override { return Type::Dagger; }
+
+  Inches GetRange() const override { return AdjacentRange; }
 };
 
 #endif  // WEAPON_DAGGER_H

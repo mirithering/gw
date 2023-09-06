@@ -114,7 +114,7 @@ T of(T value, Percent percent) {
 using Inches = Unit<UnitType::Inches, double>;
 
 const Inches AdjacentRange = Inches(144);
-const Inches EarshotRange = Inches(1000);
+const Inches EarshotRange = Inches(1020);
 
 const Inches CastingRange = Inches(1248);
 
@@ -141,7 +141,12 @@ bool InRange(const Position& p1, const Position& p2, const Inches& range);
 // Speed is measured in Inches per millisecond
 using Speed = Unit<UnitType::Speed, Inches>;
 
-const Speed WalkingSpeed = Speed(Inches(0.250));
+// TODO Myabe I can do a bit better at calculating this. Also it's just the the
+// speed for walking straight in front. You're slower on diagonals and
+// backwards.
+const Speed WalkingSpeed = Speed(Inches(EarshotRange / 4000.0));
+
+Time operator/(Inches lhs, Speed rhs);
 
 using Direction = std::pair<Inches, Inches>;
 

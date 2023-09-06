@@ -19,11 +19,16 @@ class Flatbow : public Weapon {
   Flatbow() : Weapon({kFlatBowMinDamage, kFlatBowMaxDamage}){};
   Flatbow(int min_damage, int max_damage) : Weapon({min_damage, max_damage}){};
 
-  Time FlightTime() const override { return kFlatBowFlightTime; }
+  Time FlightTimeDeprecated() const override { return kFlatBowFlightTime; }
   Time AttackDuration() const override { return kFlatBowAttackDuration; }
   DamageType GetDamageType() const override { return DamageType::Piercing; }
   Attribute GetAttribute() const override { return Attribute::Marksmanship; }
   Type GetType() const override { return Type::Bow; }
+
+  Inches GetRange() const override { return FlatbowRange; }
+  Speed GetFlightSpeed() const override {
+    return Speed(Inches(1.1409));
+  }  // 880ms for 1004inches.
 };
 
 #endif  // WEAPON_FLATBOW_H

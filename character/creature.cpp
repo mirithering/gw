@@ -181,3 +181,13 @@ void Creature::StartWeaponAttack() {
   assert(target_ != nullptr);
   action_ = Action::WeaponAttack(*this, *target_);
 }
+
+void Creature::WalkTowards(const Creature& target, Inches target_range) {
+  action_ = Action::WalkTowardsUntilInRange(*this, target, target_range);
+}
+
+void Creature::OneStepTowards(Position target) {
+  Direction direction = Towards(position_, target);
+  // TODO implement speed modifiers.
+  position_ = NextPosition(position_, direction, WalkingSpeed);
+}

@@ -30,8 +30,14 @@ class Creature : public TimedObject {
 
   bool ReceiveWeaponDamage(int damage, Weapon::Type type,
                            bool blockable = true);
+
+  // TODO I think I can make this one private if I move the weapon attack action
+  // over here.
   bool WeaponAttack(Creature& target, int skill_damage = 0,
                     bool blockable = true);
+
+  // TODO I think I can make this private if I move walking action over here.
+  void OneStepTowards(Position target);
 
   void UseEnergy(int use_energy) {
     assert(energy_ >= use_energy);
@@ -64,6 +70,8 @@ class Creature : public TimedObject {
 
   void StartWeaponAttack();
 
+  void WalkTowards(const Creature& target, Inches target_range);
+
   void AddProjectile(Event<>&& projectile) {
     incoming_projectiles_.push_back(std::move(projectile));
   }
@@ -88,6 +96,8 @@ class Creature : public TimedObject {
       callbacks_block_chance_;
   FunctionList<void(Creature& creature, Weapon::Type type)>
       callbacks_attack_blocked_;
+
+  Position GetPosition() const { return position_; }
 
  private:
   void HealthGeneration();
@@ -119,6 +129,16 @@ std::unique_ptr<Creature> ConstructCreature(
     std::map<Attribute, int> attributes = {}, std::unique_ptr<S>... skills) {
   return std::make_unique<Creature>(ConstructBuild(
       first_profession, std::move(weapon), attributes, std::move(skills)...));
+}
+
+template <class W, class... S>
+std::unique_ptr<Creature> ConstructCreature(
+    Profession first_profession, std::unique_ptr<W> weapon, Position position,
+    std::map<Attribute, int> attributes = {}, std::unique_ptr<S>... skills) {
+  return std::make_unique<Creature>(
+      ConstructBuild(first_profession, std::move(weapon), attributes,
+                     std::move(skills)...),
+      position);
 }
 
 #endif  // CREATURE_H

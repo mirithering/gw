@@ -39,6 +39,10 @@ class Action {
 
   static Action WeaponAttack(Creature& source, Creature& target);
 
+  // Walks towards another character until in range.
+  static Action WalkTowardsUntilInRange(Creature& source,
+                                        const Creature& target, Inches range);
+
   Type GetType() const { return type_; }
 
  private:

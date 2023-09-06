@@ -18,7 +18,7 @@ class ArcingShot : public AttackSkill {
     // TODO flight time actually also depends on distance to target, and
     // character's modifiers.
     Time flight_time =
-        of(creature.GetBuild().GetWeapon().FlightTime(), Percent(150));
+        of(creature.GetBuild().GetWeapon().FlightTimeDeprecated(), Percent(150));
     bool blockable = false;
 
     assert(target_ != nullptr);

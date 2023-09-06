@@ -37,9 +37,11 @@ class Weapon {
   virtual Attribute GetAttribute() const = 0;
   virtual Type GetType() const = 0;
 
+  virtual Inches GetRange() const = 0;
+  virtual Speed GetFlightSpeed() const { return Speed(Inches(0)); }
   // TODO I think flight time depends on distance. Need to use speed and
   // distance later.
-  virtual Time FlightTime() const { return Time(0); }
+  virtual Time FlightTimeDeprecated() const { return Time(0); }
 
   int MinDamage() const { return damage_.first; };
   int MaxDamage() const { return damage_.second; }

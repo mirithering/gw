@@ -25,6 +25,7 @@ cc_test(
     ],
     deps = [
         "weapon",
+        "//base",
         "@com_google_googletest//:gtest_main",
     ],
 )

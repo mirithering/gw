@@ -2,8 +2,10 @@
 
 #include <gtest/gtest.h>
 
+#include "base/logging.h"
 #include "base/profession.h"
 #include "creature.h"
+#include "test/test.h"
 #include "weapon/dagger.h"
 #include "weapon/flatbow.h"
 #include "weapon/sword.h"
@@ -112,20 +114,96 @@ TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
   ASSERT_EQ(action.Tick(), Action::Result::End);
 }
 
-TEST(ActionTest, MeeleWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
+TEST(ActionTest, RangedWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
   std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>());
+      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
+                        Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Creature> target =
+      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
+                        Position({Inches(1000), Inches(0)}));
+  const Weapon& bow = character->GetBuild().GetWeapon();
 
-  character->target_ = character.get();
+  character->target_ = target.get();
   character->StartWeaponAttack();
 
-  Time expect_attack_at = character->GetBuild().GetWeapon().AttackDuration() +
-                          character->GetBuild().GetWeapon().FlightTime();
+  Time expected_flight_time = Inches(1000) / bow.GetFlightSpeed();
+
+  Time expect_attack_at = bow.AttackDuration() + expected_flight_time;
+  LOG << expect_attack_at;
   for (int i = 0; i < expect_attack_at.value(); ++i) {
-    ASSERT_EQ(character->GetLostHealth(), 0);
+    ASSERT_EQ(target->GetLostHealth(), 0) << i;
     Tick();
   }
-  ASSERT_NE(character->GetLostHealth(), 0);
+  ASSERT_NE(target->GetLostHealth(), 0);
+}
+
+TEST(ActionTest, WalkTowardsEndsAfterOneTickIfAlreadyInRange) {
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
+                        Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Creature> target =
+      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
+                        Position({Inches(1000), Inches(0)}));
+
+  character->WalkTowards(*target, Inches(1000));
+  Tick();
+  ASSERT_EQ(character->GetActionType(), Action::Type::Idle);
+}
+
+TEST(ActionTest, WalkTowardsWalksTowardsUntilTargetRangeReached) {
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
+                        Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Creature> target =
+      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
+                        Position({Inches(1000), Inches(0)}));
+
+  character->WalkTowards(*target, Inches(50));
+  AwaitIdle(character.get());
+  ASSERT_TRUE(
+      InRange(character->GetPosition(), target->GetPosition(), Inches(50)));
+}
+
+TEST(ActionTest, WalkTowardsWalksTowardsTargetEvenIfItMovesTowardsMe) {
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
+                        Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Creature> target =
+      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
+                        Position({Inches(1000), Inches(0)}));
+
+  character->WalkTowards(*target, Inches(50));
+  target->WalkTowards(*character, Inches(50));
+  AwaitIdle(character.get());
+  AwaitIdle(target.get());
+  ASSERT_TRUE(
+      InRange(character->GetPosition(), target->GetPosition(), Inches(50)));
+}
+
+TEST(ActionTest, WalkTowardsTargetWalksTowardsTargetEvenIfItMovesAwayFromMe) {
+  std::unique_ptr<Creature> character =
+      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
+                        Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Creature> target =
+      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
+                        Position({Inches(1000), Inches(0)}));
+  std::unique_ptr<Creature> target_target =
+      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
+                        Position({Inches(2000), Inches(0)}));
+
+  character->WalkTowards(*target, Inches(50));
+  target->WalkTowards(*target_target, Inches(50));
+
+  AwaitIdle(character.get());
+  AwaitIdle(target.get());
+
+  ASSERT_TRUE(Distance(character->GetPosition(),
+                       Position({Inches(1900), Inches(0)})) < Inches(1))
+      << Distance(character->GetPosition(),
+                  Position({Inches(1900), Inches(0)}));
+  ASSERT_TRUE(Distance(target->GetPosition(),
+                       Position({Inches(1950), Inches(0)})) < Inches(1))
+      << Distance(target->GetPosition(), Position({Inches(1950), Inches(0)}));
 }
 
 // TODO double strike chance for daggers.

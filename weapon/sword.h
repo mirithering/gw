@@ -22,6 +22,8 @@ class Sword : public Weapon {
   DamageType GetDamageType() const override { return DamageType::Slashing; }
   Attribute GetAttribute() const override { return Attribute::Swordsmanship; }
   Type GetType() const override { return Type::Sword; }
+
+  Inches GetRange() const override { return AdjacentRange; }
 };
 
 #endif  // WEAPON_SWORD_H

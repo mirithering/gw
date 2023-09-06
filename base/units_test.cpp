@@ -79,14 +79,16 @@ TEST(UnitsTest, MovingOutOfAggroCircleTakes4SecondsDiagonally) {
   ASSERT_FALSE(InRange(initial, p, EarshotRange));
 }
 
-TEST(UnitsTest, MovingOutOfAggroCircleTakes4SecondsWithRandomDirection) {
+// This takes a millisecond longer because my value for speed is not a nice
+// number.
+TEST(UnitsTest, MovingOutOfAggroCircleTakesRoughly4SecondsWithRandomDirection) {
   Position p = {Inches(0), Inches(0)};
   Position initial = p;
   const Direction d = {Inches(153), Inches(185)};
   const Speed s = WalkingSpeed;
-  for (int i = 0; Time(i) <= 4 * Second; ++i) {
-    ASSERT_TRUE(InRange(initial, p, EarshotRange));
+  for (int i = 0; Time(i) <= 4 * Second - Time(1); ++i) {
+    ASSERT_TRUE(InRange(initial, p, EarshotRange)) << Distance(initial, p);
     p = NextPosition(p, d, s);
   }
-  ASSERT_FALSE(InRange(initial, p, EarshotRange));
+  ASSERT_FALSE(InRange(initial, p, EarshotRange)) << Distance(initial, p);
 }
