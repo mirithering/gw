@@ -8,6 +8,7 @@
 #include "base/profession.h"
 #include "character/creature.h"
 #include "character/skill.h"
+#include "skills/attack/bow/arcing_shot.h"
 #include "skills/attack/sword/barbarous_slice.h"
 #include "skills/attack/sword/gash.h"
 #include "skills/attack/sword/jaizenju_strike.h"
@@ -37,6 +38,32 @@ TEST_F(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
   defender->GetBuild().SetAttribute(Attribute::Tactics, 12);
   defender->GetBuild().AddSkill(std::make_unique<BonettisDefense>());
   defender->name_ = "Defender";
+
+  for (int ticks = 0; ticks < kTime; ++ticks) {
+    ASSERT_NE(attacker->GetActionType(), Action::Type::Dead) << " " << ticks;
+    ASSERT_NE(defender->GetActionType(), Action::Type::Dead) << " " << ticks;
+    Tick();
+    NextActions(world());
+  }
+  ASSERT_EQ(defender->GetActionType(), Action::Type::Dead);
+}
+
+// TODO add kiting! and crippled
+TEST_F(EngineTest, RangerAndWarriorWalkTowardsAndFight) {
+  int kTime = 24546;
+
+  auto attacker = AddWarriorTo(team());
+  attacker->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);
+  attacker->GetBuild().SetAttribute(Attribute::Strength, 12);
+  attacker->GetBuild().SetSkills(
+      std::make_unique<PureStrike>(), std::make_unique<JaizenjuStrike>(),
+      std::make_unique<BarbarousSlice>(), std::make_unique<Gash>());
+  attacker->SetPosition({Inches(2000), Inches(0)});
+
+  auto defender = AddRangerTo(enemies());
+  defender->GetBuild().SetAttribute(Attribute::Marksmanship, 12);
+  defender->GetBuild().AddSkill(std::make_unique<ArcingShot>());
+  defender->SetPosition({Inches(0), Inches(2000)});
 
   for (int ticks = 0; ticks < kTime; ++ticks) {
     ASSERT_NE(attacker->GetActionType(), Action::Type::Dead) << " " << ticks;

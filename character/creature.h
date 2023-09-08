@@ -99,6 +99,9 @@ class Creature : public TimedObject {
 
   Position GetPosition() const { return position_; }
 
+  // TODO should that be used?
+  void SetPosition(Position position) { position_ = position; }
+
  private:
   void HealthGeneration();
   void EnergyGeneration();
@@ -111,6 +114,7 @@ class Creature : public TimedObject {
   Position position_;
 
   Action action_ = kActionIdle;
+  Action next_action_ = kActionIdle;
 
   std::vector<Event<>> incoming_projectiles_;
 

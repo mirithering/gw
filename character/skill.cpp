@@ -3,18 +3,17 @@
 #include <bits/stdc++.h>
 
 #include "character/action.h"
-#include "character/world.h"
 #include "character/creature.h"
 #include "character/damage.h"
+#include "character/world.h"
 
-bool Skill::CanActivate(const Creature& creature, const World& world) const {
+bool Skill::CanActivate(Creature& creature, World& world) const {
   return recharge_ == Time(0) && adrenaline_ >= AdrenalineCost() &&
          creature.energy() >= EnergyCost();
 }
 
-Action Skill::Activate(Creature& creature,
-
-                       World& world) {
+Action Skill::Activate(Creature& creature, World& world) {
+  assert(CanActivate(creature, world));
   ActivationStart(creature, world);
 
   Time activation_time = ActivationTime(creature);
@@ -47,11 +46,6 @@ void Skill::LoseAdrenaline(Adrenaline adrenaline) {
 void Skill::LoseAllAdrenaline() { adrenaline_ = Adrenaline(0); }
 Adrenaline Skill::GetAdrenaline() const { return adrenaline_; }
 
-Creature* Skill::GetTarget(Creature& creature,
-
-                           World& world) {
-  return creature.target_;
-}
 void Skill::ActivationStart(Creature& creature, World& world) {
   adrenaline_ = Adrenaline(0);
   if (AdrenalineCost() > Adrenaline(0)) {

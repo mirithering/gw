@@ -57,4 +57,6 @@ bool IsMeele(Weapon::Type type);
 bool IsRanged(Weapon::Type type);
 bool IsProjectile(Weapon::Type type);
 
+Inches RangeFor(Weapon::Type type);
+
 #endif  // WEAPON_WEAPON_H

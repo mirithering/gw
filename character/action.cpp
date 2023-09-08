@@ -58,6 +58,7 @@ Action Action::WalkTowardsUntilInRange(Creature& source, const Creature& target,
   std::function<Action::Result(Time duration)> tick = [&,
                                                        range](Time duration) {
     if (InRange(source.GetPosition(), target.GetPosition(), range)) {
+      LOG << source.name_ << " arrived";
       return Action::Result::End;
     }
     source.OneStepTowards(target.GetPosition());

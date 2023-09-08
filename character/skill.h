@@ -13,12 +13,10 @@ class Skill : public TimedObject {
  public:
   Skill() = default;
 
-  virtual bool CanActivate(const Creature& creature, const World& world) const;
+  virtual bool CanActivate(Creature& creature, World& world) const;
   virtual ~Skill() override = default;
 
-  Action Activate(Creature& creature,
-
-                  World& world);
+  Action Activate(Creature& creature, World& world);
 
   void Tick(Time) override final {
     recharge_ = std::max(Time(0), recharge_ - Millisecond);
@@ -31,6 +29,10 @@ class Skill : public TimedObject {
 
   virtual std::string Name() const = 0;
 
+  virtual Creature* GetTarget(Creature& creature, World& world) const = 0;
+
+  virtual Inches GetRange(const Creature& creature) const = 0;
+
  protected:
   Creature* target_ = nullptr;
   virtual Adrenaline AdrenalineCost() const = 0;
@@ -38,9 +40,6 @@ class Skill : public TimedObject {
   virtual Time RechargeTime() const = 0;
   virtual Time ActivationTime(Creature& character) const = 0;
 
-  Creature* GetTarget(Creature& creature,
-
-                      World& world);
   virtual void ActivationStart(Creature& creature, World& world);
   virtual void ActivationMiddle(Creature& creature, World& world){};
   virtual void ActivationEnd(Creature& creature, World& world);

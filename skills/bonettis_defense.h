@@ -56,6 +56,11 @@ class BonettisDefense : public Skill {
  public:
   std::string Name() const override { return "Bonetti's Defense"; }
 
+  Creature* GetTarget(Creature& creature, World& world) const override {
+    return &creature;
+  }
+  Inches GetRange(const Creature&) const override { return Inches(0); }
+
  protected:
   void ActivationEnd(Creature& creature, World& world) override;
 

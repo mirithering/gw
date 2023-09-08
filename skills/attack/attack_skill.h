@@ -12,7 +12,13 @@ class AttackSkill : public Skill {
  public:
   AttackSkill() = default;
   virtual ~AttackSkill() = default;
-  bool CanActivate(const Creature& creature, const World& world) const override;
+  bool CanActivate(Creature& creature, World& world) const override;
+  Creature* GetTarget(Creature& creature, World& world) const override {
+    return creature.target_;
+  }
+  Inches GetRange(const Creature& creature) const override {
+    return creature.GetBuild().GetWeapon().GetRange();
+  }
 
  protected:
   virtual Weapon::Type WeaponType() const = 0;

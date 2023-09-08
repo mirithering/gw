@@ -28,12 +28,12 @@ class BonettisDefenseTest : public GwTest {
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
-  ASSERT_FALSE(bonettis_defense_->CanActivate(*warrior_, {}));
+  ASSERT_FALSE(bonettis_defense_->CanActivate(*warrior_, world()));
 }
 
 TEST_F(BonettisDefenseTest, UnskilledDurationIsFive) {
   bonettis_defense_->AddAdrenaline(8 * Strike);
-  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, {}));
+  ASSERT_TRUE(bonettis_defense_->CanActivate(*warrior_, world()));
 
   warrior_->UseSkill(bonettis_defense_, world());
   for (int i = 1; i <= 5000; ++i) {

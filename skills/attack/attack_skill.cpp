@@ -7,8 +7,7 @@
 #include "character/world.h"
 #include "weapon/weapon.h"
 
-bool AttackSkill::CanActivate(const Creature& creature,
-                              const World& world) const {
+bool AttackSkill::CanActivate(Creature& creature, World& world) const {
   return creature.GetBuild().GetWeapon().GetType() == WeaponType() &&
          Skill::CanActivate(creature, world);
 }

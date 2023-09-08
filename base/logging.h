@@ -5,7 +5,9 @@
 
 #include "clock.h"
 
-#define LOG Stream().stream() << "[" << __FILE__ << ":" << __LINE__ << "] "
+#define LOG                                                                \
+  Stream().stream() << "[" << __FILE__ << "(" << __LINE__ << ")(" << Now() \
+                    << ")] "
 
 class Stream {
  public:

@@ -46,7 +46,8 @@ void Creature::Tick(Time time_passed) {
   }
 
   if (action_.Tick() == Action::Result::End) {
-    action_ = kActionIdle;
+    action_ = next_action_;
+    next_action_ = kActionIdle;
   }
 }
 
@@ -173,13 +174,31 @@ void Creature::Die() {
 }
 
 void Creature::UseSkill(Skill* skill, World& world) {
-  assert(skill->CanActivate(*this, world));
-  action_ = skill->Activate(*this, world);
+  bool in_range =
+      InRange(GetPosition(), skill->GetTarget(*this, world)->GetPosition(),
+              skill->GetRange(*this));
+  if (in_range) {
+    action_ = skill->Activate(*this, world);
+    return;
+  }
+  LOG << name_ << " walking towards target and then " << skill->Name();
+  WalkTowards(*skill->GetTarget(*this, world), skill->GetRange(*this));
+  next_action_ = skill->Activate(*this, world);
 }
 
 void Creature::StartWeaponAttack() {
   assert(target_ != nullptr);
-  action_ = Action::WeaponAttack(*this, *target_);
+
+  bool in_range = InRange(GetPosition(), target_->GetPosition(),
+                          build_->GetWeapon().GetRange());
+  if (in_range) {
+    action_ = Action::WeaponAttack(*this, *target_);
+    return;
+  }
+
+  LOG << name_ << " walking towards target and then weapon attack";
+  WalkTowards(*target_, build_->GetWeapon().GetRange());
+  next_action_ = Action::WeaponAttack(*this, *target_);
 }
 
 void Creature::WalkTowards(const Creature& target, Inches target_range) {
