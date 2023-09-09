@@ -17,6 +17,15 @@ Creature* NextTarget(Creature& creature,
   return nullptr;
 }
 
+const Creature* EnemyVeryClose(const Creature& creature, World& world) {
+  for (const auto& other : world.EnemiesOf(creature)) {
+    if (InRange(creature.GetPosition(), other->GetPosition(), AdjacentRange)) {
+      return other.get();
+    }
+  }
+  return nullptr;
+}
+
 void NextAction(Creature& creature, World& world) {
   for (unsigned int i = 0; i < creature.GetBuild().GetSkills().size(); ++i) {
     Skill* skill = creature.GetBuild().GetSkill<Skill>(i);
@@ -24,6 +33,15 @@ void NextAction(Creature& creature, World& world) {
     if (skill->CanActivate(creature, world)) {
       LOG << creature.name_ << " activating " << skill->Name();
       creature.UseSkill(skill, world);
+      return;
+    }
+  }
+
+  if (!IsMeele(creature.GetBuild().GetWeapon().GetType())) {
+    const Creature* enemy_very_close = EnemyVeryClose(creature, world);
+    if (enemy_very_close) {
+      LOG << creature.name_ << "fleeing";
+      creature.FleeFrom(*enemy_very_close);
       return;
     }
   }

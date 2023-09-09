@@ -47,8 +47,8 @@ TEST_F(ArcingShotTest, Test) {
   }
   EXPECT_EQ(ranger[0].GetActionType(), Action::Type::Idle);
 
-  // 150% of flatbow flight time
-  int flight_time = 1320;
+  // No distance between the two
+  int flight_time = 1;
   for (int i = 0; i < flight_time; ++i) {
     EXPECT_EQ(enemy->GetLostHealth(), 0);
     Tick();

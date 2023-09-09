@@ -13,19 +13,22 @@ class ArcingShot : public AttackSkill {
 
  protected:
   void ActivationEnd(Creature& creature, World& world) override {
-    int additional_damage =
-        creature.GetBuild().GetAttribute(Attribute::Marksmanship) + 10;
-    // TODO flight time actually also depends on distance to target, and
-    // character's modifiers.
-    Time flight_time =
-        of(creature.GetBuild().GetWeapon().FlightTimeDeprecated(), Percent(150));
-    bool blockable = false;
-
     assert(target_ != nullptr);
 
-    // TODO All this binding to references etc. is problematic... I really seem
-    // to trust that neither characters nor skills are moved while my program is
-    // running.
+    int additional_damage =
+        creature.GetBuild().GetAttribute(Attribute::Marksmanship) + 10;
+
+    Inches distance_to_target =
+        Distance(creature.GetPosition(), target_->GetPosition());
+    assert(distance_to_target <= creature.GetBuild().GetWeapon().GetRange());
+
+    Time flight_time =
+        distance_to_target / creature.GetBuild().GetWeapon().GetFlightSpeed();
+
+    flight_time = of(flight_time, Percent(150));
+
+    bool blockable = false;
+
     target_->AddProjectile(
         Event<>(flight_time, [&, additional_damage, blockable]() {
           creature.WeaponAttack(*target_, additional_damage, blockable);

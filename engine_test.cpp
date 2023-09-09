@@ -50,7 +50,7 @@ TEST_F(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
 
 // TODO add kiting! and crippled
 TEST_F(EngineTest, RangerAndWarriorWalkTowardsAndFight) {
-  int kTime = 24546;
+  int kTime = 25217;
 
   auto attacker = AddWarriorTo(team());
   attacker->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);

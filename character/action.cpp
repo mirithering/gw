@@ -71,6 +71,7 @@ Action Action::WalkTowardsUntilInRange(Creature& source, const Creature& target,
 Action Action::WalkAwayFromUntilOutOfRange(Creature& creature,
                                            const Creature& away_from,
                                            Inches range) {
+  Time expected_flee_time = range / creature.GetWalkingSpeed();
   std::function<Action::Result(Time duration)> tick = [&,
                                                        range](Time duration) {
     if (!InRange(creature.GetPosition(), away_from.GetPosition(), range)) {
@@ -80,7 +81,8 @@ Action Action::WalkAwayFromUntilOutOfRange(Creature& creature,
     return Action::Result::Continue;
   };
   // TODO Give up if your target is moving faster than you
-  return Action(Action::Type::Busy, Time(INT_MAX), tick, &DoNothingEnd);
+  return Action(Action::Type::Busy, Time(expected_flee_time), tick,
+                &DoNothingEnd);
 }
 
 Action::Result DoNothingTick(Time) { return Action::Result::Continue; }

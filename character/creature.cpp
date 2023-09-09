@@ -212,12 +212,11 @@ void Creature::FleeFrom(const Creature& target) {
 
 void Creature::OneStepTowards(Position target) {
   Direction direction = Towards(position_, target);
-  // TODO implement speed modifiers.
-  position_ = NextPosition(position_, direction, WalkingSpeed);
+  position_ = NextPosition(position_, direction, GetWalkingSpeed());
 }
 
 void Creature::OneStepAwayFrom(Position away_from) {
   Direction direction = AwayFrom(position_, away_from);
   // TODO implement speed modifiers.
-  position_ = NextPosition(position_, direction, WalkingSpeed);
+  position_ = NextPosition(position_, direction, GetWalkingSpeed());
 }

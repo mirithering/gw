@@ -82,6 +82,8 @@ class Creature : public TimedObject {
   int GetLostHealth() const { return health_lost_; }
   int energy() const { return energy_; }
 
+  Speed GetWalkingSpeed() { return WalkingSpeed; }
+
   std::string name_ = "Lovely Princess";  // For debugging.
 
   // TODO this violates Tell don't ask principle, I have to redirect a lot.. Not

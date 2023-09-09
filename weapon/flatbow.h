@@ -9,7 +9,6 @@
 
 namespace {
 const Time kFlatBowAttackDuration = 2025 * Millisecond;
-const Time kFlatBowFlightTime = 880 * Millisecond;
 const int kFlatBowMinDamage = 15;
 const int kFlatBowMaxDamage = 28;
 }  // namespace
@@ -19,7 +18,6 @@ class Flatbow : public Weapon {
   Flatbow() : Weapon({kFlatBowMinDamage, kFlatBowMaxDamage}){};
   Flatbow(int min_damage, int max_damage) : Weapon({min_damage, max_damage}){};
 
-  Time FlightTimeDeprecated() const override { return kFlatBowFlightTime; }
   Time AttackDuration() const override { return kFlatBowAttackDuration; }
   DamageType GetDamageType() const override { return DamageType::Piercing; }
   Attribute GetAttribute() const override { return Attribute::Marksmanship; }
