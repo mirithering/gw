@@ -157,3 +157,10 @@ TEST_F(CreatureTest, StartWeaponAttackDoesDamage) {
   AwaitIdle(creature_);
   ASSERT_NE(dummy_->GetLostHealth(), 0);
 }
+
+TEST_F(CreatureTest, FleeingTakesYouHalfAggroCircleAway) {
+  creature_->FleeFrom(*dummy_);
+  AwaitIdle(creature_);
+  ASSERT_FALSE(InRange(creature_->GetPosition(), dummy_->GetPosition(),
+                       EarshotRange / 2));
+}

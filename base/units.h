@@ -144,6 +144,8 @@ using Speed = Unit<UnitType::Speed, Inches>;
 // TODO Myabe I can do a bit better at calculating this. Also it's just the the
 // speed for walking straight in front. You're slower on diagonals and
 // backwards.
+// TODO I am guessing that mosters are actually slower. Because you can run a
+// away from them usually.
 const Speed WalkingSpeed = Speed(Inches(EarshotRange / 4000.0));
 
 Time operator/(Inches lhs, Speed rhs);
@@ -151,6 +153,8 @@ Time operator/(Inches lhs, Speed rhs);
 using Direction = std::pair<Inches, Inches>;
 
 Direction Towards(const Position& from, const Position& to);
+
+Direction AwayFrom(const Position& start, const Position& away_from);
 
 // Calculates the position after one tick if moving with speed in direction.
 Position NextPosition(const Position& current, const Direction& direction,

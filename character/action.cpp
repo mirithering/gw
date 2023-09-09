@@ -64,8 +64,22 @@ Action Action::WalkTowardsUntilInRange(Creature& source, const Creature& target,
     source.OneStepTowards(target.GetPosition());
     return Action::Result::Continue;
   };
-  // TODO I'm guessing that we would give up eventually, need to figure out what
-  // NPCs do if they can never reach their target.
+  // TODO Give up if your target is moving faster than you
+  return Action(Action::Type::Busy, Time(INT_MAX), tick, &DoNothingEnd);
+}
+
+Action Action::WalkAwayFromUntilOutOfRange(Creature& creature,
+                                           const Creature& away_from,
+                                           Inches range) {
+  std::function<Action::Result(Time duration)> tick = [&,
+                                                       range](Time duration) {
+    if (!InRange(creature.GetPosition(), away_from.GetPosition(), range)) {
+      return Action::Result::End;
+    }
+    creature.OneStepAwayFrom(away_from.GetPosition());
+    return Action::Result::Continue;
+  };
+  // TODO Give up if your target is moving faster than you
   return Action(Action::Type::Busy, Time(INT_MAX), tick, &DoNothingEnd);
 }
 

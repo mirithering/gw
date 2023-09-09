@@ -18,6 +18,10 @@ Direction Towards(const Position& from, const Position& to) {
   return {to.first - from.first, to.second - from.second};
 }
 
+Direction AwayFrom(const Position& start, const Position& away_from) {
+  return {start.first - away_from.first, start.second - away_from.second};
+}
+
 // Calculates the position after one tick if moving with speed in direction.
 Position NextPosition(const Position& current, const Direction& direction,
                       const Speed& speed) {

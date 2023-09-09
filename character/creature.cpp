@@ -205,8 +205,19 @@ void Creature::WalkTowards(const Creature& target, Inches target_range) {
   action_ = Action::WalkTowardsUntilInRange(*this, target, target_range);
 }
 
+void Creature::FleeFrom(const Creature& target) {
+  action_ =
+      Action::WalkAwayFromUntilOutOfRange(*this, target, EarshotRange / 2);
+}
+
 void Creature::OneStepTowards(Position target) {
   Direction direction = Towards(position_, target);
+  // TODO implement speed modifiers.
+  position_ = NextPosition(position_, direction, WalkingSpeed);
+}
+
+void Creature::OneStepAwayFrom(Position away_from) {
+  Direction direction = AwayFrom(position_, away_from);
   // TODO implement speed modifiers.
   position_ = NextPosition(position_, direction, WalkingSpeed);
 }

@@ -38,6 +38,7 @@ class Creature : public TimedObject {
 
   // TODO I think I can make this private if I move walking action over here.
   void OneStepTowards(Position target);
+  void OneStepAwayFrom(Position away_from);
 
   void UseEnergy(int use_energy) {
     assert(energy_ >= use_energy);
@@ -71,6 +72,7 @@ class Creature : public TimedObject {
   void StartWeaponAttack();
 
   void WalkTowards(const Creature& target, Inches target_range);
+  void FleeFrom(const Creature& target);
 
   void AddProjectile(Event<>&& projectile) {
     incoming_projectiles_.push_back(std::move(projectile));

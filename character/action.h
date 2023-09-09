@@ -43,6 +43,10 @@ class Action {
   static Action WalkTowardsUntilInRange(Creature& source,
                                         const Creature& target, Inches range);
 
+  static Action WalkAwayFromUntilOutOfRange(Creature& creature,
+                                            const Creature& away_from,
+                                            Inches range);
+
   Type GetType() const { return type_; }
 
  private:
