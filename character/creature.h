@@ -82,7 +82,7 @@ class Creature : public TimedObject {
   int GetLostHealth() const { return health_lost_; }
   int energy() const { return energy_; }
 
-  Speed GetWalkingSpeed() { return WalkingSpeed; }
+  Speed GetWalkingSpeed();
 
   std::string name_ = "Lovely Princess";  // For debugging.
 
@@ -98,6 +98,7 @@ class Creature : public TimedObject {
   FunctionList<int()> callbacks_health_generation_;
   FunctionList<Percent(const Creature& creature, Weapon::Type type)>
       callbacks_block_chance_;
+  FunctionList<Percent()> callbacks_walking_speed_;
   FunctionList<void(Creature& creature, Weapon::Type type)>
       callbacks_attack_blocked_;
 

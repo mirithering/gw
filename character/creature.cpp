@@ -220,3 +220,13 @@ void Creature::OneStepAwayFrom(Position away_from) {
   // TODO implement speed modifiers.
   position_ = NextPosition(position_, direction, GetWalkingSpeed());
 }
+
+Speed Creature::GetWalkingSpeed() {
+  Percent modifier = Percent(100);
+  for (const auto& modifier_callback : callbacks_walking_speed_.GetList()) {
+    modifier += modifier_callback();
+  }
+  modifier = std::max(Percent(0), modifier);
+  // TODO fix this, I should be able to take a percentage of speed.
+  return Speed(of(WalkingSpeed.value(), modifier));
+}

@@ -17,6 +17,7 @@ cc_test(
     name = "test",
     size = "small",
     srcs = [
+        "crippled_test.cpp",
         "deep_wound_test.cpp",
     ],
     deps = [
