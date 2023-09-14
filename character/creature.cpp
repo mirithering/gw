@@ -8,6 +8,7 @@
 #include "base/profession.h"
 #include "base/random.h"
 #include "damage.h"
+#include "hex.h"
 #include "skill.h"
 
 namespace {
@@ -123,6 +124,27 @@ bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
   return true;
 }
 
+Effect<Hex>* Creature::AddHex(Effect<Hex> hex) {
+  assert(hex.get());
+  Hex::Type type = hex.get()->GetType();
+  if (hexes_[type].RemainingDuration() >= hex.RemainingDuration()) {
+    // Existing condition last longer, not adding anything.
+    return nullptr;
+  }
+  hexes_[type] = std::move(hex);
+  hexes_[type].get()->AddModifiers(*this);
+  return &hexes_[type];
+}
+
+bool Creature::IsHexed() {
+  for (const auto& hex : hexes_) {
+    if (!hex.second.Ended()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool Creature::WillBlockAttack(Weapon::Type type) const {
   Percent block_chance(0);
   for (auto& modifier : callbacks_block_chance_.GetList()) {
@@ -223,6 +245,8 @@ void Creature::OneStepAwayFrom(Position away_from) {
 
 Speed Creature::GetWalkingSpeed() {
   Percent modifier = Percent(100);
+  // TODO check wether those add up, and not apply one after the other or
+  // something.
   for (const auto& modifier_callback : callbacks_walking_speed_.GetList()) {
     modifier += modifier_callback();
   }

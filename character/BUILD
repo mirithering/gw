@@ -13,6 +13,7 @@ cc_library(
         "condition.h",
         "creature.h",
         "damage.h",
+        "hex.h",
         "skill.h",
         "stance.h",
         "world.h",

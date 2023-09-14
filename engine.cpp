@@ -37,7 +37,7 @@ void NextAction(Creature& creature, World& world) {
     }
   }
 
-  if (!IsMeele(creature.GetBuild().GetWeapon().GetType())) {
+  if (!IsMeele(creature.GetBuild().GetWeapon().GetType()) && creature.kiting_) {
     const Creature* enemy_very_close = EnemyVeryClose(creature, world);
     if (enemy_very_close) {
       LOG << creature.name_ << "fleeing";

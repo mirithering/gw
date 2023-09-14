@@ -23,7 +23,16 @@ Creature* AddRangerTo(std::vector<std::unique_ptr<Creature>>& group) {
 Creature* AddAssassinTo(std::vector<std::unique_ptr<Creature>>& group) {
   group.push_back(std::make_unique<Creature>(
       ConstructBuild(Profession::Assassin, std::make_unique<Dagger>())));
-  group.back()->name_ = "Warrior";
+  group.back()->name_ = "Assassin";
+  return group.back().get();
+}
+
+Creature* AddMesmerTo(std::vector<std::unique_ptr<Creature>>& group) {
+  group.push_back(std::make_unique<Creature>(
+      ConstructBuild(Profession::Mesmer,
+                     std::make_unique<Dagger>())));  // TODO give a staff or
+                                                     // something to the mesmer.
+  group.back()->name_ = "Mesmer";
   return group.back().get();
 }
 

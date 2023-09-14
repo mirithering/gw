@@ -18,6 +18,7 @@ enum class Attribute {
   Expertise,
   BeastMastery,
   WildernessSurvival,
+  IllusionMagic,
 };
 
 // Double strike chance for DaggerMastery attribute.

@@ -10,6 +10,7 @@
 #include "character/skill.h"
 #include "skills/attack/bow/arcing_shot.h"
 #include "skills/attack/sword/barbarous_slice.h"
+#include "skills/attack/sword/crippling_slash.h"
 #include "skills/attack/sword/gash.h"
 #include "skills/attack/sword/jaizenju_strike.h"
 #include "skills/attack/sword/pure_strike.h"
@@ -48,7 +49,6 @@ TEST_F(EngineTest, WarriorWithSkillsKillsWarriorInExactlyXTurns) {
   ASSERT_EQ(defender->GetActionType(), Action::Type::Dead);
 }
 
-// TODO add kiting! and crippled
 TEST_F(EngineTest, RangerAndWarriorWalkTowardsAndFight) {
   int kTime = 25217;
 
@@ -61,6 +61,7 @@ TEST_F(EngineTest, RangerAndWarriorWalkTowardsAndFight) {
   attacker->SetPosition({Inches(2000), Inches(0)});
 
   auto defender = AddRangerTo(enemies());
+  defender->kiting_ = true;
   defender->GetBuild().SetAttribute(Attribute::Marksmanship, 12);
   defender->GetBuild().AddSkill(std::make_unique<ArcingShot>());
   defender->SetPosition({Inches(0), Inches(2000)});

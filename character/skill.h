@@ -9,6 +9,7 @@
 class Action;
 class Creature;
 
+// TODO implement aftercast delay
 class Skill : public TimedObject {
  public:
   Skill() = default;

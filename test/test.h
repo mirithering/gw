@@ -28,6 +28,7 @@ Creature* AddWarriorTo(std::vector<std::unique_ptr<Creature>>& group);
 Creature* AddRangerTo(std::vector<std::unique_ptr<Creature>>& group);
 
 Creature* AddAssassinTo(std::vector<std::unique_ptr<Creature>>& group);
+Creature* AddMesmerTo(std::vector<std::unique_ptr<Creature>>& group);
 
 void AwaitIdle(Creature* creature);
 

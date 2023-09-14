@@ -11,6 +11,7 @@
 #include "build.h"
 #include "character/world.h"
 #include "condition.h"
+#include "hex.h"
 #include "stance.h"
 
 class Creature : public TimedObject {
@@ -61,6 +62,9 @@ class Creature : public TimedObject {
     return conditions_[type];
   }
 
+  Effect<Hex>* AddHex(Effect<Hex> hex);
+  bool IsHexed();
+
   bool HasCondition(Condition::Type type) { return !conditions_[type].Ended(); }
 
   Stance* GetStance() { return stance_.get(); }
@@ -107,6 +111,10 @@ class Creature : public TimedObject {
   // TODO should that be used?
   void SetPosition(Position position) { position_ = position; }
 
+  // Should go into engine/AI. Whether this creature will run away if enemies
+  // are too close.
+  bool kiting_ = false;
+
  private:
   void HealthGeneration();
   void EnergyGeneration();
@@ -125,6 +133,7 @@ class Creature : public TimedObject {
 
   Effect<Stance> stance_ = Effect<Stance>::None();
   std::map<Condition::Type, Effect<Condition>> conditions_;
+  std::map<Hex::Type, Effect<Hex>> hexes_;
 
   int health_lost_;
   int energy_;
