@@ -168,11 +168,23 @@ bool Creature::WeaponAttack(Creature& target, int skill_damage,
 }
 
 void Creature::AddAdrenaline(Adrenaline adrenaline) {
+  if (!CanGainAdrenaline()) {
+    return;
+  }
   const auto& skills = build_->GetSkills();
   std::for_each(std::begin(skills), std::end(skills),
                 [adrenaline](const std::unique_ptr<Skill>& skill) {
                   if (skill) skill->AddAdrenaline(adrenaline);
                 });
+}
+
+bool Creature::CanGainAdrenaline() {
+  for (auto& can_gain : callbacks_can_gain_adrenaline_.GetList()) {
+    if (!can_gain()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void Creature::RemoveOneAdrenalineStrike() {

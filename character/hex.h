@@ -15,7 +15,7 @@ class Hex {
   virtual ~Hex() = default;
 
   virtual void AddModifiers(Creature& creature) = 0;
-  enum class Type { ImaginedBurden };
+  enum class Type { ImaginedBurden, SoothingImages };
   virtual Type GetType() const = 0;
 };
 

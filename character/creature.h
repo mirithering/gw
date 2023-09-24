@@ -105,6 +105,7 @@ class Creature : public TimedObject {
   FunctionList<Percent()> callbacks_walking_speed_;
   FunctionList<void(Creature& creature, Weapon::Type type)>
       callbacks_attack_blocked_;
+  FunctionList<bool()> callbacks_can_gain_adrenaline_;
 
   Position GetPosition() const { return position_; }
 
@@ -118,6 +119,7 @@ class Creature : public TimedObject {
  private:
   void HealthGeneration();
   void EnergyGeneration();
+  bool CanGainAdrenaline();
   void AddAdrenaline(Adrenaline adrenaline);
   void Die();
   bool WillBlockAttack(Weapon::Type type) const;

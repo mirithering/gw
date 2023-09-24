@@ -5,6 +5,7 @@ cc_library(
         "attack/sword/barbarous_slice.cpp",
         "bonettis_defense.cpp",
         "hex/imagined_burden.cpp",
+        "hex/soothing_images.cpp",
     ],
     hdrs = [
         "attack/attack_skill.h",
@@ -17,6 +18,7 @@ cc_library(
         "attack/sword/pure_strike.h",
         "bonettis_defense.h",
         "hex/imagined_burden.h",
+        "hex/soothing_images.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -37,6 +39,7 @@ cc_test(
         "attack/sword/pure_strike_test.cpp",
         "bonettis_defense_test.cpp",
         "hex/imagined_burden_test.cpp",
+        "hex/soothing_images_test.cpp",
     ],
     deps = [
         "skills",
