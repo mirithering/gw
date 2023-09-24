@@ -4,6 +4,7 @@
 #include "character/creature.h"
 #include "weapon/dagger.h"
 #include "weapon/flatbow.h"
+#include "weapon/staff.h"
 #include "weapon/sword.h"
 
 Creature* AddWarriorTo(std::vector<std::unique_ptr<Creature>>& group) {
@@ -28,10 +29,9 @@ Creature* AddAssassinTo(std::vector<std::unique_ptr<Creature>>& group) {
 }
 
 Creature* AddMesmerTo(std::vector<std::unique_ptr<Creature>>& group) {
-  group.push_back(std::make_unique<Creature>(
-      ConstructBuild(Profession::Mesmer,
-                     std::make_unique<Dagger>())));  // TODO give a staff or
-                                                     // something to the mesmer.
+  group.push_back(std::make_unique<Creature>(ConstructBuild(
+      Profession::Mesmer,
+      std::make_unique<Staff>(DamageType::Chaos, Attribute::IllusionMagic))));
   group.back()->name_ = "Mesmer";
   return group.back().get();
 }

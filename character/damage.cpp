@@ -21,6 +21,7 @@ int WeaponStrikeDamage(const Creature& attacker, const Creature& defender) {
 
   double base_damage = BaseDamage(weapon, weapon_requirement_met);
 
+  // TODO Get the damage type and calculate armor against that type.
   int armor_rating = defender.GetBuild().GetArmor()->Rating();
   int attribute_level = attacker.GetBuild().GetAttribute(weapon.GetAttribute());
   int strike_level = 5 * attribute_level;

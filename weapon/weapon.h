@@ -8,7 +8,7 @@
 
 // TODO critical hits. crit base rate is roughly weapon mastery / 100.
 
-enum class DamageType { Slashing, Piercing };
+enum class DamageType { Slashing, Piercing, Chaos };
 
 class Weapon {
  public:
@@ -56,7 +56,5 @@ class Weapon {
 bool IsMeele(Weapon::Type type);
 bool IsRanged(Weapon::Type type);
 bool IsProjectile(Weapon::Type type);
-
-Inches RangeFor(Weapon::Type type);
 
 #endif  // WEAPON_WEAPON_H
