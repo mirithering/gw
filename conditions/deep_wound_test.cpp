@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include "test/test.h"
-#include "weapon/sword.h"
 
 class DeepWoundTest : public GwTest {};
 
