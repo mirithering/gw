@@ -106,10 +106,11 @@ TEST_F(EngineTest, KossVsIboga) {
   ModifyLevel6Iboga(iboga3);
 
   for (int ticks = 0; ticks < kTime; ++ticks) {
-    ASSERT_NE(attacker->GetActionType(), Action::Type::Dead) << " " << attacker;
-    ASSERT_NE(iboga->GetActionType(), Action::Type::Dead) << " " << attacker;
+    ASSERT_NE(attacker->GetActionType(), Action::Type::Dead);
+    ASSERT_NE(iboga->GetActionType(), Action::Type::Dead)
+        << " " << attacker->GetLostHealth();
     Tick();
     NextActions(world());
-    }
+  }
   ASSERT_EQ(iboga->GetActionType(), Action::Type::Dead);
 }
