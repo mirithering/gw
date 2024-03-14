@@ -23,9 +23,9 @@ class ArcingShotTest : public GwTest {
   }
 
  protected:
-  Creature* ranger;
+  Character* ranger;
   ArcingShot* arcing_shot;
-  Creature* enemy;
+  Character* enemy;
 };
 
 TEST_F(ArcingShotTest, Test) {

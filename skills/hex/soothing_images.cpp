@@ -9,8 +9,9 @@ constexpr int kDuration[] = {8,  9,  10, 10, 11, 12, 13, 14, 14, 15, 16,
 
 class SoothingImagesHex : public Hex {
  public:
-  void AddModifiers(Creature& creature) override {
-    creature.callbacks_can_gain_adrenaline_.AddFunction([]() { return false; });
+  void AddModifiers(Character& character) override {
+    character.callbacks_can_gain_adrenaline_.AddFunction(
+        []() { return false; });
   }
 
   Type GetType() const override { return Type::SoothingImages; }
@@ -19,9 +20,9 @@ class SoothingImagesHex : public Hex {
   FunctionList<Percent()>::UniqueReference reference_;
 };
 
-bool FirstOrSecondProfessionWarrior(const Creature& creature) {
-  if (creature.GetBuild().GetFirstProfession() == Profession::Warrior ||
-      creature.GetBuild().GetSecondProfession() == Profession::Warrior) {
+bool FirstOrSecondProfessionWarrior(const Character& character) {
+  if (character.GetBuild().GetFirstProfession() == Profession::Warrior ||
+      character.GetBuild().GetSecondProfession() == Profession::Warrior) {
     return true;
   }
   return false;
@@ -29,12 +30,12 @@ bool FirstOrSecondProfessionWarrior(const Creature& creature) {
 
 }  // namespace
 
-Creature* SoothingImages::GetTarget(Creature& creature, World& world) const {
-  if (FirstOrSecondProfessionWarrior(*creature.target_)) {
-    return creature.target_;
+Character* SoothingImages::GetTarget(Character& character, World& world) const {
+  if (FirstOrSecondProfessionWarrior(*character.target_)) {
+    return character.target_;
   }
 
-  auto& enemies = world.EnemiesOf(creature);
+  auto& enemies = world.EnemiesOf(character);
   for (const auto& enemy : enemies) {
     if (FirstOrSecondProfessionWarrior(*enemy)) {
       return enemy.get();
@@ -43,19 +44,19 @@ Creature* SoothingImages::GetTarget(Creature& creature, World& world) const {
   return nullptr;
 }
 
-void SoothingImages::ActivationEnd(Creature& creature, World& world) {
+void SoothingImages::ActivationEnd(Character& character, World& world) {
   Time time =
-      kDuration[creature.GetBuild().GetAttribute(Attribute::IllusionMagic)] *
+      kDuration[character.GetBuild().GetAttribute(Attribute::IllusionMagic)] *
       Second;
 
-  auto& enemies = world.EnemiesOf(creature);
+  auto& enemies = world.EnemiesOf(character);
   for (auto& enemy : enemies) {
     if (InRange(target_->GetPosition(), enemy->GetPosition(), AdjacentRange)) {
       enemy->AddHex(Effect<Hex>(time, std::make_unique<SoothingImagesHex>()));
     }
   }
 
-  Skill::ActivationEnd(creature, world);
+  Skill::ActivationEnd(character, world);
 }
 
 // TODO heroes will use this skill exactly on foes with warrior primary or

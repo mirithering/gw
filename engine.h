@@ -5,7 +5,7 @@
 
 #include "character/world.h"
 
-class Creature;
+class Character;
 
 void NextActions(World& world);
 

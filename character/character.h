@@ -14,18 +14,18 @@
 #include "hex.h"
 #include "stance.h"
 
-class Creature : public TimedObject {
+class Character : public TimedObject {
  public:
-  Creature(std::unique_ptr<Build> build,
-           Position initial_position = {Inches(0), Inches(0)});
+  Character(std::unique_ptr<Build> build,
+            Position initial_position = {Inches(0), Inches(0)});
   // TODO I needed to remove the move constructor because a lot of code depends
-  // on references and ptrs to creatures to stay valid. This is a sign of bad
-  // design. Maybe I can fix my dependencies at some point and make creatures
+  // on references and ptrs to characters to stay valid. This is a sign of bad
+  // design. Maybe I can fix my dependencies at some point and make characters
   // movable?
-  Creature(const Creature&) = delete;
-  Creature& operator=(const Creature&) = delete;
+  Character(const Character&) = delete;
+  Character& operator=(const Character&) = delete;
 
-  ~Creature() override { conditions_.clear(); };
+  ~Character() override { conditions_.clear(); };
 
   void Tick(Time time_passed) override;
 
@@ -34,7 +34,7 @@ class Creature : public TimedObject {
 
   // TODO I think I can make this one private if I move the weapon attack action
   // over here.
-  bool WeaponAttack(Creature& target, int skill_damage = 0,
+  bool WeaponAttack(Character& target, int skill_damage = 0,
                     bool blockable = true);
 
   // TODO I think I can make this private if I move walking action over here.
@@ -75,8 +75,8 @@ class Creature : public TimedObject {
 
   void StartWeaponAttack();
 
-  void WalkTowards(const Creature& target, Inches target_range);
-  void FleeFrom(const Creature& target);
+  void WalkTowards(const Character& target, Inches target_range);
+  void FleeFrom(const Character& target);
 
   void AddProjectile(Event<>&& projectile) {
     incoming_projectiles_.push_back(std::move(projectile));
@@ -94,16 +94,16 @@ class Creature : public TimedObject {
   // sure how to get rid of it.
   Build& GetBuild() const { return *build_.get(); }
 
-  // Creatures lock on one target, but will attack other targets with skills if
+  // Characters lock on one target, but will attack other targets with skills if
   // the locked target would be pointless.
-  Creature* target_ = nullptr;
+  Character* target_ = nullptr;
 
-  FunctionList<Percent(const Creature& creature)> callbacks_max_health_;
+  FunctionList<Percent(const Character& character)> callbacks_max_health_;
   FunctionList<int()> callbacks_health_generation_;
-  FunctionList<Percent(const Creature& creature, Weapon::Type type)>
+  FunctionList<Percent(const Character& character, Weapon::Type type)>
       callbacks_block_chance_;
   FunctionList<Percent()> callbacks_walking_speed_;
-  FunctionList<void(Creature& creature, Weapon::Type type)>
+  FunctionList<void(Character& character, Weapon::Type type)>
       callbacks_attack_blocked_;
   FunctionList<bool()> callbacks_can_gain_adrenaline_;
 
@@ -112,7 +112,7 @@ class Creature : public TimedObject {
   // TODO should that be used?
   void SetPosition(Position position) { position_ = position; }
 
-  // Should go into engine/AI. Whether this creature will run away if enemies
+  // Should go into engine/AI. Whether this character will run away if enemies
   // are too close.
   bool kiting_ = false;
 
@@ -141,21 +141,21 @@ class Creature : public TimedObject {
   int energy_;
 };
 
-std::ostream& operator<<(std::ostream& out, const Creature& character);
+std::ostream& operator<<(std::ostream& out, const Character& character);
 
 template <class W, class... S>
-std::unique_ptr<Creature> ConstructCreature(
+std::unique_ptr<Character> ConstructCharacter(
     Profession first_profession, std::unique_ptr<W> weapon,
     std::map<Attribute, int> attributes = {}, std::unique_ptr<S>... skills) {
-  return std::make_unique<Creature>(ConstructBuild(
+  return std::make_unique<Character>(ConstructBuild(
       first_profession, std::move(weapon), attributes, std::move(skills)...));
 }
 
 template <class W, class... S>
-std::unique_ptr<Creature> ConstructCreature(
+std::unique_ptr<Character> ConstructCharacter(
     Profession first_profession, std::unique_ptr<W> weapon, Position position,
     std::map<Attribute, int> attributes = {}, std::unique_ptr<S>... skills) {
-  return std::make_unique<Creature>(
+  return std::make_unique<Character>(
       ConstructBuild(first_profession, std::move(weapon), attributes,
                      std::move(skills)...),
       position);

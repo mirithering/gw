@@ -20,9 +20,9 @@ class PureStrikeTest : public GwTest {
   }
 
  protected:
-  Creature* character_;
+  Character* character_;
   PureStrike* pure_strike_;
-  Creature* dummy_;
+  Character* dummy_;
 };
 
 TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {

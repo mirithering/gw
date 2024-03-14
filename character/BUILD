@@ -2,7 +2,7 @@ cc_library(
     name = "character",
     srcs = [
         "action.cpp",
-        "creature.cpp",
+        "character.cpp",
         "damage.cpp",
         "skill.cpp",
         "stance.cpp",
@@ -10,8 +10,8 @@ cc_library(
     hdrs = [
         "action.h",
         "build.h",
+        "character.h",
         "condition.h",
-        "creature.h",
         "damage.h",
         "hex.h",
         "skill.h",
@@ -32,7 +32,7 @@ cc_test(
     srcs = [
         "action_test.cpp",
         "build_test.cpp",
-        "creature_test.cpp",
+        "character_test.cpp",
         "damage_test.cpp",
     ],
     deps = [

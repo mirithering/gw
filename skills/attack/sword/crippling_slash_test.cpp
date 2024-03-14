@@ -5,7 +5,7 @@
 
 #include "base/random.h"
 #include "character/build.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "test/test.h"
 #include "weapon/dagger.h"
 #include "weapon/sword.h"
@@ -22,9 +22,9 @@ class CripplingSlashTest : public GwTest {
   }
 
  protected:
-  Creature* attacker;
+  Character* attacker;
   CripplingSlash* crippling_slash;
-  Creature* defender;
+  Character* defender;
 };
 
 TEST_F(CripplingSlashTest, InflictBleedingAndCrippled) {

@@ -5,20 +5,20 @@
 
 #include "base/function_list.h"
 #include "character/condition.h"
-#include "character/creature.h"
+#include "character/character.h"
 
 // TODO deep wound also reduces healing effect, but I dongf
 class DeepWound : public Condition {
  public:
-  void AddModifiers(Creature& creature) override {
-    reference_ = creature.callbacks_max_health_.AddFunction(
-        [](const Creature&) { return Percent(-20); });
+  void AddModifiers(Character& character) override {
+    reference_ = character.callbacks_max_health_.AddFunction(
+        [](const Character&) { return Percent(-20); });
   }
 
   Type GetType() const override { return Type::DeepWound; }
 
  private:
-  FunctionList<Percent(const Creature&)>::UniqueReference reference_;
+  FunctionList<Percent(const Character&)>::UniqueReference reference_;
 };
 
 #endif  // CONDITIONS_DEEP_WOUND_H

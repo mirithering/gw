@@ -9,28 +9,28 @@
 class CrippledTest : public GwTest {};
 
 TEST_F(CrippledTest, Test) {
-  auto creature = AddWarriorTo(team());
+  auto character = AddWarriorTo(team());
   auto target = AddWarriorTo(team());
   target->SetPosition({Inches(1000), Inches(0)});
-  creature->WalkTowards(*target, Inches(1));
+  character->WalkTowards(*target, Inches(1));
 
-  Speed speed_non_crippled = creature->GetWalkingSpeed();
+  Speed speed_non_crippled = character->GetWalkingSpeed();
 
   int required_ticks_not_crippled = 0;
-  while (creature->GetActionType() != Action::Type::Idle) {
+  while (character->GetActionType() != Action::Type::Idle) {
     Tick();
     required_ticks_not_crippled++;
   }
 
   target->SetPosition({Inches(2000), Inches(0)});
-  creature->WalkTowards(*target, Inches(1));
-  creature->AddCondition(
+  character->WalkTowards(*target, Inches(1));
+  character->AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<Crippled>()));
 
-  Speed speed_crippled = creature->GetWalkingSpeed();
+  Speed speed_crippled = character->GetWalkingSpeed();
 
   int required_ticks_crippled = 0;
-  while (creature->GetActionType() != Action::Type::Idle) {
+  while (character->GetActionType() != Action::Type::Idle) {
     Tick();
     required_ticks_crippled++;
   }

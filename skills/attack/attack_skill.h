@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 
-#include "character/creature.h"
+#include "character/character.h"
 #include "character/skill.h"
 #include "character/world.h"
 #include "weapon/weapon.h"
@@ -12,12 +12,12 @@ class AttackSkill : public Skill {
  public:
   AttackSkill() = default;
   virtual ~AttackSkill() = default;
-  bool CanActivate(Creature& creature, World& world) const override;
-  Creature* GetTarget(Creature& creature, World& world) const override {
-    return creature.target_;
+  bool CanActivate(Character& character, World& world) const override;
+  Character* GetTarget(Character& character, World& world) const override {
+    return character.target_;
   }
-  Inches GetRange(const Creature& creature) const override {
-    return creature.GetBuild().GetWeapon().GetRange();
+  Inches GetRange(const Character& character) const override {
+    return character.GetBuild().GetWeapon().GetRange();
   }
 
  protected:

@@ -6,7 +6,7 @@
 
 #include "../attack_skill.h"
 #include "character/action.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "character/damage.h"
 
 // TODO this is a first hand attack, need to set the state to allow for chains.
@@ -15,29 +15,29 @@ class DesperateStrike : public AttackSkill {
   std::string Name() const override { return "Desperate Strike"; }
 
  protected:
-  void ActivationMiddle(Creature& creature, World& world) override {
+  void ActivationMiddle(Character& character, World& world) override {
     assert(target_ != nullptr);
 
     int health_below =
-        healthAndDamage.at(creature.GetBuild().GetAttribute(attribute)).first;
+        healthAndDamage.at(character.GetBuild().GetAttribute(attribute)).first;
     int added_damage =
-        healthAndDamage.at(creature.GetBuild().GetAttribute(attribute)).second;
+        healthAndDamage.at(character.GetBuild().GetAttribute(attribute)).second;
 
     int skill_damage = 0;
-    if ((creature.GetMaxHealth() - creature.GetLostHealth()) * 100 /
-            creature.GetMaxHealth() <
+    if ((character.GetMaxHealth() - character.GetLostHealth()) * 100 /
+            character.GetMaxHealth() <
         health_below) {
       skill_damage = added_damage;
     }
 
-    creature.WeaponAttack(*target_, skill_damage);
+    character.WeaponAttack(*target_, skill_damage);
   }
 
   Adrenaline AdrenalineCost() const override { return Adrenaline(0); }
   int EnergyCost() const override { return 5; }
   Time RechargeTime() const override { return 6 * Second; }
-  Time ActivationTime(Creature& creature) const override {
-    return creature.GetBuild().GetWeapon().AttackDuration();
+  Time ActivationTime(Character& character) const override {
+    return character.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Dagger; };
 

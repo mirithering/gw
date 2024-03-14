@@ -21,9 +21,9 @@ class Staff : public Weapon {
       : Staff(damage_type, attribute, kStaffMinDamage, kStaffMaxDamage){};
   Staff(DamageType damage_type, Attribute attribute, int min_damage,
         int max_damage)
-      : damage_type_(damage_type),
-        attribute_(attribute),
-        Weapon({min_damage, max_damage}){};
+      : Weapon({min_damage, max_damage}),
+        damage_type_(damage_type),
+        attribute_(attribute){};
 
   Time AttackDuration() const override { return kStaffAttackDuration; }
   DamageType GetDamageType() const override { return damage_type_; }

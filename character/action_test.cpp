@@ -4,7 +4,7 @@
 
 #include "base/logging.h"
 #include "base/profession.h"
-#include "creature.h"
+#include "character.h"
 #include "test/test.h"
 #include "weapon/dagger.h"
 #include "weapon/flatbow.h"
@@ -80,15 +80,15 @@ TEST(ActionTest, DeadTypeIsDead) {
 }
 
 TEST(ActionTest, WeaponAttackTypeIsBusy) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
   Action action = Action::WeaponAttack(*character, *character);
   ASSERT_EQ(action.GetType(), Action::Type::Busy);
 }
 
 TEST(ActionTest, MeeleWeaponAttackAttacksAfterHalfOfWeaponSpeed) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
 
   Action action = Action::WeaponAttack(*character, *character);
 
@@ -102,8 +102,8 @@ TEST(ActionTest, MeeleWeaponAttackAttacksAfterHalfOfWeaponSpeed) {
 }
 
 TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
 
   Action action = Action::WeaponAttack(*character, *character);
 
@@ -115,12 +115,12 @@ TEST(ActionTest, WeaponAttackLastsForWeaponSpeedTime) {
 }
 
 TEST(ActionTest, RangedWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
-                        Position({Inches(0), Inches(0)}));
-  std::unique_ptr<Creature> target =
-      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
-                        Position({Inches(1000), Inches(0)}));
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Ranger, std::make_unique<Flatbow>(),
+                         Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Character> target =
+      ConstructCharacter(Profession::Assassin, std::make_unique<Dagger>(),
+                         Position({Inches(1000), Inches(0)}));
   const Weapon& bow = character->GetBuild().GetWeapon();
 
   character->target_ = target.get();
@@ -138,12 +138,12 @@ TEST(ActionTest, RangedWeaponAttackAttacksAfterAttackDurationPlusFlightTime) {
 }
 
 TEST(ActionTest, WalkTowardsEndsAfterOneTickIfAlreadyInRange) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
-                        Position({Inches(0), Inches(0)}));
-  std::unique_ptr<Creature> target =
-      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
-                        Position({Inches(1000), Inches(0)}));
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Ranger, std::make_unique<Flatbow>(),
+                         Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Character> target =
+      ConstructCharacter(Profession::Assassin, std::make_unique<Dagger>(),
+                         Position({Inches(1000), Inches(0)}));
 
   character->WalkTowards(*target, Inches(1000));
   Tick();
@@ -151,12 +151,12 @@ TEST(ActionTest, WalkTowardsEndsAfterOneTickIfAlreadyInRange) {
 }
 
 TEST(ActionTest, WalkTowardsWalksTowardsUntilTargetRangeReached) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
-                        Position({Inches(0), Inches(0)}));
-  std::unique_ptr<Creature> target =
-      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
-                        Position({Inches(1000), Inches(0)}));
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Ranger, std::make_unique<Flatbow>(),
+                         Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Character> target =
+      ConstructCharacter(Profession::Assassin, std::make_unique<Dagger>(),
+                         Position({Inches(1000), Inches(0)}));
 
   character->WalkTowards(*target, Inches(50));
   AwaitIdle(character.get());
@@ -165,12 +165,12 @@ TEST(ActionTest, WalkTowardsWalksTowardsUntilTargetRangeReached) {
 }
 
 TEST(ActionTest, WalkTowardsWalksTowardsTargetEvenIfItMovesTowardsMe) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
-                        Position({Inches(0), Inches(0)}));
-  std::unique_ptr<Creature> target =
-      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
-                        Position({Inches(1000), Inches(0)}));
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Ranger, std::make_unique<Flatbow>(),
+                         Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Character> target =
+      ConstructCharacter(Profession::Assassin, std::make_unique<Dagger>(),
+                         Position({Inches(1000), Inches(0)}));
 
   character->WalkTowards(*target, Inches(50));
   target->WalkTowards(*character, Inches(50));
@@ -181,15 +181,15 @@ TEST(ActionTest, WalkTowardsWalksTowardsTargetEvenIfItMovesTowardsMe) {
 }
 
 TEST(ActionTest, WalkTowardsTargetWalksTowardsTargetEvenIfItMovesAwayFromMe) {
-  std::unique_ptr<Creature> character =
-      ConstructCreature(Profession::Ranger, std::make_unique<Flatbow>(),
-                        Position({Inches(0), Inches(0)}));
-  std::unique_ptr<Creature> target =
-      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
-                        Position({Inches(1000), Inches(0)}));
-  std::unique_ptr<Creature> target_target =
-      ConstructCreature(Profession::Assassin, std::make_unique<Dagger>(),
-                        Position({Inches(2000), Inches(0)}));
+  std::unique_ptr<Character> character =
+      ConstructCharacter(Profession::Ranger, std::make_unique<Flatbow>(),
+                         Position({Inches(0), Inches(0)}));
+  std::unique_ptr<Character> target =
+      ConstructCharacter(Profession::Assassin, std::make_unique<Dagger>(),
+                         Position({Inches(1000), Inches(0)}));
+  std::unique_ptr<Character> target_target =
+      ConstructCharacter(Profession::Assassin, std::make_unique<Dagger>(),
+                         Position({Inches(2000), Inches(0)}));
 
   character->WalkTowards(*target, Inches(50));
   target->WalkTowards(*target_target, Inches(50));

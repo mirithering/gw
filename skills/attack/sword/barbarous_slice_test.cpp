@@ -5,7 +5,7 @@
 
 #include "base/random.h"
 #include "character/build.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "test/test.h"
 #include "weapon/sword.h"
 
@@ -14,7 +14,7 @@ namespace {
 class NoOpStance : public Stance {
  public:
   NoOpStance() {}
-  void AddModifiers(Creature&) override {}
+  void AddModifiers(Character&) override {}
 };
 }  // namespace
 
@@ -32,8 +32,8 @@ class BarbarousSliceTest : public GwTest {
   }
 
  protected:
-  Creature* character;
-  Creature* dummy;
+  Character* character;
+  Character* dummy;
   BarbarousSlice* barbarous_slice;
 };
 

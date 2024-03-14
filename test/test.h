@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
-#include "character/creature.h"
+#include "character/character.h"
 #include "character/world.h"
 #include "weapon/dagger.h"
 #include "weapon/flatbow.h"
@@ -15,8 +15,8 @@ class GwTest : public ::testing::Test {
   GwTest() {}
 
  protected:
-  std::vector<std::unique_ptr<Creature>>& team() { return world_.team; }
-  std::vector<std::unique_ptr<Creature>>& enemies() { return world_.enemies; }
+  std::vector<std::unique_ptr<Character>>& team() { return world_.team; }
+  std::vector<std::unique_ptr<Character>>& enemies() { return world_.enemies; }
 
   World& world() { return world_; }
 
@@ -24,12 +24,12 @@ class GwTest : public ::testing::Test {
   World world_;
 };
 
-Creature* AddWarriorTo(std::vector<std::unique_ptr<Creature>>& group);
-Creature* AddRangerTo(std::vector<std::unique_ptr<Creature>>& group);
+Character* AddWarriorTo(std::vector<std::unique_ptr<Character>>& group);
+Character* AddRangerTo(std::vector<std::unique_ptr<Character>>& group);
 
-Creature* AddAssassinTo(std::vector<std::unique_ptr<Creature>>& group);
-Creature* AddMesmerTo(std::vector<std::unique_ptr<Creature>>& group);
+Character* AddAssassinTo(std::vector<std::unique_ptr<Character>>& group);
+Character* AddMesmerTo(std::vector<std::unique_ptr<Character>>& group);
 
-void AwaitIdle(Creature* creature);
+void AwaitIdle(Character* character);
 
 #endif  // TEST_TEST_H

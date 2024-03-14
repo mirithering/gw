@@ -5,20 +5,21 @@
 
 #include "base/logging.h"
 
-class Creature;
+class Character;
 
 struct World {
-  std::vector<std::unique_ptr<Creature>> team;
-  std::vector<std::unique_ptr<Creature>> enemies;
+  std::vector<std::unique_ptr<Character>> team;
+  std::vector<std::unique_ptr<Character>> enemies;
 
-  std::vector<std::unique_ptr<Creature>>& EnemiesOf(const Creature& creature) {
+  std::vector<std::unique_ptr<Character>>& EnemiesOf(
+      const Character& character) {
     for (const auto& other : team) {
-      if (other.get() == &creature) {
+      if (other.get() == &character) {
         return enemies;
       }
     }
     for (const auto& other : enemies) {
-      if (other.get() == &creature) {
+      if (other.get() == &character) {
         return team;
       }
     }

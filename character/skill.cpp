@@ -3,36 +3,36 @@
 #include <bits/stdc++.h>
 
 #include "character/action.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "character/damage.h"
 #include "character/world.h"
 
-bool Skill::CanActivate(Creature& creature, World& world) const {
+bool Skill::CanActivate(Character& character, World& world) const {
   return recharge_ == Time(0) && adrenaline_ >= AdrenalineCost() &&
-         creature.energy() >= EnergyCost();
+         character.energy() >= EnergyCost();
 }
 
-Action Skill::Activate(Creature& creature, World& world) {
-  assert(CanActivate(creature, world));
-  ActivationStart(creature, world);
+Action Skill::Activate(Character& character, World& world) {
+  assert(CanActivate(character, world));
+  ActivationStart(character, world);
 
-  Time activation_time = ActivationTime(creature);
+  Time activation_time = ActivationTime(character);
 
   std::function<Action::Result(Time)> tick = [&,
                                               activation_time](Time duration) {
     if (duration == activation_time / 2) {
-      ActivationMiddle(creature, world);
+      ActivationMiddle(character, world);
     }
     // TODO cancel skills with dead targets.
     return Action::Result::Continue;
   };
 
   if (activation_time == Time(0)) {
-    ActivationEnd(creature, world);
+    ActivationEnd(character, world);
     return kActionIdle;
   }
 
-  std::function<void()> end = [&]() { ActivationEnd(creature, world); };
+  std::function<void()> end = [&]() { ActivationEnd(character, world); };
 
   return Action(Action::Type::Busy, activation_time, tick, end);
 }
@@ -46,16 +46,16 @@ void Skill::LoseAdrenaline(Adrenaline adrenaline) {
 void Skill::LoseAllAdrenaline() { adrenaline_ = Adrenaline(0); }
 Adrenaline Skill::GetAdrenaline() const { return adrenaline_; }
 
-void Skill::ActivationStart(Creature& creature, World& world) {
+void Skill::ActivationStart(Character& character, World& world) {
   adrenaline_ = Adrenaline(0);
   if (AdrenalineCost() > Adrenaline(0)) {
-    creature.RemoveOneAdrenalineStrike();
+    character.RemoveOneAdrenalineStrike();
   }
-  target_ = GetTarget(creature, world);
-  creature.UseEnergy(EnergyCost());
+  target_ = GetTarget(character, world);
+  character.UseEnergy(EnergyCost());
 }
 
-void Skill::ActivationEnd(Creature& creature,
+void Skill::ActivationEnd(Character& character,
 
                           World& world) {
   recharge_ = RechargeTime();

@@ -5,7 +5,7 @@
 
 #include "base/effect.h"
 #include "base/random.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "character/damage.h"
 #include "conditions/bleeding.h"
 #include "test/test.h"
@@ -23,8 +23,8 @@ class GashTest : public GwTest {
   }
 
  protected:
-  Creature* warrior_;
-  Creature* enemy_;
+  Character* warrior_;
+  Character* enemy_;
   Gash* gash_;
 };
 

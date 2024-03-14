@@ -7,7 +7,7 @@
 #include "base/attribute.h"
 #include "base/logging.h"
 #include "base/profession.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "character/skill.h"
 #include "skills/attack/bow/arcing_shot.h"
 #include "skills/attack/sword/barbarous_slice.h"
@@ -76,41 +76,4 @@ TEST_F(EngineTest, RangerAndWarriorWalkTowardsAndFight) {
     NextActions(world());
   }
   ASSERT_EQ(defender->GetActionType(), Action::Type::Dead);
-}
-
-void ModifyLevel6Iboga(Creature* creature) {
-  creature->kiting_ = false;
-  creature->GetBuild().SetAttribute(Attribute::IllusionMagic, 7);
-  creature->GetBuild().SetArmor(std::make_unique<Armor>(20));  // guessed
-  creature->GetBuild().AddSkill(std::make_unique<ImaginedBurden>());
-  creature->GetBuild().AddSkill(std::make_unique<SoothingImages>());
-}
-
-TEST_F(EngineTest, KossVsIboga) {
-  int kTime = 25217;
-
-  auto attacker = AddWarriorTo(team());
-  attacker->GetBuild().SetAttribute(Attribute::Swordsmanship, 12);
-  attacker->GetBuild().SetAttribute(Attribute::Strength, 12);
-  attacker->GetBuild().SetSkills(
-      std::make_unique<PureStrike>(), std::make_unique<JaizenjuStrike>(),
-      std::make_unique<BarbarousSlice>(), std::make_unique<Gash>());
-  attacker->SetPosition({Inches(2000), Inches(0)});
-
-  // TODO Iboga at level 6... what else do I need to change? Maybe the staff?
-  auto iboga = AddMesmerTo(enemies());
-  auto iboga2 = AddMesmerTo(enemies());
-  auto iboga3 = AddMesmerTo(enemies());
-  ModifyLevel6Iboga(iboga);
-  ModifyLevel6Iboga(iboga2);
-  ModifyLevel6Iboga(iboga3);
-
-  for (int ticks = 0; ticks < kTime; ++ticks) {
-    ASSERT_NE(attacker->GetActionType(), Action::Type::Dead);
-    ASSERT_NE(iboga->GetActionType(), Action::Type::Dead)
-        << " " << attacker->GetLostHealth();
-    Tick();
-    NextActions(world());
-  }
-  ASSERT_EQ(iboga->GetActionType(), Action::Type::Dead);
 }

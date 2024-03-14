@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "../attack_skill.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "conditions/deep_wound.h"
 
 class Gash : public AttackSkill {
@@ -12,18 +12,18 @@ class Gash : public AttackSkill {
   std::string Name() const override { return "Gash"; }
 
  protected:
-  void ActivationMiddle(Creature& creature, World& world) override {
+  void ActivationMiddle(Character& character, World& world) override {
     assert(target_);
     bool is_bleeding = target_->HasCondition(Condition::Type::Bleeding);
     int skill_damage = 0;
     if (is_bleeding) {
-      skill_damage = Damage(creature.GetBuild().GetAttribute(attribute));
+      skill_damage = Damage(character.GetBuild().GetAttribute(attribute));
     }
     Time deep_wound_duration =
-        DeepWoundDurationSeconds(creature.GetBuild().GetAttribute(attribute)) *
+        DeepWoundDurationSeconds(character.GetBuild().GetAttribute(attribute)) *
         Second;
 
-    bool success = creature.WeaponAttack(*target_, skill_damage);
+    bool success = character.WeaponAttack(*target_, skill_damage);
 
     if (success && is_bleeding) {
       target_->AddCondition(Effect<Condition>(deep_wound_duration,
@@ -34,7 +34,7 @@ class Gash : public AttackSkill {
   Adrenaline AdrenalineCost() const override { return 6 * Strike; }
   int EnergyCost() const override { return 0; }
   Time RechargeTime() const override { return Time(0); }
-  Time ActivationTime(Creature& character) const override {
+  Time ActivationTime(Character& character) const override {
     return character.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };

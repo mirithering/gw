@@ -7,27 +7,27 @@
 #include "base/units.h"
 #include "weapon/weapon.h"
 
-class Creature;
+class Character;
 
 class Stance {
  public:
   virtual ~Stance() = default;
-  virtual void AddModifiers(Creature& creature) = 0;
+  virtual void AddModifiers(Character& character) = 0;
 };
 
 class BlockEverythingStance : public Stance {
  public:
   BlockEverythingStance() = default;
-  void AddModifiers(Creature& creature) override;
+  void AddModifiers(Character& character) override;
 
   ~BlockEverythingStance() override = default;
 
   int attack_blocked_called_ = 0;
 
  private:
-  FunctionList<Percent(const Creature& creature, Weapon::Type)>::UniqueReference
-      block_modifier;
-  FunctionList<void(Creature& creature, Weapon::Type)>::UniqueReference
+  FunctionList<Percent(const Character& character,
+                       Weapon::Type)>::UniqueReference block_modifier;
+  FunctionList<void(Character& character, Weapon::Type)>::UniqueReference
       block_callback;
 };
 

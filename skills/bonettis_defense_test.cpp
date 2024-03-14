@@ -6,7 +6,7 @@
 #include "base/clock.h"
 #include "base/random.h"
 #include "bonettis_defense.h"
-#include "character/creature.h"
+#include "character/character.h"
 #include "test/test.h"
 #include "weapon/sword.h"
 
@@ -21,10 +21,10 @@ class BonettisDefenseTest : public GwTest {
   }
 
  protected:
-  Creature* warrior_;
+  Character* warrior_;
   BonettisDefense* bonettis_defense_;
 
-  Creature* enemy_;
+  Character* enemy_;
 };
 
 TEST_F(BonettisDefenseTest, CannotUseWithoutAdrenaline) {
