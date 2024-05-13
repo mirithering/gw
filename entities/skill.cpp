@@ -2,28 +2,28 @@
 
 #include <bits/stdc++.h>
 
-#include "character/action.h"
-#include "character/character.h"
-#include "character/damage.h"
-#include "character/world.h"
+#include "entities/action.h"
+#include "entities/creature.h"
+#include "entities/damage.h"
+#include "entities/world.h"
 
-bool Skill::CanActivate(Character& character, World& world) const {
+bool Skill::CanActivate(Creature& creature, World& world) const {
   return recharge_ == Time(0) && adrenaline_ >= AdrenalineCost() &&
-         character.energy() >= EnergyCost();
+         creature.energy() >= EnergyCost();
 }
 
-Action Skill::Activate(Character& character, World& world) {
-  assert(CanActivate(character, world));
-  ActivationStart(character, world);
+Action Skill::Activate(Creature& creature, World& world) {
+  assert(CanActivate(creature, world));
+  ActivationStart(creature, world);
 
-  Time activation_time = ActivationTime(character);
+  Time activation_time = ActivationTime(creature);
 
   if (IsSpell(GetType())) {
     Percent modifier = Percent(100);
     // TODO check wether those add up, and not multiply or
     // something.
     for (const auto& modifier_callback :
-         character.callbacks_spell_casting_speed_.GetList()) {
+         creature.callbacks_spell_casting_speed_.GetList()) {
       modifier += modifier_callback();
     }
     activation_time = of(activation_time, modifier);
@@ -32,18 +32,18 @@ Action Skill::Activate(Character& character, World& world) {
   std::function<Action::Result(Time)> tick = [&,
                                               activation_time](Time duration) {
     if (duration == activation_time / 2) {
-      ActivationMiddle(character, world);
+      ActivationMiddle(creature, world);
     }
     // TODO cancel skills with dead targets.
     return Action::Result::Continue;
   };
 
   if (activation_time == Time(0)) {
-    ActivationEnd(character, world);
+    ActivationEnd(creature, world);
     return kActionIdle;
   }
 
-  std::function<void()> end = [&]() { ActivationEnd(character, world); };
+  std::function<void()> end = [&]() { ActivationEnd(creature, world); };
 
   return Action(Action::Type::Busy, activation_time, tick, end);
 }
@@ -57,16 +57,16 @@ void Skill::LoseAdrenaline(Adrenaline adrenaline) {
 void Skill::LoseAllAdrenaline() { adrenaline_ = Adrenaline(0); }
 Adrenaline Skill::GetAdrenaline() const { return adrenaline_; }
 
-void Skill::ActivationStart(Character& character, World& world) {
+void Skill::ActivationStart(Creature& creature, World& world) {
   adrenaline_ = Adrenaline(0);
   if (AdrenalineCost() > Adrenaline(0)) {
-    character.RemoveOneAdrenalineStrike();
+    creature.RemoveOneAdrenalineStrike();
   }
-  target_ = GetTarget(character, world);
-  character.UseEnergy(EnergyCost());
+  target_ = GetTarget(creature, world);
+  creature.UseEnergy(EnergyCost());
 }
 
-void Skill::ActivationEnd(Character& character,
+void Skill::ActivationEnd(Creature& creature,
 
                           World& world) {
   recharge_ = RechargeTime();

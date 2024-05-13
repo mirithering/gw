@@ -25,8 +25,8 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//character",
         "//conditions",
+        "//entities",
     ],
 )
 
@@ -47,7 +47,7 @@ cc_test(
     ],
     deps = [
         "skills",
-        "//character",
+        "//entities",
         "//test",
         "@com_google_googletest//:gtest_main",
     ],

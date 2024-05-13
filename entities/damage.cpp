@@ -2,7 +2,7 @@
 
 #include "armor/armor.h"
 #include "base/random.h"
-#include "character.h"
+#include "creature.h"
 #include "weapon/weapon.h"
 
 double BaseDamage(const Weapon& weapon, bool requirement_met) {
@@ -11,7 +11,7 @@ double BaseDamage(const Weapon& weapon, bool requirement_met) {
   return RandomValue(weapon.MinDamage(), weapon.MaxDamage()) * modifier;
 }
 
-int WeaponStrikeDamage(const Character& attacker, const Character& defender) {
+int WeaponStrikeDamage(const Creature& attacker, const Creature& defender) {
   bool weapon_requirement_met = true;
   const Weapon& weapon = attacker.GetBuild().GetWeapon();
   if (attacker.GetBuild().GetAttribute(weapon.GetAttribute()) <

@@ -10,7 +10,7 @@ cc_library(
     deps = [
         "//armor",
         "//base",
-        "//character",
+        "//entities",
         "//skills",
         "//weapon",
     ],
@@ -33,8 +33,8 @@ test_suite(
         "engine_test",
         "//armor:test",
         "//base:test",
-        "//character:test",
         "//conditions:test",
+        "//entities:test",
         "//skills:test",
         "//weapon:test",
     ],

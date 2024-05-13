@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "base/random.h"
-#include "character.h"
+#include "creature.h"
 #include "weapon/sword.h"
 
 namespace {
@@ -13,11 +13,11 @@ double kExpectedReqNotMetModifier = 1.0 / 3.0;
 
 TEST(DamageTest, DamageWithoutArmorOrAttributeIsBaseDamage) {
   auto attacker =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
   attacker->GetBuild().SetArmor(std::make_unique<Armor>(0));
 
   auto defender =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
   defender->GetBuild().SetArmor(std::make_unique<Armor>(0));
 
   const int kDamage = 10;
@@ -32,12 +32,12 @@ TEST(DamageTest, DamageWithoutArmorIsBaseDamageModifiedByAttribute) {
   const int kAttribute = 9;
 
   auto attacker =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>(),
-                         {{Attribute::Swordsmanship, kAttribute}});
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>(),
+                        {{Attribute::Swordsmanship, kAttribute}});
   attacker->GetBuild().SetArmor(std::make_unique<Armor>(0));
 
   auto defender =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
   defender->GetBuild().SetArmor(std::make_unique<Armor>(0));
 
   const int kDamage = 20;
@@ -52,13 +52,13 @@ TEST(DamageTest, DamageWithoutArmorIsBaseDamageModifiedByAttribute) {
 
 TEST(DamageTest, DamageWithoutAttributeIsBaseDamageModifiedByArmor) {
   auto attacker =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
   attacker->GetBuild().SetArmor(std::make_unique<Armor>(0));
 
   const int kArmor = 10;
 
   auto defender =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
   defender->GetBuild().SetArmor(std::make_unique<Armor>(kArmor));
 
   const int kDamage = 16;
@@ -81,12 +81,12 @@ TEST(DamageTest, DamageWithAttributeAndArmorIsExpectedFormula) {
   OverrideRandomValueForTesting(kDamage);
 
   auto attacker =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>(),
-                         {{Attribute::Swordsmanship, kAttribute}});
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>(),
+                        {{Attribute::Swordsmanship, kAttribute}});
   attacker->GetBuild().SetArmor(std::make_unique<Armor>(0));
 
   auto defender =
-      ConstructCharacter(Profession::Warrior, std::make_unique<Sword>());
+      ConstructCreature(Profession::Warrior, std::make_unique<Sword>());
   defender->GetBuild().SetArmor(std::make_unique<Armor>(kArmor));
 
   EXPECT_EQ(WeaponStrikeDamage(*attacker, *defender),

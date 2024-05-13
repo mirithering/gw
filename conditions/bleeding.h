@@ -3,23 +3,23 @@
 
 #include <bits/stdc++.h>
 
-#include "character/condition.h"
-#include "character/character.h"
+#include "entities/condition.h"
+#include "entities/creature.h"
 
 class Bleeding : public Condition {
  public:
-  void AddModifiers(Character& character) override {
+  void AddModifiers(Creature& creature) override {
     modifier_ = {
-        .character = &character,
+        .creature = &creature,
         .reference =
-            character.callbacks_health_generation_.AddFunctionDeprecated(
+            creature.callbacks_health_generation_.AddFunctionDeprecated(
                 []() { return -3; }),
     };
   }
 
   ~Bleeding() override {
     if (modifier_.has_value()) {
-      modifier_->character->callbacks_health_generation_.RemoveFunction(
+      modifier_->creature->callbacks_health_generation_.RemoveFunction(
           modifier_->reference);
     }
   }
@@ -27,7 +27,7 @@ class Bleeding : public Condition {
 
  private:
   struct Modifier {
-    Character* character;
+    Creature* creature;
     FunctionList<int()>::ref reference;
   };
 

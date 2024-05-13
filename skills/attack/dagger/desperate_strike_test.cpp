@@ -19,8 +19,8 @@ class DesperateStrikeTest : public GwTest {
   }
 
  protected:
-  Character* assassin;
-  Character* enemy;
+  Creature* assassin;
+  Creature* enemy;
   DesperateStrike* desperate_strike;
 };
 

@@ -8,7 +8,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//character",
+        "//entities",
         "//weapon",
         "@com_google_googletest//:gtest_main",
     ],

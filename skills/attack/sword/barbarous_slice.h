@@ -4,22 +4,22 @@
 #include <bits/stdc++.h>
 
 #include "../attack_skill.h"
-#include "character/character.h"
-#include "character/world.h"
 #include "conditions/bleeding.h"
+#include "entities/creature.h"
+#include "entities/world.h"
 
 class BarbarousSlice : public AttackSkill {
  public:
   std::string Name() const override { return "Barbarous Slice"; }
 
  protected:
-  void ActivationMiddle(Character& character, World& world) override;
+  void ActivationMiddle(Creature& creature, World& world) override;
 
   Adrenaline AdrenalineCost() const override { return 6 * Strike; }
   int EnergyCost() const override { return 0; }
   Time RechargeTime() const override { return Time(0); }
-  Time ActivationTime(Character& character) const override {
-    return character.GetBuild().GetWeapon().AttackDuration();
+  Time ActivationTime(Creature& creature) const override {
+    return creature.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };
 

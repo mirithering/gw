@@ -10,7 +10,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//character",
+        "//entities",
     ],
 )
 
@@ -24,7 +24,7 @@ cc_test(
     ],
     deps = [
         "conditions",
-        "//character",
+        "//entities",
         "//skills",
         "//test",
         "//weapon",

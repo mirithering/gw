@@ -5,7 +5,7 @@
 
 #include "base/clock.h"
 #include "base/random.h"
-#include "character/stance.h"
+#include "entities/stance.h"
 #include "test/test.h"
 #include "weapon/flatbow.h"
 #include "weapon/sword.h"
@@ -23,9 +23,9 @@ class ArcingShotTest : public GwTest {
   }
 
  protected:
-  Character* ranger;
+  Creature* ranger;
   ArcingShot* arcing_shot;
-  Character* enemy;
+  Creature* enemy;
 };
 
 TEST_F(ArcingShotTest, Test) {

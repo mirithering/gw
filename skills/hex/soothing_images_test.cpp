@@ -6,7 +6,7 @@
 #include "base/clock.h"
 #include "base/random.h"
 #include "base/units.h"
-#include "character/character.h"
+#include "entities/creature.h"
 #include "skills/attack/sword/gash.h"
 #include "test/test.h"
 #include "weapon/sword.h"
@@ -23,10 +23,10 @@ class SoothingImagesTest : public GwTest {
   }
 
  protected:
-  Character* mesmer_;
+  Creature* mesmer_;
   SoothingImages* soothing_images_;
 
-  Character* enemy_;
+  Creature* enemy_;
 };
 
 TEST_F(SoothingImagesTest, TargetMovesCannotGainAdrenaline) {
@@ -45,10 +45,10 @@ TEST_F(SoothingImagesTest, TargetMovesCannotGainAdrenaline) {
 }
 
 TEST_F(SoothingImagesTest, AffectsAdjacentEnemies) {
-  Character* adjacent_enemy_ = AddWarriorTo(enemies());
+  Creature* adjacent_enemy_ = AddWarriorTo(enemies());
   adjacent_enemy_->SetPosition(Position({Inches(100), Inches(100)}));
 
-  Character* away_enemy_ = AddWarriorTo(enemies());
+  Creature* away_enemy_ = AddWarriorTo(enemies());
   away_enemy_->SetPosition(Position({Inches(140), Inches(140)}));
 
   mesmer_->UseSkill(soothing_images_, world());
@@ -60,7 +60,7 @@ TEST_F(SoothingImagesTest, AffectsAdjacentEnemies) {
 }
 
 TEST_F(SoothingImagesTest, TargetWarriorIfCurrentTargetIsNoWarrior) {
-  Character* assassin = AddAssassinTo(enemies());
+  Creature* assassin = AddAssassinTo(enemies());
   assassin->SetPosition(Position({Inches(140), Inches(140)}));
 
   mesmer_->target_ = assassin;

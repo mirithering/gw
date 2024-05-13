@@ -4,10 +4,10 @@
 #include <bits/stdc++.h>
 
 #include "base/clock.h"
-#include "character/world.h"
+#include "entities/world.h"
 
 class Action;
-class Character;
+class Creature;
 
 // TODO implement aftercast delay
 class Skill : public TimedObject {
@@ -25,10 +25,10 @@ class Skill : public TimedObject {
 
   Skill() = default;
 
-  virtual bool CanActivate(Character& character, World& world) const;
+  virtual bool CanActivate(Creature& creature, World& world) const;
   virtual ~Skill() override = default;
 
-  Action Activate(Character& character, World& world);
+  Action Activate(Creature& creature, World& world);
 
   void Tick(Time) override final {
     recharge_ = std::max(Time(0), recharge_ - Millisecond);
@@ -41,21 +41,21 @@ class Skill : public TimedObject {
 
   virtual std::string Name() const = 0;
 
-  virtual Character* GetTarget(Character& character, World& world) const = 0;
+  virtual Creature* GetTarget(Creature& creature, World& world) const = 0;
 
-  virtual Inches GetRange(const Character& character) const = 0;
+  virtual Inches GetRange(const Creature& creature) const = 0;
 
  protected:
-  Character* target_ = nullptr;
+  Creature* target_ = nullptr;
   virtual Adrenaline AdrenalineCost() const = 0;
   virtual int EnergyCost() const = 0;
   virtual Time RechargeTime() const = 0;
-  virtual Time ActivationTime(Character& character) const = 0;
+  virtual Time ActivationTime(Creature& creature) const = 0;
   virtual Type GetType() const = 0;
 
-  virtual void ActivationStart(Character& character, World& world);
-  virtual void ActivationMiddle(Character& character, World& world){};
-  virtual void ActivationEnd(Character& character, World& world);
+  virtual void ActivationStart(Creature& creature, World& world);
+  virtual void ActivationMiddle(Creature& creature, World& world) {};
+  virtual void ActivationEnd(Creature& creature, World& world);
 
  private:
   Adrenaline adrenaline_ =

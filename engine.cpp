@@ -2,13 +2,13 @@
 
 #include "base/clock.h"
 #include "base/logging.h"
-#include "character/action.h"
-#include "character/character.h"
-#include "character/skill.h"
+#include "entities/action.h"
+#include "entities/creature.h"
+#include "entities/skill.h"
 
 namespace {
-Character* NextTarget(Character& character,
-                      std::vector<std::unique_ptr<Character>>& enemies) {
+Creature* NextTarget(Creature& creature,
+                     std::vector<std::unique_ptr<Creature>>& enemies) {
   for (auto& enemy : enemies) {
     if (enemy->GetActionType() != Action::Type::Dead) {
       return enemy.get();
@@ -17,61 +17,60 @@ Character* NextTarget(Character& character,
   return nullptr;
 }
 
-const Character* EnemyVeryClose(const Character& character, World& world) {
-  for (const auto& other : world.EnemiesOf(character)) {
-    if (InRange(character.GetPosition(), other->GetPosition(), AdjacentRange)) {
+const Creature* EnemyVeryClose(const Creature& creature, World& world) {
+  for (const auto& other : world.EnemiesOf(creature)) {
+    if (InRange(creature.GetPosition(), other->GetPosition(), AdjacentRange)) {
       return other.get();
     }
   }
   return nullptr;
 }
 
-void NextAction(Character& character, World& world) {
-  for (unsigned int i = 0; i < character.GetBuild().GetSkills().size(); ++i) {
-    Skill* skill = character.GetBuild().GetSkill<Skill>(i);
+void NextAction(Creature& creature, World& world) {
+  for (unsigned int i = 0; i < creature.GetBuild().GetSkills().size(); ++i) {
+    Skill* skill = creature.GetBuild().GetSkill<Skill>(i);
     assert(skill);
-    if (skill->CanActivate(character, world)) {
-      LOG << character.name_ << " activating " << skill->Name();
-      character.UseSkill(skill, world);
+    if (skill->CanActivate(creature, world)) {
+      LOG << creature.name_ << " activating " << skill->Name();
+      creature.UseSkill(skill, world);
       return;
     }
   }
 
-  if (!IsMeele(character.GetBuild().GetWeapon().GetType()) &&
-      character.kiting_) {
-    const Character* enemy_very_close = EnemyVeryClose(character, world);
+  if (!IsMeele(creature.GetBuild().GetWeapon().GetType()) && creature.kiting_) {
+    const Creature* enemy_very_close = EnemyVeryClose(creature, world);
     if (enemy_very_close) {
-      LOG << character.name_ << "fleeing";
-      character.FleeFrom(*enemy_very_close);
+      LOG << creature.name_ << "fleeing";
+      creature.FleeFrom(*enemy_very_close);
       return;
     }
   }
 
-  if (character.target_ != nullptr) {
-    LOG << character.name_ << " starting weapon attack.";
-    character.StartWeaponAttack();
+  if (creature.target_ != nullptr) {
+    LOG << creature.name_ << " starting weapon attack.";
+    creature.StartWeaponAttack();
   }
 }
 }  // namespace
 
 void NextActions(World& world) {
-  for (auto& character : world.team) {
-    if (character->GetActionType() == Action::Type::Idle) {
-      if (character->target_ == nullptr) {
-        character->target_ = NextTarget(*character, world.enemies);
+  for (auto& creature : world.team) {
+    if (creature->GetActionType() == Action::Type::Idle) {
+      if (creature->target_ == nullptr) {
+        creature->target_ = NextTarget(*creature, world.enemies);
       }
 
-      NextAction(*character, world);
+      NextAction(*creature, world);
     }
   }
 
-  for (auto& character : world.enemies) {
-    if (character->GetActionType() == Action::Type::Idle) {
-      if (character->target_ == nullptr) {
-        character->target_ = NextTarget(*character, world.team);
+  for (auto& creature : world.enemies) {
+    if (creature->GetActionType() == Action::Type::Idle) {
+      if (creature->target_ == nullptr) {
+        creature->target_ = NextTarget(*creature, world.team);
       }
 
-      NextAction(*character, world);
+      NextAction(*creature, world);
     }
   }
 }

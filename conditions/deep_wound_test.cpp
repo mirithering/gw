@@ -8,10 +8,10 @@
 class DeepWoundTest : public GwTest {};
 
 TEST_F(DeepWoundTest, Test) {
-  auto character = AddAssassinTo(team());
-  int previous_health = character->GetMaxHealth();
-  character->AddCondition(
+  auto creature = AddAssassinTo(team());
+  int previous_health = creature->GetMaxHealth();
+  creature->AddCondition(
       Effect<Condition>(10 * Second, std::make_unique<DeepWound>()));
-  ASSERT_TRUE(character->HasCondition(Condition::Type::DeepWound));
-  ASSERT_EQ(character->GetMaxHealth(), previous_health * 0.8);
+  ASSERT_TRUE(creature->HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(creature->GetMaxHealth(), previous_health * 0.8);
 }

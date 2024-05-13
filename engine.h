@@ -3,9 +3,9 @@
 
 #include <bits/stdc++.h>
 
-#include "character/world.h"
+#include "entities/world.h"
 
-class Character;
+class Creature;
 
 void NextActions(World& world);
 

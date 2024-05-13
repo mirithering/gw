@@ -16,7 +16,7 @@ struct ArmorPiece {
 };
 
 // TODO amor provides boni that are always present. (But I accidently put at
-// least the energy bonus into character.cpp)
+// least the energy bonus into creature.cpp)
 
 class Armor {
  public:

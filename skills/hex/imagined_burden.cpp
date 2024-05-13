@@ -1,7 +1,7 @@
 #include "imagined_burden.h"
 
-#include "character/hex.h"
-#include "character/skill.h"
+#include "entities/hex.h"
+#include "entities/skill.h"
 
 namespace {
 constexpr int kDuration[] = {8,  9,  10, 10, 11, 12, 13, 14, 14, 15, 16,
@@ -9,8 +9,8 @@ constexpr int kDuration[] = {8,  9,  10, 10, 11, 12, 13, 14, 14, 15, 16,
 
 class ImaginedBurdenHex : public Hex {
  public:
-  void AddModifiers(Character& character) override {
-    reference_ = character.callbacks_walking_speed_.AddFunction(
+  void AddModifiers(Creature& creature) override {
+    reference_ = creature.callbacks_walking_speed_.AddFunction(
         []() { return Percent(-50); });
   }
 
@@ -22,12 +22,12 @@ class ImaginedBurdenHex : public Hex {
 
 }  // namespace
 
-void ImaginedBurden::ActivationEnd(Character& character, World& world) {
+void ImaginedBurden::ActivationEnd(Creature& creature, World& world) {
   Time time =
-      kDuration[character.GetBuild().GetAttribute(Attribute::IllusionMagic)] *
+      kDuration[creature.GetBuild().GetAttribute(Attribute::IllusionMagic)] *
       Second;
 
   target_->AddHex(Effect<Hex>(time, std::make_unique<ImaginedBurdenHex>()));
 
-  Skill::ActivationEnd(character, world);
+  Skill::ActivationEnd(creature, world);
 }

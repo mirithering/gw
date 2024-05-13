@@ -3,14 +3,14 @@
 
 #include <bits/stdc++.h>
 
-#include "character/condition.h"
-#include "character/character.h"
+#include "entities/condition.h"
+#include "entities/creature.h"
 
-// TODO add effect once characters have a position and move.
+// TODO add effect once creatures have a position and move.
 class Crippled : public Condition {
  public:
-  void AddModifiers(Character& character) override {
-    reference_ = character.callbacks_walking_speed_.AddFunction(
+  void AddModifiers(Creature& creature) override {
+    reference_ = creature.callbacks_walking_speed_.AddFunction(
         []() { return Percent(-50); });
   }
 

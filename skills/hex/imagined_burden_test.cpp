@@ -5,7 +5,7 @@
 
 #include "base/clock.h"
 #include "base/random.h"
-#include "character/character.h"
+#include "entities/creature.h"
 #include "test/test.h"
 #include "weapon/sword.h"
 
@@ -21,10 +21,10 @@ class ImaginedBurdenTest : public GwTest {
   }
 
  protected:
-  Character* mesmer_;
+  Creature* mesmer_;
   ImaginedBurden* imagined_burden_;
 
-  Character* enemy_;
+  Creature* enemy_;
 };
 
 TEST_F(ImaginedBurdenTest, TargetMoves50PercentSlower) {

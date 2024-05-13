@@ -4,26 +4,26 @@
 #include <bits/stdc++.h>
 
 #include "../attack_skill.h"
-#include "character/character.h"
-#include "character/damage.h"
 #include "conditions/bleeding.h"
 #include "conditions/crippled.h"
+#include "entities/creature.h"
+#include "entities/damage.h"
 
 class CripplingSlash : public AttackSkill {
  public:
   std::string Name() const override { return "Crippling Slash"; }
 
  protected:
-  void ActivationMiddle(Character& character, World& world) override {
+  void ActivationMiddle(Creature& creature, World& world) override {
     assert(target_);
-    bool success = character.WeaponAttack(*target_);
+    bool success = creature.WeaponAttack(*target_);
     if (success) {
       Time cripple_duration =
-          kCrippledDurationSeconds[character.GetBuild().GetAttribute(
+          kCrippledDurationSeconds[creature.GetBuild().GetAttribute(
               kAttribute)] *
           Second;
       Time bleed_duration = BleedingDurationSeconds(
-                                character.GetBuild().GetAttribute(kAttribute)) *
+                                creature.GetBuild().GetAttribute(kAttribute)) *
                             Second;
       target_->AddCondition(
           Effect<Condition>(bleed_duration, std::make_unique<Bleeding>()));
@@ -35,8 +35,8 @@ class CripplingSlash : public AttackSkill {
   Adrenaline AdrenalineCost() const override { return 6 * Strike; }
   int EnergyCost() const override { return 0; }
   Time RechargeTime() const override { return 0 * Second; }
-  Time ActivationTime(Character& character) const override {
-    return character.GetBuild().GetWeapon().AttackDuration();
+  Time ActivationTime(Creature& creature) const override {
+    return creature.GetBuild().GetWeapon().AttackDuration();
   }
   Weapon::Type WeaponType() const override { return Weapon::Type::Sword; };
 

@@ -5,7 +5,7 @@
 
 #include "base/clock.h"
 
-class Character;
+class Creature;
 
 class Condition {
  public:
@@ -14,7 +14,7 @@ class Condition {
   Condition& operator=(const Condition&) = delete;
   virtual ~Condition() = default;
 
-  virtual void AddModifiers(Character& character) = 0;
+  virtual void AddModifiers(Creature& creature) = 0;
   enum class Type {
     Bleeding,
     Blind,

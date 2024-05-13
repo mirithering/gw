@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 
 #include "base/random.h"
-#include "character/build.h"
-#include "character/character.h"
+#include "entities/build.h"
+#include "entities/creature.h"
 #include "test/test.h"
 #include "weapon/dagger.h"
 #include "weapon/sword.h"
@@ -22,9 +22,9 @@ class CripplingSlashTest : public GwTest {
   }
 
  protected:
-  Character* attacker;
+  Creature* attacker;
   CripplingSlash* crippling_slash;
-  Character* defender;
+  Creature* defender;
 };
 
 TEST_F(CripplingSlashTest, InflictBleedingAndCrippled) {

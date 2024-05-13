@@ -3,9 +3,9 @@
 
 #include <bits/stdc++.h>
 
-#include "character/character.h"
-#include "character/skill.h"
-#include "character/world.h"
+#include "entities/creature.h"
+#include "entities/skill.h"
+#include "entities/world.h"
 #include "weapon/weapon.h"
 
 class HexSkill : public Skill {

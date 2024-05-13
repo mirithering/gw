@@ -5,11 +5,11 @@
 #include "base/attribute.h"
 #include "base/logging.h"
 #include "base/random.h"
-#include "character.h"
+#include "creature.h"
 #include "damage.h"
 #include "weapon/weapon.h"
 
-Action Action::WeaponAttack(Character& source, Character& target) {
+Action Action::WeaponAttack(Creature& source, Creature& target) {
   const Weapon& weapon = source.GetBuild().GetWeapon();
   // TODO walk towards target if not in range.
   Time attack_duration = weapon.AttackDuration();
@@ -53,8 +53,8 @@ Action Action::WeaponAttack(Character& source, Character& target) {
   return Action(Action::Type::Busy, attack_duration, tick, end);
 }
 
-Action Action::WalkTowardsUntilInRange(Character& source,
-                                       const Character& target, Inches range) {
+Action Action::WalkTowardsUntilInRange(Creature& source, const Creature& target,
+                                       Inches range) {
   std::function<Action::Result(Time duration)> tick = [&,
                                                        range](Time duration) {
     if (InRange(source.GetPosition(), target.GetPosition(), range)) {
@@ -68,16 +68,16 @@ Action Action::WalkTowardsUntilInRange(Character& source,
   return Action(Action::Type::Busy, Time(INT_MAX), tick, &DoNothingEnd);
 }
 
-Action Action::WalkAwayFromUntilOutOfRange(Character& character,
-                                           const Character& away_from,
+Action Action::WalkAwayFromUntilOutOfRange(Creature& creature,
+                                           const Creature& away_from,
                                            Inches range) {
-  Time expected_flee_time = range / character.GetWalkingSpeed();
+  Time expected_flee_time = range / creature.GetWalkingSpeed();
   std::function<Action::Result(Time duration)> tick = [&,
                                                        range](Time duration) {
-    if (!InRange(character.GetPosition(), away_from.GetPosition(), range)) {
+    if (!InRange(creature.GetPosition(), away_from.GetPosition(), range)) {
       return Action::Result::End;
     }
-    character.OneStepAwayFrom(away_from.GetPosition());
+    creature.OneStepAwayFrom(away_from.GetPosition());
     return Action::Result::Continue;
   };
   // TODO Give up if your target is moving faster than you

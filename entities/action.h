@@ -6,7 +6,7 @@
 #include "base/units.h"
 #include "weapon/weapon.h"
 
-class Character;
+class Creature;
 
 class Action {
  public:
@@ -37,14 +37,14 @@ class Action {
     return result;
   }
 
-  static Action WeaponAttack(Character& source, Character& target);
+  static Action WeaponAttack(Creature& source, Creature& target);
 
-  // Walks towards another character until in range.
-  static Action WalkTowardsUntilInRange(Character& source,
-                                        const Character& target, Inches range);
+  // Walks towards another creature until in range.
+  static Action WalkTowardsUntilInRange(Creature& source,
+                                        const Creature& target, Inches range);
 
-  static Action WalkAwayFromUntilOutOfRange(Character& character,
-                                            const Character& away_from,
+  static Action WalkAwayFromUntilOutOfRange(Creature& creature,
+                                            const Creature& away_from,
                                             Inches range);
 
   Type GetType() const { return type_; }
