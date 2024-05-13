@@ -15,6 +15,11 @@
  */
 class Effect : public TimedObject {
  public:
+  // TODO Start migrating deprecated effects to these. My idea is to create a
+  // subclass of Effect that holds a shared_ptr to a callback that is created
+  // and attached to the creature on Start(). The creature itself holds a
+  // weak_ptr to that callback. shared_ptr is destroyed when the effect ends, or
+  // its object is destructed.
   enum class Type {
     Stance,
     // Conditions
@@ -54,7 +59,7 @@ class Effect : public TimedObject {
   // over.
 
  private:
-  // Override these for a concrete effect
+  // Override these three to implement a concrete effect
 
   // Called with the first tick of the effect.
   virtual void Start() = 0;

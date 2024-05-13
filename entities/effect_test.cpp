@@ -7,15 +7,15 @@ class FakeEffect : public Effect {
  public:
   FakeEffect(Time duration) : Effect(duration) {}
 
-  void Start() override { ++start_; }
-  void Tick() override { ++tick_; }
-  void End() override { ++end_; }
-
   int start_calls() { return start_; }
   int tick_calls() { return tick_; }
   int end_calls() { return end_; }
 
  private:
+  void Start() override { ++start_; }
+  void Tick() override { ++tick_; }
+  void End() override { ++end_; }
+
   int start_ = 0;
   int tick_ = 0;
   int end_ = 0;
