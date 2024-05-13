@@ -6,8 +6,9 @@
 #include "base/units.h"
 #include "character/character.h"
 #include "character/skill.h"
+#include "skills/hex/hex_skill.h"
 
-class SoothingImages : public Skill {
+class SoothingImages : public HexSkill {
  public:
   std::string Name() const override { return "Soothing Images"; }
 

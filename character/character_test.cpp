@@ -141,6 +141,7 @@ TEST_F(CharacterTest, SecondConditionDoesNotOverrideIfShorter) {
       Effect<Condition>(8 * Second, std::make_unique<Bleeding>()));
   ASSERT_EQ(bleeding_, nullptr);
   ASSERT_TRUE(character_->HasCondition(Condition::Type::Bleeding));
+  ASSERT_EQ(character_->ConditionsCount(), 1);
 }
 
 TEST_F(CharacterTest, ActivateSkillDoesDamage) {
@@ -164,4 +165,21 @@ TEST_F(CharacterTest, FleeingTakesYouHalfAggroCircleAway) {
   AwaitIdle(character_);
   ASSERT_FALSE(InRange(character_->GetPosition(), dummy_->GetPosition(),
                        EarshotRange / 2));
+}
+
+TEST_F(CharacterTest, ConditionsAreCountedCorrectly) {
+  ASSERT_EQ(character_->ConditionsCount(), 0);
+  character_->AddCondition(
+      Effect<Condition>(1 * Millisecond, std::make_unique<Bleeding>()));
+  ASSERT_TRUE(character_->HasCondition(Condition::Type::Bleeding));
+  ASSERT_EQ(character_->ConditionsCount(), 1);
+
+  character_->AddCondition(
+      Effect<Condition>(2 * Millisecond, std::make_unique<DeepWound>()));
+  ASSERT_TRUE(character_->HasCondition(Condition::Type::DeepWound));
+  ASSERT_EQ(character_->ConditionsCount(), 2);
+  Tick();
+  ASSERT_EQ(character_->ConditionsCount(), 1);
+  Tick();
+  ASSERT_EQ(character_->ConditionsCount(), 0);
 }

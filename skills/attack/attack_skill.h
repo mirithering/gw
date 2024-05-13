@@ -19,6 +19,7 @@ class AttackSkill : public Skill {
   Inches GetRange(const Character& character) const override {
     return character.GetBuild().GetWeapon().GetRange();
   }
+  Skill::Type GetType() const override { return Skill::Type::Attack; }
 
  protected:
   virtual Weapon::Type WeaponType() const = 0;

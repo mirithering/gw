@@ -1,17 +1,14 @@
-#ifndef SKILLS_HEX_IMAGINED_BURDEN_H
-#define SKILLS_HEX_IMAGINED_BURDEN_H
+#ifndef SKILLS_HEX_FEVERED_DREAMS_H
+#define SKILLS_HEX_FEVERED_DREAMS_H
 
 #include <bits/stdc++.h>
 
-#include "base/units.h"
-#include "character/character.h"
 #include "character/skill.h"
 #include "skills/hex/hex_skill.h"
 
-// TODO I can unify some of these into a generic "hex" skill base class
-class ImaginedBurden : public HexSkill {
+class FeveredDreams : public HexSkill {
  public:
-  std::string Name() const override { return "Imagined Burden"; }
+  std::string Name() const override { return "Fevered Dreams"; }
 
   Character* GetTarget(Character& character, World& world) const override {
     return character.target_;
@@ -22,11 +19,11 @@ class ImaginedBurden : public HexSkill {
   void ActivationEnd(Character& character, World& world) override;
 
   Adrenaline AdrenalineCost() const override { return 0 * Strike; }
-  int EnergyCost() const override { return 15; }
-  Time RechargeTime() const override { return 30 * Second; }
+  int EnergyCost() const override { return 10; }
+  Time RechargeTime() const override { return 10 * Second; }
   Time ActivationTime(Character& character) const override {
-    return 1 * Second;
+    return 2 * Second;
   }
 };
 
-#endif  // SKILLS_HEX_IMAGINED_BURDEN_H
+#endif  // SKILLS_HEX_FEVERED_DREAMS_H

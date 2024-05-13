@@ -68,6 +68,8 @@ class BonettisDefense : public Skill {
   int EnergyCost() const override { return 0; }
   Time RechargeTime() const override { return Time(0); }
   Time ActivationTime(Character& character) const override { return Time(0); }
+  // TODO create a stance skill class
+  Skill::Type GetType() const override { return Skill::Type::Stance; }
 
  private:
   inline static const Attribute kAttribute = Attribute::Tactics;

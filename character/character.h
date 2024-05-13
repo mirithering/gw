@@ -14,6 +14,8 @@
 #include "hex.h"
 #include "stance.h"
 
+// TODO Creatures/monsters are simpler versions of characters, without sets of
+// armor, and with different health/energy. Write a class for those...
 class Character : public TimedObject {
  public:
   Character(std::unique_ptr<Build> build,
@@ -67,6 +69,16 @@ class Character : public TimedObject {
 
   bool HasCondition(Condition::Type type) { return !conditions_[type].Ended(); }
 
+  int ConditionsCount() {
+    int count = 0;
+    for (const auto& condition : conditions_) {
+      if (!condition.second.Ended()) {
+        ++count;
+      }
+    }
+    return count;
+  }
+
   Stance* GetStance() { return stance_.get(); }
 
   Action::Type GetActionType() const { return action_.GetType(); }
@@ -106,6 +118,10 @@ class Character : public TimedObject {
   FunctionList<void(Character& character, Weapon::Type type)>
       callbacks_attack_blocked_;
   FunctionList<bool()> callbacks_can_gain_adrenaline_;
+  FunctionList<Percent()> callbacks_spell_casting_speed_;
+  FunctionList<void(const Character& character,
+                    const Effect<Condition>& condition, World& world)>
+      callbacks_add_condition_;
 
   Position GetPosition() const { return position_; }
 

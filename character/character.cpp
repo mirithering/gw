@@ -94,21 +94,31 @@ int Character::GetMaxHealth() const {
   return of(max_health, percent);
 }
 
+// TODO If I could make this a function that would just receive a duration and a
+// type, that might make more sense.
+// Then the Condition constructor itself could be Condition(time, type) that
+// creates the correct thing? What seems conceptually off is that a condition is
+// the same object, no matter if applied or not...
 Effect<Condition>* Character::AddCondition(Effect<Condition> condition) {
   // TODO not all characters can have all conditions, e.g. bleeding, deep wound.
   assert(condition.get());
   Condition::Type type = condition.get()->GetType();
   if (conditions_[type].RemainingDuration() >= condition.RemainingDuration()) {
-    // Existing condition last longer, not adding anything.
+    // Existing condition lasts longer, not adding anything.
     return nullptr;
   }
   conditions_[type] = std::move(condition);
   conditions_[type].get()->AddModifiers(*this);
+
+  // TODO run add condition callbacks.
+
   return &conditions_[type];
 }
 
 bool Character::ReceiveWeaponDamage(int damage, Weapon::Type type,
                                     bool blockable) {
+  // TODO interrupt if easily interruptable or dazed. Not sure where to best put
+  // this... because any kind of attack seems to interrupt.
   if (blockable && WillBlockAttack(type)) {
     for (const auto& callback : callbacks_attack_blocked_.GetList()) {
       callback(*this, type);

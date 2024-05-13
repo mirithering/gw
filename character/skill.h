@@ -12,6 +12,17 @@ class Character;
 // TODO implement aftercast delay
 class Skill : public TimedObject {
  public:
+  enum class Type {
+    Spell,
+    HexSpell,
+    ItemSpell,
+    WardSpell,
+    WeaponSpell,
+    WellSpell,
+    Attack,
+    Stance,
+  };
+
   Skill() = default;
 
   virtual bool CanActivate(Character& character, World& world) const;
@@ -40,6 +51,7 @@ class Skill : public TimedObject {
   virtual int EnergyCost() const = 0;
   virtual Time RechargeTime() const = 0;
   virtual Time ActivationTime(Character& character) const = 0;
+  virtual Type GetType() const = 0;
 
   virtual void ActivationStart(Character& character, World& world);
   virtual void ActivationMiddle(Character& character, World& world){};
@@ -51,5 +63,7 @@ class Skill : public TimedObject {
                       // But I don't think I care.
   Time recharge_ = Time(0);
 };
+
+bool IsSpell(Skill::Type type);
 
 #endif

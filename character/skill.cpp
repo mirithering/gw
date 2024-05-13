@@ -18,6 +18,17 @@ Action Skill::Activate(Character& character, World& world) {
 
   Time activation_time = ActivationTime(character);
 
+  if (IsSpell(GetType())) {
+    Percent modifier = Percent(100);
+    // TODO check wether those add up, and not multiply or
+    // something.
+    for (const auto& modifier_callback :
+         character.callbacks_spell_casting_speed_.GetList()) {
+      modifier += modifier_callback();
+    }
+    activation_time = of(activation_time, modifier);
+  }
+
   std::function<Action::Result(Time)> tick = [&,
                                               activation_time](Time duration) {
     if (duration == activation_time / 2) {
@@ -60,4 +71,18 @@ void Skill::ActivationEnd(Character& character,
                           World& world) {
   recharge_ = RechargeTime();
   target_ = nullptr;
+}
+
+bool IsSpell(Skill::Type type) {
+  switch (type) {
+    case Skill::Type::Spell:
+    case Skill::Type::HexSpell:
+    case Skill::Type::ItemSpell:
+    case Skill::Type::WardSpell:
+    case Skill::Type::WeaponSpell:
+    case Skill::Type::WellSpell:
+      return true;
+    default:
+      return false;
+  }
 }

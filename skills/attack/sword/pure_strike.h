@@ -14,9 +14,10 @@ class PureStrike : public AttackSkill {
  protected:
   void ActivationMiddle(Character& character, World& world) override {
     assert(target_);
-    int skill_damage = kDamage.at(character.GetBuild().GetAttribute(kAttribute));
+    int skill_damage =
+        kDamage.at(character.GetBuild().GetAttribute(kAttribute));
     character.WeaponAttack(*target_, skill_damage,
-                          /*blockable=*/(character.GetStance() != nullptr));
+                           /*blockable=*/(character.GetStance() != nullptr));
   }
 
   Adrenaline AdrenalineCost() const override { return Adrenaline(0); }
