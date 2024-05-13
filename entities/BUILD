@@ -13,6 +13,7 @@ cc_library(
         "condition.h",
         "creature.h",
         "damage.h",
+        "effect.h",
         "hex.h",
         "skill.h",
         "stance.h",
@@ -34,6 +35,7 @@ cc_test(
         "build_test.cpp",
         "creature_test.cpp",
         "damage_test.cpp",
+        "effect_test.cpp",
     ],
     deps = [
         "entities",

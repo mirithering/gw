@@ -14,7 +14,7 @@ void TickAllTicks(Time current_time) {
 
     (*it)->Tick(g_time - (*it)->creation_time_);
     if (g_ticks.size() != size) {
-      // Something was deleted, let's start over.
+      // Something was deleted or added, let's start over.
       TickAllTicks(current_time);
       return;
     }

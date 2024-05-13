@@ -13,7 +13,7 @@ class TimedObject {
   virtual ~TimedObject();
 
   // Called every 1ms of Game time. `time_passed` is the time that passed since
-  // creation of this object.
+  // creation of this object, starting with 1.
   virtual void Tick(Time time_passed) = 0;
 
   Time creation_time_;
