@@ -15,6 +15,14 @@ class Build {
   Build& operator=(const Build&) = delete;
 
   void SetFirstProfession(Profession profession) {
+    std::map<Profession, int> max_energy_per_profession = {
+        {Profession::Warrior, 20},     {Profession::Ranger, 25},
+        {Profession::Dervish, 25},     {Profession::Assassin, 25},
+        {Profession::Paragon, 30},     {Profession::Elementalist, 30},
+        {Profession::Monk, 30},        {Profession::Mesmer, 30},
+        {Profession::Necromancer, 30}, {Profession::Ritualist, 30}};
+
+    SetMaxEnergy(max_energy_per_profession[profession]);
     first_profession_ = profession;
   }
   Profession GetFirstProfession() const { return first_profession_; }
@@ -31,6 +39,12 @@ class Build {
 
   void SetArmor(std::unique_ptr<Armor> armor) { armor_ = std::move(armor); }
   const Armor* GetArmor() const { return armor_.get(); }
+
+  void SetMaxHealth(int health) { max_health_ = health; }
+  int GetMaxHealth() const { return max_health_; }
+
+  void SetMaxEnergy(int energy) { max_energy_ = energy; }
+  int GetMaxEnergy() const { return max_energy_; }
 
   void SetAttribute(Attribute attribute, int num) {
     // TODO Make sure to not violate primary attributes.
@@ -88,6 +102,9 @@ class Build {
   std::vector<std::unique_ptr<Skill>> skills_;
 
   int attribute_points_ = 200;
+
+  int max_health_ = 480;
+  int max_energy_ = 0;
 };
 
 template <class W, class... S>

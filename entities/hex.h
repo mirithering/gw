@@ -5,8 +5,8 @@
 
 class Creature;
 
-// TODO move all of this into a Modifier class and have only Effect::Type for
-// stances, conitions, hexes, boons etc.
+// TODO move all of this into a Modifier class and have only
+// EffectDeprecated::Type for stances, conitions, hexes, boons etc.
 class Hex {
  public:
   Hex() = default;

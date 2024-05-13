@@ -57,8 +57,8 @@ TEST_F(BonettisDefenseTest, SkilledDurationIsTen) {
 }
 
 TEST_F(BonettisDefenseTest, BlockChanceIs75ForMeele) {
-  warrior_->SetStance(
-      Effect<Stance>(20 * Second, std::make_unique<BonettisDefenseStance>()));
+  warrior_->SetStance(EffectDeprecated<Stance>(
+      20 * Second, std::make_unique<BonettisDefenseStance>()));
 
   OverrideRandomDecisionForTesting(Percent(74));
   ASSERT_FALSE(enemy_->WeaponAttack(*warrior_));
@@ -69,8 +69,8 @@ TEST_F(BonettisDefenseTest, BlockChanceIs75ForMeele) {
 // TODO write a test for projectile and one for staff.
 
 TEST_F(BonettisDefenseTest, BlockingMeeleGivesEnergy) {
-  warrior_->SetStance(
-      Effect<Stance>(20 * Second, std::make_unique<BonettisDefenseStance>()));
+  warrior_->SetStance(EffectDeprecated<Stance>(
+      20 * Second, std::make_unique<BonettisDefenseStance>()));
 
   warrior_->UseEnergy(warrior_->energy());
   ASSERT_EQ(warrior_->energy(), 0);

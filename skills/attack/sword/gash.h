@@ -26,8 +26,8 @@ class Gash : public AttackSkill {
     bool success = creature.WeaponAttack(*target_, skill_damage);
 
     if (success && is_bleeding) {
-      target_->AddCondition(Effect<Condition>(deep_wound_duration,
-                                              std::make_unique<DeepWound>()));
+      target_->AddCondition(EffectDeprecated<Condition>(
+          deep_wound_duration, std::make_unique<DeepWound>()));
     }
   }
 

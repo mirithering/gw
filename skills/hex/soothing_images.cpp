@@ -10,13 +10,14 @@ constexpr int kDuration[] = {8,  9,  10, 10, 11, 12, 13, 14, 14, 15, 16,
 class SoothingImagesHex : public Hex {
  public:
   void AddModifiers(Creature& creature) override {
-    creature.callbacks_can_gain_adrenaline_.AddFunction([]() { return false; });
+    reference_ = creature.callbacks_can_gain_adrenaline_.AddFunction(
+        []() { return false; });
   }
 
   Type GetType() const override { return Type::SoothingImages; }
 
  private:
-  FunctionList<Percent()>::UniqueReference reference_;
+  FunctionList<bool()>::UniqueReference reference_;
 };
 
 bool FirstOrSecondProfessionWarrior(const Creature& creature) {
@@ -51,7 +52,8 @@ void SoothingImages::ActivationEnd(Creature& creature, World& world) {
   auto& enemies = world.EnemiesOf(creature);
   for (auto& enemy : enemies) {
     if (InRange(target_->GetPosition(), enemy->GetPosition(), AdjacentRange)) {
-      enemy->AddHex(Effect<Hex>(time, std::make_unique<SoothingImagesHex>()));
+      enemy->AddHex(
+          EffectDeprecated<Hex>(time, std::make_unique<SoothingImagesHex>()));
     }
   }
 

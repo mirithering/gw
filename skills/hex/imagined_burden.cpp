@@ -27,7 +27,8 @@ void ImaginedBurden::ActivationEnd(Creature& creature, World& world) {
       kDuration[creature.GetBuild().GetAttribute(Attribute::IllusionMagic)] *
       Second;
 
-  target_->AddHex(Effect<Hex>(time, std::make_unique<ImaginedBurdenHex>()));
+  target_->AddHex(
+      EffectDeprecated<Hex>(time, std::make_unique<ImaginedBurdenHex>()));
 
   Skill::ActivationEnd(creature, world);
 }

@@ -4,7 +4,7 @@
 #include <bits/stdc++.h>
 
 #include "clock.h"
-#include "effect.h"
+#include "effect_deprecated.h"
 
 template <class... Args>
 class FunctionResolver {
@@ -26,7 +26,7 @@ template <class... Args>
 class Event {
  public:
   Event(Time until_event, std::function<void(Args...)> effect)
-      : effect_(Effect<FunctionResolver<Args...>>(
+      : effect_(EffectDeprecated<FunctionResolver<Args...>>(
             until_event, std::make_unique<FunctionResolver<Args...>>(effect))) {
   }
   Event(Event&&) = default;
@@ -38,7 +38,7 @@ class Event {
   }
 
  private:
-  Effect<FunctionResolver<Args...>> effect_;
+  EffectDeprecated<FunctionResolver<Args...>> effect_;
 };
 
 #endif  // BASE_EVENT_H

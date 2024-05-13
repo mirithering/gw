@@ -16,7 +16,7 @@ void BarbarousSlice::ActivationMiddle(Creature& creature, World& world) {
   bool success = creature.WeaponAttack(*target_, skill_damage);
   bool inflict_bleeding = (creature.GetStance() == nullptr);
   if (success && inflict_bleeding) {
-    target_->AddCondition(
-        Effect<Condition>(bleeding_duration, std::make_unique<Bleeding>()));
+    target_->AddCondition(EffectDeprecated<Condition>(
+        bleeding_duration, std::make_unique<Bleeding>()));
   }
 }

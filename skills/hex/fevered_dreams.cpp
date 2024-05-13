@@ -17,8 +17,8 @@ class FeveredDreamsHex : public Hex {
  public:
   void AddModifiers(Creature& creature) override {
     reference_ = creature.callbacks_add_condition_.AddFunction(
-        [](const Creature& creature, const Effect<Condition>& condition,
-           World& world) {
+        [](const Creature& creature,
+           const EffectDeprecated<Condition>& condition, World& world) {
           // TODO shiiit I have no idea how to copy conditions.
         });
   }
@@ -27,7 +27,7 @@ class FeveredDreamsHex : public Hex {
 
  private:
   FunctionList<void(const Creature& creature,
-                    const Effect<Condition>& condition,
+                    const EffectDeprecated<Condition>& condition,
                     World& world)>::UniqueReference reference_;
 };
 
@@ -41,7 +41,8 @@ void FeveredDreams::ActivationEnd(Creature& creature, World& world) {
                    kDurationIncrease) *
               Second;
 
-  target_->AddHex(Effect<Hex>(time, std::make_unique<FeveredDreamsHex>()));
+  target_->AddHex(
+      EffectDeprecated<Hex>(time, std::make_unique<FeveredDreamsHex>()));
 
   if (target_->ConditionsCount() >= 2) {
     Time dazed_time = (kDazeDurationBase + creature.GetBuild().GetAttribute(
@@ -49,7 +50,7 @@ void FeveredDreams::ActivationEnd(Creature& creature, World& world) {
                                                kDazeDurationIncrease) *
                       Second;
     target_->AddCondition(
-        Effect<Condition>(dazed_time, std::make_unique<Dazed>()));
+        EffectDeprecated<Condition>(dazed_time, std::make_unique<Dazed>()));
   }
 
   Skill::ActivationEnd(creature, world);

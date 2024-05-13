@@ -1,3 +1,5 @@
+#include "creature.h"
+
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
@@ -5,7 +7,6 @@
 #include "base/profession.h"
 #include "conditions/bleeding.h"
 #include "conditions/deep_wound.h"
-#include "creature.h"
 #include "skills/attack/sword/barbarous_slice.h"
 #include "skills/attack/sword/pure_strike.h"
 #include "skills/bonettis_defense.h"
@@ -43,9 +44,9 @@ TEST_F(CreatureTest, WarriorRecharges2EnergyEvery3000Ticks) {
 }
 
 TEST_F(CreatureTest, StanceBlocksAttacks) {
-  BlockEverythingStance* stance =
-      static_cast<BlockEverythingStance*>(creature_->SetStance(
-          Effect<Stance>(Second, std::make_unique<BlockEverythingStance>())));
+  BlockEverythingStance* stance = static_cast<BlockEverythingStance*>(
+      creature_->SetStance(EffectDeprecated<Stance>(
+          Second, std::make_unique<BlockEverythingStance>())));
 
   ASSERT_FALSE(creature_->ReceiveWeaponDamage(100, Weapon::Type::Scythe));
   ASSERT_EQ(creature_->GetLostHealth(), 0);
@@ -108,35 +109,35 @@ TEST_F(CreatureTest, UsingSkillRemovesAllAdrenalingFromItself) {
 
 TEST_F(CreatureTest, AddConditionAddsCondition) {
   creature_->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(CreatureTest, AddTwoConditionsAddsTwoCondition) {
   creature_->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
   creature_->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<DeepWound>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<DeepWound>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::DeepWound));
 }
 
 TEST_F(CreatureTest, SecondConditionOverridesIfLonger) {
   creature_->AddCondition(
-      Effect<Condition>(9 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(9 * Second, std::make_unique<Bleeding>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
   auto bleeding_ = creature_->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
   ASSERT_NE(bleeding_, nullptr);
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
 }
 
 TEST_F(CreatureTest, SecondConditionDoesNotOverrideIfShorter) {
   creature_->AddCondition(
-      Effect<Condition>(9 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(9 * Second, std::make_unique<Bleeding>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
   auto bleeding_ = creature_->AddCondition(
-      Effect<Condition>(8 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(8 * Second, std::make_unique<Bleeding>()));
   ASSERT_EQ(bleeding_, nullptr);
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
   ASSERT_EQ(creature_->ConditionsCount(), 1);
@@ -167,13 +168,13 @@ TEST_F(CreatureTest, FleeingTakesYouHalfAggroCircleAway) {
 
 TEST_F(CreatureTest, ConditionsAreCountedCorrectly) {
   ASSERT_EQ(creature_->ConditionsCount(), 0);
-  creature_->AddCondition(
-      Effect<Condition>(1 * Millisecond, std::make_unique<Bleeding>()));
+  creature_->AddCondition(EffectDeprecated<Condition>(
+      1 * Millisecond, std::make_unique<Bleeding>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::Bleeding));
   ASSERT_EQ(creature_->ConditionsCount(), 1);
 
-  creature_->AddCondition(
-      Effect<Condition>(2 * Millisecond, std::make_unique<DeepWound>()));
+  creature_->AddCondition(EffectDeprecated<Condition>(
+      2 * Millisecond, std::make_unique<DeepWound>()));
   ASSERT_TRUE(creature_->HasCondition(Condition::Type::DeepWound));
   ASSERT_EQ(creature_->ConditionsCount(), 2);
   Tick();

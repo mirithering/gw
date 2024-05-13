@@ -6,6 +6,8 @@
 template <class>
 class FunctionList;
 
+// TODO I think this is just a fancy re-implementation of what weak_ptr and
+// shared_ptr together can achieve.
 template <class R, class... Args>
 class FunctionList<R(Args...)> {
  public:

@@ -9,8 +9,8 @@
 
 void BonettisDefense::ActivationEnd(Creature& creature, World& world) {
   Time time = kDuration[creature.GetBuild().GetAttribute(kAttribute)] * Second;
-  creature.SetStance(
-      Effect<Stance>(time, std::make_unique<BonettisDefenseStance>()));
+  creature.SetStance(EffectDeprecated<Stance>(
+      time, std::make_unique<BonettisDefenseStance>()));
 
   Skill::ActivationEnd(creature, world);
 };

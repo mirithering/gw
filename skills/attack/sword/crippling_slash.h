@@ -25,10 +25,10 @@ class CripplingSlash : public AttackSkill {
       Time bleed_duration = BleedingDurationSeconds(
                                 creature.GetBuild().GetAttribute(kAttribute)) *
                             Second;
-      target_->AddCondition(
-          Effect<Condition>(bleed_duration, std::make_unique<Bleeding>()));
-      target_->AddCondition(
-          Effect<Condition>(cripple_duration, std::make_unique<Crippled>()));
+      target_->AddCondition(EffectDeprecated<Condition>(
+          bleed_duration, std::make_unique<Bleeding>()));
+      target_->AddCondition(EffectDeprecated<Condition>(
+          cripple_duration, std::make_unique<Crippled>()));
     }
   }
 

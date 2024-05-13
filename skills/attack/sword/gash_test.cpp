@@ -3,7 +3,7 @@
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
-#include "base/effect.h"
+#include "base/effect_deprecated.h"
 #include "base/random.h"
 #include "conditions/bleeding.h"
 #include "entities/creature.h"
@@ -61,7 +61,7 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
                         kExpectedSkillDamage + kExpectedBleedingDamage;
 
   enemy_->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
 
   OverrideRandomValueForTesting(10);
@@ -77,7 +77,7 @@ TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
   enemy_->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Bleeding>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
   warrior_->UseSkill(gash_, world());
   AwaitIdle(warrior_);
 

@@ -1,24 +1,23 @@
-#include "effect.h"
-
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
 #include "clock.h"
+#include "effect_deprecated.h"
 
 namespace {
 const Time kTime = 10 * Second;
 constexpr int kNumber = 5;
 }  // namespace
 
-TEST(EffectTest, NoEffectIsAlwaysOver) {
-  Effect<int> effect = Effect<int>::None();
+TEST(EffectDeprecatedTest, NoEffectDeprecatedIsAlwaysOver) {
+  EffectDeprecated<int> effect = EffectDeprecated<int>::None();
   ASSERT_TRUE(effect.Ended());
   ASSERT_EQ(effect.get(), nullptr);
   Tick();
 }
 
-TEST(EffectTest, EffectLastsForCorrectTime) {
-  Effect<int> effect(kTime, std::make_unique<int>(kNumber));
+TEST(EffectDeprecatedTest, EffectDeprecatedLastsForCorrectTime) {
+  EffectDeprecated<int> effect(kTime, std::make_unique<int>(kNumber));
 
   for (int i = 0; i < kTime.value(); ++i) {
     ASSERT_EQ(effect.RemainingDuration(), kTime - Time(i));
@@ -30,8 +29,8 @@ TEST(EffectTest, EffectLastsForCorrectTime) {
   ASSERT_EQ(effect.get(), nullptr);
 }
 
-TEST(EffectTest, RemovedEffectIsGone) {
-  Effect<int> effect(kTime, std::make_unique<int>(kNumber));
+TEST(EffectDeprecatedTest, RemovedEffectDeprecatedIsGone) {
+  EffectDeprecated<int> effect(kTime, std::make_unique<int>(kNumber));
 
   for (int i = 0; i < kTime.value() / 2; ++i) {
     ASSERT_FALSE(effect.Ended());
@@ -39,7 +38,7 @@ TEST(EffectTest, RemovedEffectIsGone) {
     Tick();
   }
 
-  effect = Effect<int>::None();
+  effect = EffectDeprecated<int>::None();
 
   Tick();
   Tick();
@@ -47,7 +46,7 @@ TEST(EffectTest, RemovedEffectIsGone) {
   ASSERT_EQ(effect.get(), nullptr);
 }
 
-TEST(EffectTest, EffectWithTimedObject) {
+TEST(EffectDeprecatedTest, EffectDeprecatedWithTimedObject) {
   int ticks = 0;
   class Timer : public TimedObject {
    public:
@@ -56,12 +55,12 @@ TEST(EffectTest, EffectWithTimedObject) {
     int& ticks_;
   };
 
-  Effect<Timer> effect(kTime, std::make_unique<Timer>(ticks));
+  EffectDeprecated<Timer> effect(kTime, std::make_unique<Timer>(ticks));
   for (int i = 1; i <= kTime.value(); ++i) {
     Tick();
     ASSERT_EQ(ticks, i);
   }
-  effect = Effect<Timer>::None();
+  effect = EffectDeprecated<Timer>::None();
   Tick();
   ASSERT_EQ(ticks, kTime.value());
 }

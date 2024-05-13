@@ -41,7 +41,7 @@ TEST_F(SoothingImagesTest, TargetMovesCannotGainAdrenaline) {
   AwaitIdle(mesmer_);
 
   enemy_->ReceiveWeaponDamage(enemy_->GetMaxHealth() / 4, Weapon::Type::Sword);
-  EXPECT_NE(gash->GetAdrenaline(), previous_adrenaline);
+  EXPECT_EQ(gash->GetAdrenaline(), previous_adrenaline);
 }
 
 TEST_F(SoothingImagesTest, AffectsAdjacentEnemies) {

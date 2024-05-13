@@ -1,3 +1,5 @@
+#include "creature.h"
+
 #include <bits/stdc++.h>
 
 #include "action.h"
@@ -5,19 +7,11 @@
 #include "base/logging.h"
 #include "base/profession.h"
 #include "base/random.h"
-#include "creature.h"
 #include "damage.h"
 #include "hex.h"
 #include "skill.h"
 
 namespace {
-
-std::map<Profession, int> kMaxEnergy = {
-    {Profession::Warrior, 20},     {Profession::Ranger, 25},
-    {Profession::Dervish, 25},     {Profession::Assassin, 25},
-    {Profession::Paragon, 30},     {Profession::Elementalist, 30},
-    {Profession::Monk, 30},        {Profession::Mesmer, 30},
-    {Profession::Necromancer, 30}, {Profession::Ritualist, 30}};
 
 // 1 means 1 energy every 3 seconds. TODO this is wrong, the additional energy
 // and energy regen is actually provided by armor.
@@ -27,14 +21,13 @@ std::map<Profession, int> kEnergyRegeneration = {
     {Profession::Paragon, 2},     {Profession::Elementalist, 4},
     {Profession::Monk, 4},        {Profession::Mesmer, 4},
     {Profession::Necromancer, 4}, {Profession::Ritualist, 4}};
-
-constexpr int kMaxHealth = 480;  // At level 20
 }  // namespace
 
-Creature::Creature(std::unique_ptr<Build> build, Position initial_position)
-    : build_(std::move(build)), position_(initial_position) {
+Creature::Creature(std::unique_ptr<Build> build, Position initial_position,
+                   Type type)
+    : build_(std::move(build)), position_(initial_position), type_(type) {
   health_lost_ = 0;
-  energy_ = kMaxEnergy[build_->GetFirstProfession()];
+  energy_ = build_->GetMaxEnergy();
 }
 
 void Creature::Tick(Time time_passed) {
@@ -70,8 +63,7 @@ void Creature::EnergyGeneration() {
 }
 
 void Creature::AddEnergy(int amount) {
-  energy_ =
-      std::min(kMaxEnergy.at(build_->GetFirstProfession()), energy_ + amount);
+  energy_ = std::min(build_->GetMaxEnergy(), energy_ + amount);
 }
 
 void Creature::LoseHealth(int amount) {
@@ -83,7 +75,7 @@ void Creature::LoseHealth(int amount) {
 }
 
 int Creature::GetMaxHealth() const {
-  int max_health = kMaxHealth;
+  int max_health = build_->GetMaxHealth();
   Percent percent(100);
   for (const auto& modifier : callbacks_max_health_.GetList()) {
     percent += modifier(*this);
@@ -98,7 +90,8 @@ int Creature::GetMaxHealth() const {
 // Then the Condition constructor itself could be Condition(time, type) that
 // creates the correct thing? What seems conceptually off is that a condition is
 // the same object, no matter if applied or not...
-Effect<Condition>* Creature::AddCondition(Effect<Condition> condition) {
+EffectDeprecated<Condition>* Creature::AddCondition(
+    EffectDeprecated<Condition> condition) {
   // TODO not all creatures can have all conditions, e.g. bleeding, deep wound.
   assert(condition.get());
   Condition::Type type = condition.get()->GetType();
@@ -133,7 +126,7 @@ bool Creature::ReceiveWeaponDamage(int damage, Weapon::Type type,
   return true;
 }
 
-Effect<Hex>* Creature::AddHex(Effect<Hex> hex) {
+EffectDeprecated<Hex>* Creature::AddHex(EffectDeprecated<Hex> hex) {
   assert(hex.get());
   Hex::Type type = hex.get()->GetType();
   if (hexes_[type].RemainingDuration() >= hex.RemainingDuration()) {
@@ -143,6 +136,14 @@ Effect<Hex>* Creature::AddHex(Effect<Hex> hex) {
   hexes_[type] = std::move(hex);
   hexes_[type].get()->AddModifiers(*this);
   return &hexes_[type];
+}
+
+EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>*
+Creature::AddEffectDeprecated(
+    EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>
+        effect) {
+  // TODO define when effects are override, can use comparison?
+  effects_[effect.GetType()] = std::move(effect);
 }
 
 bool Creature::IsHexed() {
@@ -212,6 +213,9 @@ void Creature::Die() {
                 [](const std::unique_ptr<Skill>& skill) {
                   if (skill) skill->LoseAllAdrenaline();
                 });
+  for (auto& on_death : callbacks_death_.GetList()) {
+    on_death(*this);
+  }
   health_lost_ = GetMaxHealth();
   energy_ = 0;
 }

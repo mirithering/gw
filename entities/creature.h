@@ -5,7 +5,7 @@
 
 #include "action.h"
 #include "base/clock.h"
-#include "base/effect.h"
+#include "base/effect_deprecated.h"
 #include "base/event.h"
 #include "base/function_list.h"
 #include "build.h"
@@ -16,8 +16,11 @@
 
 class Creature : public TimedObject {
  public:
+  enum Type { Human, Spirit };
+
   Creature(std::unique_ptr<Build> build,
-           Position initial_position = {Inches(0), Inches(0)});
+           Position initial_position = {Inches(0), Inches(0)},
+           Type type = Human);
   // TODO I needed to remove the move constructor because a lot of code depends
   // on references and ptrs to creatures to stay valid. This is a sign of bad
   // design. Maybe I can fix my dependencies at some point and make creatures
@@ -51,19 +54,25 @@ class Creature : public TimedObject {
 
   void RemoveOneAdrenalineStrike();
 
-  Stance* SetStance(Effect<Stance> stance) {
+  Stance* SetStance(EffectDeprecated<Stance> stance) {
     stance_ = std::move(stance);
     GetStance()->AddModifiers(*this);
     return GetStance();
   }
 
-  Effect<Condition>* AddCondition(Effect<Condition> condition);
-  const Effect<Condition>& GetCondition(Condition::Type type) {
+  EffectDeprecated<Condition>* AddCondition(
+      EffectDeprecated<Condition> condition);
+  const EffectDeprecated<Condition>& GetCondition(Condition::Type type) {
     return conditions_[type];
   }
 
-  Effect<Hex>* AddHex(Effect<Hex> hex);
+  EffectDeprecated<Hex>* AddHex(EffectDeprecated<Hex> hex);
   bool IsHexed();
+
+  EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>*
+  AddEffectDeprecated(
+      EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>
+          effect);
 
   bool HasCondition(Condition::Type type) { return !conditions_[type].Ended(); }
 
@@ -118,8 +127,9 @@ class Creature : public TimedObject {
   FunctionList<bool()> callbacks_can_gain_adrenaline_;
   FunctionList<Percent()> callbacks_spell_casting_speed_;
   FunctionList<void(const Creature& creature,
-                    const Effect<Condition>& condition, World& world)>
+                    const EffectDeprecated<Condition>& condition, World& world)>
       callbacks_add_condition_;
+  FunctionList<void(const Creature& creature)> callbacks_death_;
 
   Position GetPosition() const { return position_; }
 
@@ -130,12 +140,14 @@ class Creature : public TimedObject {
   // are too close.
   bool kiting_ = false;
 
+  const Type type_;
+  void Die();
+
  private:
   void HealthGeneration();
   void EnergyGeneration();
   bool CanGainAdrenaline();
   void AddAdrenaline(Adrenaline adrenaline);
-  void Die();
   bool WillBlockAttack(Weapon::Type type) const;
 
   std::unique_ptr<Build> build_;
@@ -147,9 +159,18 @@ class Creature : public TimedObject {
 
   std::vector<Event<>> incoming_projectiles_;
 
-  Effect<Stance> stance_ = Effect<Stance>::None();
-  std::map<Condition::Type, Effect<Condition>> conditions_;
-  std::map<Hex::Type, Effect<Hex>> hexes_;
+  EffectDeprecated<Stance> stance_ = EffectDeprecated<Stance>::None();
+  std::map<Condition::Type, EffectDeprecated<Condition>> conditions_;
+  std::map<Hex::Type, EffectDeprecated<Hex>> hexes_;
+
+  // TODO clean up this type, is supposed to be just effects, which are things
+  // that expire after a certain time. No more templates and doubled logic
+  // here...
+  std::map<
+      EffectDeprecated<
+          FunctionList<void(const Creature&)>::UniqueReference>::Type,
+      EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>>
+      effects_;
 
   int health_lost_;
   int energy_;

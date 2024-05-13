@@ -31,7 +31,7 @@ TEST_F(DazedTest, DazedDoublesSpellCastTime) {
   }
 
   mesmer->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Dazed>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Dazed>()));
   ASSERT_TRUE(mesmer->HasCondition(Condition::Type::Dazed));
 
   int time_with_dazed = 0;

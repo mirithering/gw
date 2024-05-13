@@ -31,8 +31,8 @@ class ArcingShotTest : public GwTest {
 TEST_F(ArcingShotTest, Test) {
   //   Arcing shot is unblockable, prove that by giving the defender a stance
   //   that blocks all attacks.
-  enemy->SetStance(
-      Effect<Stance>(100 * Second, std::make_unique<BlockEverythingStance>()));
+  enemy->SetStance(EffectDeprecated<Stance>(
+      100 * Second, std::make_unique<BlockEverythingStance>()));
 
   OverrideRandomValueForTesting((22));
   ranger->target_ = enemy;

@@ -3,7 +3,7 @@ cc_library(
     srcs = [
         "attribute.cpp",
         "clock.cpp",
-        "effect.cpp",
+        "effect_deprecated.cpp",
         "profession.cpp",
         "random.cpp",
         "units.cpp",
@@ -11,7 +11,7 @@ cc_library(
     hdrs = [
         "attribute.h",
         "clock.h",
-        "effect.h",
+        "effect_deprecated.h",
         "event.h",
         "function_list.h",
         "logging.h",

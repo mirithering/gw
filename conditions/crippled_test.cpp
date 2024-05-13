@@ -25,7 +25,7 @@ TEST_F(CrippledTest, Test) {
   target->SetPosition({Inches(2000), Inches(0)});
   creature->WalkTowards(*target, Inches(1));
   creature->AddCondition(
-      Effect<Condition>(10 * Second, std::make_unique<Crippled>()));
+      EffectDeprecated<Condition>(10 * Second, std::make_unique<Crippled>()));
 
   Speed speed_crippled = creature->GetWalkingSpeed();
 

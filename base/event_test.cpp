@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "clock.h"
-#include "effect.h"
+#include "effect_deprecated.h"
 #include "units.h"
 
 TEST(EventTest, EventIsResolvedAfterTime) {

@@ -7,6 +7,7 @@ cc_library(
         "hex/fevered_dreams.cpp",
         "hex/imagined_burden.cpp",
         "hex/soothing_images.cpp",
+        #"ritual/nature_ritual/edge_of_extinction.cpp",
     ],
     hdrs = [
         "attack/attack_skill.h",
@@ -22,6 +23,7 @@ cc_library(
         "hex/hex_skill.h",
         "hex/imagined_burden.h",
         "hex/soothing_images.h",
+        #"ritual/nature_ritual/edge_of_extinction.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -44,6 +46,7 @@ cc_test(
         "hex/fevered_dreams_test.cpp",
         "hex/imagined_burden_test.cpp",
         "hex/soothing_images_test.cpp",
+        #"ritual/nature_ritual/edge_of_extinction_test.cpp",
     ],
     deps = [
         "skills",

@@ -21,6 +21,7 @@ class Skill : public TimedObject {
     WellSpell,
     Attack,
     Stance,
+    NatureRitual,
   };
 
   Skill() = default;

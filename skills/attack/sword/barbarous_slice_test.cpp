@@ -62,7 +62,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsDamage) {
   OverrideRandomValueForTesting(0);
   // Put myself in a stance to avoid inflicting bleeding.
   creature->SetStance(
-      Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
+      EffectDeprecated<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
   AwaitIdle(creature);
 
@@ -92,7 +92,7 @@ TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
   creature->UseSkill(barbarous_slice, world());
 
   creature->SetStance(
-      Effect<Stance>(10 * Second, std::make_unique<NoOpStance>()));
+      EffectDeprecated<Stance>(10 * Second, std::make_unique<NoOpStance>()));
 
   AwaitIdle(creature);
 

@@ -3,7 +3,7 @@
 #include <bits/stdc++.h>
 #include <gtest/gtest.h>
 
-#include "base/effect.h"
+#include "base/effect_deprecated.h"
 #include "test/test.h"
 #include "weapon/sword.h"
 
@@ -26,8 +26,9 @@ class PureStrikeTest : public GwTest {
 };
 
 TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
-  auto* stance = static_cast<BlockEverythingStance*>(dummy_->SetStance(
-      Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
+  auto* stance = static_cast<BlockEverythingStance*>(
+      dummy_->SetStance(EffectDeprecated<Stance>(
+          Eternity, std::make_unique<BlockEverythingStance>())));
   creature_->UseSkill(pure_strike_, world());
   AwaitIdle(creature_);
   ASSERT_EQ(stance->attack_blocked_called_, 0);
@@ -35,10 +36,12 @@ TEST_F(PureStrikeTest, PureStrikeCannotBeBlockedIfNotInStance) {
 }
 
 TEST_F(PureStrikeTest, PureStrikeCanBeBlockedIfInStance) {
-  auto* stance = static_cast<BlockEverythingStance*>(dummy_->SetStance(
-      Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
-  static_cast<BlockEverythingStance*>(creature_->SetStance(
-      Effect<Stance>(Eternity, std::make_unique<BlockEverythingStance>())));
+  auto* stance = static_cast<BlockEverythingStance*>(
+      dummy_->SetStance(EffectDeprecated<Stance>(
+          Eternity, std::make_unique<BlockEverythingStance>())));
+  static_cast<BlockEverythingStance*>(
+      creature_->SetStance(EffectDeprecated<Stance>(
+          Eternity, std::make_unique<BlockEverythingStance>())));
   creature_->UseSkill(pure_strike_, world());
   AwaitIdle(creature_);
   ASSERT_EQ(stance->attack_blocked_called_, 1);
