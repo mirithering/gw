@@ -10,6 +10,7 @@
 #include "base/function_list.h"
 #include "build.h"
 #include "condition.h"
+#include "effect.h"
 #include "entities/world.h"
 #include "hex.h"
 #include "stance.h"
@@ -69,17 +70,19 @@ class Creature : public TimedObject {
   EffectDeprecated<Hex>* AddHex(EffectDeprecated<Hex> hex);
   bool IsHexed();
 
-  EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>*
-  AddEffectDeprecated(
-      EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>
-          effect);
+  Effect* AddEffect(std::unique_ptr<Effect> effect);
+
+  bool HasEffect(Effect::Type type) {
+    if (!effects_.contains(type)) return false;
+    return !effects_.at(type)->Ended();
+  };
 
   bool HasCondition(Condition::Type type) { return !conditions_[type].Ended(); }
 
   int ConditionsCount() {
     int count = 0;
-    for (const auto& condition : conditions_) {
-      if (!condition.second.Ended()) {
+    for (const auto& effect : effects_) {
+      if (!effect.second->Ended() && IsCondition(effect.second->GetType())) {
         ++count;
       }
     }
@@ -163,14 +166,7 @@ class Creature : public TimedObject {
   std::map<Condition::Type, EffectDeprecated<Condition>> conditions_;
   std::map<Hex::Type, EffectDeprecated<Hex>> hexes_;
 
-  // TODO clean up this type, is supposed to be just effects, which are things
-  // that expire after a certain time. No more templates and doubled logic
-  // here...
-  std::map<
-      EffectDeprecated<
-          FunctionList<void(const Creature&)>::UniqueReference>::Type,
-      EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>>
-      effects_;
+  std::unordered_map<Effect::Type, std::unique_ptr<Effect>> effects_;
 
   int health_lost_;
   int energy_;

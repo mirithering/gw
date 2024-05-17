@@ -60,15 +60,14 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
   int expected_damage = WeaponStrikeDamage(*warrior_, *enemy_) +
                         kExpectedSkillDamage + kExpectedBleedingDamage;
 
-  enemy_->AddCondition(
-      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
-  ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
+  enemy_->AddEffect(std::make_unique<Bleeding>(*enemy_, 10 * Second));
+  ASSERT_TRUE(enemy_->HasEffect(Effect::Type::Bleeding));
 
   OverrideRandomValueForTesting(10);
   warrior_->UseSkill(gash_, world());
   AwaitIdle(warrior_);
 
-  ASSERT_TRUE(enemy_->HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(enemy_->HasEffect(Effect::Type::Bleeding));
   ASSERT_TRUE(enemy_->HasCondition(Condition::Type::DeepWound));
   ASSERT_EQ(enemy_->GetLostHealth(), expected_damage);
 }
@@ -76,8 +75,9 @@ TEST_F(GashTest, GashHasAdditionalDamageIfBleeding) {
 TEST_F(GashTest, GashIsInflictsDeepWoundIfBleeding) {
   gash_->AddAdrenaline(6 * Strike);
 
-  enemy_->AddCondition(
-      EffectDeprecated<Condition>(10 * Second, std::make_unique<Bleeding>()));
+  enemy_->AddEffect(std::make_unique<Bleeding>(*enemy_, 10 * Second));
+  ASSERT_TRUE(enemy_->HasEffect(Effect::Type::Bleeding));
+
   warrior_->UseSkill(gash_, world());
   AwaitIdle(warrior_);
 

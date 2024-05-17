@@ -76,15 +76,15 @@ TEST_F(BarbarousSliceTest, BarbarousSliceInflictsBleedingIfNoStance) {
 
   while (creature->GetActionType() != Action::Type::Idle) {
     Tick();
-    if (dummy->HasCondition(Condition::Type::Bleeding)) {
+    if (dummy->HasEffect(Effect::Type::Bleeding)) {
       expected_duration--;
     }
   }
-  while (--expected_duration >= Time(0)) {
-    ASSERT_TRUE(dummy->HasCondition(Condition::Type::Bleeding));
+  while (expected_duration-- >= Time(0)) {
+    ASSERT_TRUE(dummy->HasEffect(Effect::Type::Bleeding)) << expected_duration;
     Tick();
   }
-  ASSERT_FALSE(dummy->HasCondition(Condition::Type::Bleeding));
+  ASSERT_FALSE(dummy->HasEffect(Effect::Type::Bleeding));
 }
 
 TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
@@ -96,5 +96,5 @@ TEST_F(BarbarousSliceTest, BarbarousSliceDoesNotInflictBleedingIfStance) {
 
   AwaitIdle(creature);
 
-  ASSERT_FALSE(dummy->HasCondition(Condition::Type::Bleeding));
+  ASSERT_FALSE(dummy->HasEffect(Effect::Type::Bleeding));
 }

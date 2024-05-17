@@ -14,7 +14,7 @@ class Gash : public AttackSkill {
  protected:
   void ActivationMiddle(Creature& creature, World& world) override {
     assert(target_);
-    bool is_bleeding = target_->HasCondition(Condition::Type::Bleeding);
+    bool is_bleeding = target_->HasEffect(Effect::Type::Bleeding);
     int skill_damage = 0;
     if (is_bleeding) {
       skill_damage = Damage(creature.GetBuild().GetAttribute(attribute));

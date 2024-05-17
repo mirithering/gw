@@ -37,6 +37,14 @@ class FunctionList<R(Args...)> {
       };
     }
 
+    void reset() {
+      if (list_) {
+        list_->RemoveFunction(modifier_);
+      };
+      list_ = nullptr;
+      modifier_ = FunctionList<R(Args...)>::ref();
+    }
+
    private:
     FunctionList<R(Args...)>* list_ = nullptr;
     FunctionList<R(Args...)>::ref modifier_;

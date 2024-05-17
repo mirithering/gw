@@ -138,12 +138,23 @@ EffectDeprecated<Hex>* Creature::AddHex(EffectDeprecated<Hex> hex) {
   return &hexes_[type];
 }
 
-EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>*
-Creature::AddEffectDeprecated(
-    EffectDeprecated<FunctionList<void(const Creature&)>::UniqueReference>
-        effect) {
-  // TODO define when effects are override, can use comparison?
-  effects_[effect.GetType()] = std::move(effect);
+Effect* Creature::AddEffect(std::unique_ptr<Effect> effect) {
+  assert(effect);
+
+  if (!effects_.contains(effect->GetType())) {
+    Effect* effect_ptr = effect.get();
+    effects_[effect->GetType()] = std::move(effect);
+    return effect_ptr;
+  }
+
+  auto& old_effect = effects_.at(effect->GetType());
+  if (old_effect->OverrideValue() <= effect->OverrideValue()) {
+    Effect* effect_ptr = effect.get();
+    effects_[effect->GetType()] = std::move(effect);
+    return effect_ptr;
+  }
+
+  return nullptr;
 }
 
 bool Creature::IsHexed() {

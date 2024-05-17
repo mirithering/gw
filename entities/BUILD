@@ -4,6 +4,7 @@ cc_library(
         "action.cpp",
         "creature.cpp",
         "damage.cpp",
+        "effect.cpp",
         "skill.cpp",
         "stance.cpp",
     ],

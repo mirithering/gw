@@ -33,6 +33,6 @@ TEST_F(CripplingSlashTest, InflictBleedingAndCrippled) {
 
   attacker->UseSkill(crippling_slash, world());
   AwaitIdle(attacker);
-  ASSERT_TRUE(defender->HasCondition(Condition::Type::Bleeding));
+  ASSERT_TRUE(defender->HasEffect(Effect::Type::Bleeding));
   ASSERT_TRUE(defender->HasCondition(Condition::Type::Crippled));
 }

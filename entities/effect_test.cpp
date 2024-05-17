@@ -11,6 +11,8 @@ class FakeEffect : public Effect {
   int tick_calls() { return tick_; }
   int end_calls() { return end_; }
 
+  Type GetType() const override { return Effect::Type::Stance; }
+
  private:
   void Start() override { ++start_; }
   void Tick() override { ++tick_; }

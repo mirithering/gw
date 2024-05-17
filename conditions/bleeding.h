@@ -5,33 +5,31 @@
 
 #include "entities/condition.h"
 #include "entities/creature.h"
+#include "entities/effect.h"
 
-class Bleeding : public Condition {
+class Bleeding : public Effect {
  public:
-  void AddModifiers(Creature& creature) override {
-    modifier_ = {
-        .creature = &creature,
-        .reference =
-            creature.callbacks_health_generation_.AddFunctionDeprecated(
-                []() { return -3; }),
-    };
-  }
+  Bleeding(Creature& creature, Time duration)
+      : Effect(duration), creature_(creature){};
 
-  ~Bleeding() override {
-    if (modifier_.has_value()) {
-      modifier_->creature->callbacks_health_generation_.RemoveFunction(
-          modifier_->reference);
-    }
+  Effect::Type GetType() const override { return Effect::Type::Bleeding; }
+
+  int OverrideValue() const override {
+    Time remaining_duration = duration_ - time_passed_;
+    return remaining_duration.value();
   }
-  Type GetType() const override { return Type::Bleeding; }
 
  private:
-  struct Modifier {
-    Creature* creature;
-    FunctionList<int()>::ref reference;
-  };
+  void Start() override {
+    reference_ =
+        creature_.callbacks_health_generation_.AddFunction([]() { return -3; });
+  }
 
-  std::optional<Modifier> modifier_;
+  void Tick() override {}
+  void End() override { reference_.reset(); }
+
+  Creature& creature_;
+  FunctionList<int()>::UniqueReference reference_;
 };
 
 #endif  // CONDITIONS_BLEEDING_H

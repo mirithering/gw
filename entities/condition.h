@@ -16,7 +16,6 @@ class Condition {
 
   virtual void AddModifiers(Creature& creature) = 0;
   enum class Type {
-    Bleeding,
     Blind,
     Burning,
     CrackedArmor,

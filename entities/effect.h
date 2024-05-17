@@ -41,6 +41,7 @@ class Effect : public TimedObject {
   };
 
   void Tick(Time time_passed) override final {
+    time_passed_ = time_passed;
     if (ended_) {
       return;
     }
@@ -58,18 +59,30 @@ class Effect : public TimedObject {
   // TODO I wonder if I need to allow for "ending" an effect before duration is
   // over.
 
+  virtual Type GetType() const = 0;
+
+  // Define this to determine when an effect overrides the existing one of the
+  // same type, and when it doesn't. E.g. for conditions this is always the
+  // duration. The "larger" effect will override.
+  virtual int OverrideValue() const { return 0; };
+
+ protected:
+  Time duration_;
+  Time time_passed_;
+
  private:
   // Override these three to implement a concrete effect
 
   // Called with the first tick of the effect.
   virtual void Start() = 0;
-  // Called on each tick during lifetime.
+  // Called on each tick during the effect, not called after the effect ended.
   virtual void Tick() = 0;
   // Called with the last tick of the effect.
   virtual void End() = 0;
 
   bool ended_ = false;
-  Time duration_;
 };
+
+bool IsCondition(Effect::Type type);
 
 #endif
