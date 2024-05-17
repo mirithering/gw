@@ -21,15 +21,15 @@ class Bleeding : public Effect {
 
  private:
   void Start() override {
-    reference_ =
-        creature_.callbacks_health_generation_.AddFunction([]() { return -3; });
+    modifier_ = std::make_shared<std::function<int()>>([]() { return -3; });
+    creature_.callbacks_health_generation_.push_back(modifier_);
   }
 
   void Tick() override {}
-  void End() override { reference_.reset(); }
+  void End() override { modifier_.reset(); }
 
   Creature& creature_;
-  FunctionList<int()>::UniqueReference reference_;
+  std::shared_ptr<std::function<int()>> modifier_;
 };
 
 #endif  // CONDITIONS_BLEEDING_H

@@ -121,7 +121,6 @@ class Creature : public TimedObject {
   Creature* target_ = nullptr;
 
   FunctionList<Percent(const Creature& creature)> callbacks_max_health_;
-  FunctionList<int()> callbacks_health_generation_;
   FunctionList<Percent(const Creature& creature, Weapon::Type type)>
       callbacks_block_chance_;
   FunctionList<Percent()> callbacks_walking_speed_;
@@ -133,6 +132,10 @@ class Creature : public TimedObject {
                     const EffectDeprecated<Condition>& condition, World& world)>
       callbacks_add_condition_;
   FunctionList<void(const Creature& creature)> callbacks_death_;
+
+  // Better kind of function list, migrate the ones above to the format down
+  // here.
+  std::vector<std::weak_ptr<std::function<int()>>> callbacks_health_generation_;
 
   Position GetPosition() const { return position_; }
 

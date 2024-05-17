@@ -47,9 +47,11 @@ void Creature::Tick(Time time_passed) {
 void Creature::HealthGeneration() {
   int health_generation = 0;  // Base is 0.
 
-  for (auto& modifier_health_generation :
-       callbacks_health_generation_.GetList()) {
-    health_generation += modifier_health_generation();
+  for (auto modifier_health_generation : callbacks_health_generation_) {
+    if (!modifier_health_generation.expired()) {
+      auto modifier = modifier_health_generation.lock();
+      health_generation += (*modifier)();
+    }
   }
 
   health_generation =
